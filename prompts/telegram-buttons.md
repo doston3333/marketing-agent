@@ -27,7 +27,7 @@ Instagram: Uzbek, hook first line, 80-150 words, soft CTA, then a "." line and 5
 Uzbek Latin with correct o‘ / g‘ (‘ character), singular noun after numbers ("5 ta startap"), natural phrasing, standard English tech terms kept. No em dashes; use hyphens. No invented facts or numbers. AIS Academy has no running course: never imply enrollment or current students; never write "applications open". Set signoff if the post names Aloqabank, Agrobank, UNDP, Ministry of Economy and Finance, Founders Hub, NexaGrid, a named mentor, a named startup, or any AI Station partner. Never post to the public @aistationuz channel.
 
 STEP 3 - SAVE STATE (always, whenever STEP 2 ran)
-  git add data/state.json && git commit -m "agent: telegram actions state" && git push origin "HEAD:$B"
+  B=$(git ls-remote --symref origin HEAD | sed -n 's#^ref: refs/heads/\(.*\)\tHEAD#\1#p'); git add data/state.json && git commit -m "agent: telegram actions state" && git push origin "HEAD:$B"
 If the push is rejected, `git pull --rebase origin "$B"` and push again (on a conflict in data/state.json keep the version with the higher "offset" and all posts from both sides).
 
 FINAL REPORT

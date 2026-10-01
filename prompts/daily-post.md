@@ -35,7 +35,7 @@ STEP 4 - DELIVER
 `python3 agent.py send work/post.json --history` (MiniMax takes ~40-90s; use a 600000 ms timeout). It prints POST_ID and any "MiniMax error" line (fallback template used). If sending fails, retry once, then send a PushNotification with the error.
 
 STEP 5 - SAVE STATE (always, even after a failure above)
-  git add data/state.json && git commit -m "agent: daily post state" && git push origin "HEAD:$B"
+  B=$(git ls-remote --symref origin HEAD | sed -n 's#^ref: refs/heads/\(.*\)\tHEAD#\1#p'); git add data/state.json && git commit -m "agent: daily post state" && git push origin "HEAD:$B"
 If the push is rejected, `git pull --rebase origin "$B"` and push again (on a conflict in data/state.json keep the version with the higher "offset" and all posts from both sides).
 
 FINAL REPORT
