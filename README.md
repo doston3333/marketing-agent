@@ -16,35 +16,42 @@ Everything the live agent runs on today, pulled from Google Drive and the two sc
 
 Not included on purpose: `secrets.json` (your MiniMax API key; it's in the Drive folder) and `Montserrat.ttf` (the library downloads it from Google Fonts on GitHub).
 
-## How it runs today
+## How it runs now (Claude Code cloud routines)
 
 ```
-Claude scheduled task ──> Composio workbench ──exec()──> agent_lib.py (from Drive, hash-checked)
-                                                     │
-          ┌──────────────────┬───────────────────────┼─────────────────────┐
-     Google Drive        Telegram bot           MiniMax image-01       Composio upload
-  (state, knowledge,  @aistation_poster_bot     (1 background per     (public URL for
-   secrets, font)     leads' private chats)      platform)             sendPhoto)
+Claude Code routine (cloud session, fresh clone of this repo)
+   │  git pull → python3 agent.py … → git commit/push data/state.json
+   ├── Telegram Bot API   @aistation_poster_bot, leads' private chats only
+   ├── MiniMax image-01   one background per platform (brand template on failure)
+   └── this repo          data/state.json = memory between runs, data/knowledge.md = voice guide
 ```
 
 - **Claude does the thinking** (research, picking the idea, writing captions and image prompts, rewriting on request).
-- **The library does the mechanics** (`poll`, `take_actions`, `send_package`, `render_all`, `compose`, `lint`, `save_state` with merge).
-- Only the leads' private chats get messages. The public @aistationuz channel (`CHANNEL_ID = -1002832312156`) is read-only for the agent.
+- **`agent.py` / `lib/agent_lib.py` do the mechanics**: `check`, `peek`, `start`, `actions`, `knowledge`, `show`, `lint`, `send`, `ack`, `status`, `say`, `learn` (`python3 agent.py -h`).
+- Two routines, prompts in `prompts/`: daily post (08:50 Tashkent) and Telegram buttons (hourly :07, 09:07-21:07).
+- Each routine run starts from a fresh clone, so it commits `data/state.json` back at the end. That commit is the agent's memory.
+- Only the leads' private chats get messages. The public @aistationuz channel (`CHANNEL_ID = -1002832312156`) is read-only.
 
-## Porting to Claude Code: the 3 things to replace
+## Cloud environment setup
 
-The library expects three globals that only exist inside the Composio workbench:
+1. **Environment variables**: `TELEGRAM_BOT_TOKEN` (from @BotFather for @aistation_poster_bot) and `MINIMAX_API_KEY`.
+2. **Network access**: allow `api.telegram.org` and `api.minimax.io` (plus `pypi.org` / `files.pythonhosted.org` for `pip install`).
+3. **Git push** from the routine to the branch it runs on, so state is saved.
+4. Check with `python3 agent.py check`: both secrets "set" and the bot username printed.
 
-| Global | Used for | Replace with |
-|---|---|---|
-| `proxy_execute(method, url, toolkit="googledrive", ...)` (5 uses) | Drive read/write of state.json, knowledge.md, secrets.json | Local files (`data/`) or the Google Drive API with your own OAuth |
-| `run_composio_tool("TELEGRAM_*", args)` (2 uses, via `tg()` and `poll()`) | getUpdates, sendMessage, sendPhoto, answerCallbackQuery | Direct Bot API calls: `requests.post(f"https://api.telegram.org/bot{TOKEN}/{method}", json=args)`. Slugs map 1:1 (`TELEGRAM_SEND_PHOTO` → `sendPhoto`, etc.) |
-| `upload_local_file(path)` (2 uses, in `public_url()`) | Getting a public URL for each image so Telegram can fetch it | Skip it: send the file directly with `sendPhoto` as multipart (`files={"photo": open(path,"rb")}`) |
-
-Everything else (rendering, lint, state merge, button handling) is plain Python and works as is.
-
-Secrets you'll need in the new setup: the Telegram bot token for @aistation_poster_bot (from @BotFather) and `MINIMAX_API_KEY`.
+The Montserrat font is vendored in `assets/` (SIL Open Font License), so no font download is needed at run time.
 
 ## Switch-over rule
 
-Only one reader may poll the bot. When the new version starts calling `getUpdates`, disable both Claude scheduled tasks ("AIS marketing agent - daily post" and "AIS marketing agent - Telegram buttons") at the same moment, or the two will steal each other's button presses. Start the new one from `data/state.snapshot.json` (or re-export state.json from Drive right before the switch) so the offset and post history carry over.
+Only one reader may poll the bot. When the new routines go live, disable the two old Claude scheduled tasks ("AIS marketing agent - daily post" and "AIS marketing agent - Telegram buttons") at the same moment, or they will steal each other's button presses. `data/state.json` was seeded from the Oct 1 snapshot; if the old tasks ran after that, copy the latest state.json from Drive over it right before the switch so the offset and post history carry over.
+
+## Files
+
+| Path | What it is |
+|---|---|
+| `agent.py` | CLI the routines call. |
+| `lib/agent_lib.py` | Engine: state, Telegram, MiniMax, Pillow brand renderer, lint, knowledge loader. |
+| `data/state.json` | Live state (committed by every run). `state.snapshot.json` is the Oct 1 export it started from. |
+| `data/knowledge.md` | Voice guide + content rules. |
+| `prompts/*.md` | The two routine prompts. |
+| `assets/Montserrat.ttf` | Brand font. |

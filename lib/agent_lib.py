@@ -1,20 +1,23 @@
-# AI Station marketing agent library v2 (Oct 2026).
-# Lives in Google Drive (folder "AIS Marketing Agent (system)") because the Composio
-# workbench /mnt/files is scoped to one tool-router session and is NOT shared between runs.
-# Bootstrapped every run with exec() inside COMPOSIO_REMOTE_WORKBENCH (needs proxy_execute,
-# run_composio_tool, upload_local_file from the workbench globals).
-import base64, io, json, os, re, time, math, random, contextlib, datetime, html as _html
+# AI Station marketing agent library v3 (Oct 2026).
+# Standalone port of the Composio-workbench v2: state and knowledge live as local files in
+# data/ (AIS_DATA_DIR), Telegram goes straight to the Bot API, secrets come from env vars.
+#   TELEGRAM_BOT_TOKEN  token of @aistation_poster_bot (from @BotFather)
+#   MINIMAX_API_KEY     MiniMax image-01 key
+# Either may instead be put in data/secrets.json as telegram_bot_token / minimax_key (gitignored).
+import base64, io, json, os, re, time, math, random, threading, datetime, html as _html
 import requests
 from concurrent.futures import ThreadPoolExecutor
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
-AIS_FOLDER = "1fJjXRcWalSoXs2F4Ue2bP8d9hyE70iek"
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA = os.environ.get("AIS_DATA_DIR", os.path.join(ROOT, "data"))
 CHANNEL_ID = -1002832312156          # public @aistationuz channel: read-only for us, NEVER post
 MAX_LEADS = 2
-WORK = "/home/user/ais"
+WORK = os.environ.get("AIS_WORK_DIR", os.path.join(ROOT, "work"))
+TG_API = "https://api.telegram.org/bot{token}/{method}"
 os.makedirs(WORK + "/out", exist_ok=True)
 MM_URL = "https://api.minimax.io/v1/image_generation"
-FONT_URL = "https://github.com/google/fonts/raw/main/ofl/montserrat/Montserrat%5Bwght%5D.ttf"
+FONT_URL = "https://raw.githubusercontent.com/google/fonts/main/ofl/montserrat/Montserrat%5Bwght%5D.ttf"
 TG_LINKS = ("\n\n🌐 [Website](https://aistation.uz) | [Instagram](https://www.instagram.com/aistationuz) | "
             "[LinkedIn](https://www.linkedin.com/company/109457182) | [YouTube](https://www.youtube.com/@AI_Station_UZ)")
 TG_END = "Learn. Build. Launch. Scale. 🚀"
@@ -27,73 +30,35 @@ GREETING = ("Salom! Men AI Station marketing agentiman. Har kuni ertalab shu yer
 esc = _html.escape
 
 
-import threading
-_QLOCK = threading.RLock()
+# ---------------------------------------------------------------- local storage
+_LOCK = threading.RLock()
 
 
-def _q(fn, *a, **k):
-    """Call a workbench helper with its noisy stdout suppressed (lock: redirect_stdout is process-wide)."""
-    with _QLOCK:
-        with contextlib.redirect_stdout(io.StringIO()):
-            return fn(*a, **k)
-
-
-# ---------------------------------------------------------------- Google Drive storage
-_IDS = {}
-
-
-def _drive_id(name):
-    if name in _IDS:
-        return _IDS[name]
-    r, e = _q(proxy_execute, "GET", "https://www.googleapis.com/drive/v3/files", toolkit="googledrive",
-              query_params={"q": f"name='{name}' and '{AIS_FOLDER}' in parents and trashed=false",
-                            "fields": "files(id,name)", "orderBy": "modifiedTime desc"})
-    if e:
-        raise RuntimeError(f"Drive list error for {name}: {e}")
-    files = (r or {}).get("files") or []
-    if files:
-        _IDS[name] = files[0]["id"]
-        return _IDS[name]
-    return None
+def _path(name):
+    return os.path.join(DATA, name)
 
 
 def drive_get(name):
-    """Return the bytes stored under name (base64 text file in the agent folder) or None."""
-    fid = _drive_id(name)
-    if not fid:
+    """Return the bytes stored under name in the data dir, or None. (Name kept from the Drive version.)"""
+    p = _path(name)
+    if not os.path.exists(p):
         return None
-    err = None
-    for i in range(3):
-        r, err = _q(proxy_execute, "GET", f"https://www.googleapis.com/drive/v3/files/{fid}",
-                    toolkit="googledrive", query_params={"alt": "media"})
-        if not err:
-            s = re.sub(r"[^A-Za-z0-9+/=]", "", str(r))
-            return base64.b64decode(s)
-        time.sleep(2 + i * 3)
-    raise RuntimeError(f"Drive read error for {name}: {err}")
+    with open(p, "rb") as f:
+        return f.read()
 
 
 def drive_put(name, data):
+    """Atomically write data (str or bytes) to name in the data dir."""
     if isinstance(data, str):
         data = data.encode()
-    s = base64.b64encode(data).decode()
-    fid = _drive_id(name)
-    if not fid:
-        r, e = _q(proxy_execute, "POST", "https://www.googleapis.com/drive/v3/files", toolkit="googledrive",
-                  body={"name": name, "parents": [AIS_FOLDER], "mimeType": "text/plain"},
-                  query_params={"fields": "id"})
-        if e or not (r or {}).get("id"):
-            raise RuntimeError(f"Drive create error for {name}: {e or r}")
-        fid = _IDS[name] = r["id"]
-    err = None
-    for i in range(3):
-        r, err = _q(proxy_execute, "PATCH", f"https://www.googleapis.com/upload/drive/v3/files/{fid}",
-                    toolkit="googledrive", query_params={"uploadType": "media"}, body=s,
-                    headers={"Content-Type": "text/plain"})
-        if not err:
-            return fid
-        time.sleep(2 + i * 3)
-    raise RuntimeError(f"Drive write error for {name}: {err}")
+    os.makedirs(DATA, exist_ok=True)
+    p = _path(name)
+    tmp = f"{p}.{os.getpid()}.tmp"
+    with _LOCK:
+        with open(tmp, "wb") as f:
+            f.write(data)
+        os.replace(tmp, p)
+    return p
 
 
 _SECRETS = {}
@@ -103,6 +68,9 @@ def secrets():
     if not _SECRETS:
         raw = drive_get("secrets.json")
         _SECRETS.update(json.loads(raw.decode()) if raw else {})
+        for env, key in (("MINIMAX_API_KEY", "minimax_key"), ("TELEGRAM_BOT_TOKEN", "telegram_bot_token")):
+            if os.environ.get(env):
+                _SECRETS[key] = os.environ[env]
     return _SECRETS
 
 
@@ -116,7 +84,7 @@ def _blank():
 
 
 def _load_remote():
-    raw = drive_get("state.json")
+    raw = drive_get("state.json") or drive_get("state.snapshot.json")
     st = json.loads(raw.decode()) if raw else {}
     for k, v in _blank().items():
         st.setdefault(k, v)
@@ -170,7 +138,7 @@ def _merge(remote, local):
 
 
 def save_state(state):
-    """Merge with the latest copy on Drive (another run may have written meanwhile) and save."""
+    """Merge with the latest copy on disk (another run may have written meanwhile) and save."""
     try:
         remote = _load_remote()
     except Exception as ex:
@@ -212,29 +180,49 @@ def add_learning(state, text):
 
 
 # ---------------------------------------------------------------- Telegram
-def tg(slug, args, tries=3):
+def tg(method, args, tries=3, files=None):
+    """Call the Telegram Bot API. method is a Bot API name (sendMessage) or a legacy Composio slug
+    (TELEGRAM_SEND_MESSAGE). files={"photo": path} sends multipart. Returns the response JSON."""
+    if method.startswith("TELEGRAM_"):
+        method = re.sub(r"_(\w)", lambda m: m.group(1).upper(), method[9:].lower())
+    token = secrets().get("telegram_bot_token")
+    if not token:
+        raise RuntimeError("TELEGRAM_BOT_TOKEN is not set")
+    url = TG_API.format(token=token, method=method)
     last = None
     for i in range(tries):
         try:
-            res, err = _q(run_composio_tool, slug, args)
+            if files:
+                form = {k: (v if isinstance(v, str) else json.dumps(v)) for k, v in args.items()}
+                handles = {k: open(v, "rb") for k, v in files.items()}
+                try:
+                    r = requests.post(url, data=form, files=handles, timeout=120)
+                finally:
+                    for h in handles.values():
+                        h.close()
+            else:
+                r = requests.post(url, json=args, timeout=60)
+            data = r.json()
         except Exception as ex:
-            res, err = None, str(ex)
-        data = res.get("data") if isinstance(res, dict) else None
-        if isinstance(data, dict) and "result" not in data and isinstance(data.get("data"), dict):
-            data = data["data"]
-        ok = not err and isinstance(res, dict) and res.get("successful", True) is not False \
-            and not (isinstance(data, dict) and data.get("ok") is False)
-        if ok:
-            return data or {}
-        last = err or (res or {}).get("error") or data
-        m = re.search(r"retry[ _]after\D{0,4}(\d+)", str(last), re.I)
-        if m:
-            time.sleep(int(m.group(1)) + 1)
-            continue
-        if re.search(r"can't parse entities|chat not found|bot was blocked|query is too old|wrong file", str(last), re.I):
+            data, last = None, str(ex)
+        if isinstance(data, dict):
+            if data.get("ok"):
+                return data
+            last = data.get("description") or data
+            ra = (data.get("parameters") or {}).get("retry_after")
+            if ra:
+                time.sleep(int(ra) + 1)
+                continue
+        if re.search(r"can't parse entities|chat not found|bot was blocked|query is too old|wrong file|unauthorized", str(last), re.I):
             break
         time.sleep(1.5 * (i + 1))
-    raise RuntimeError(f"{slug} failed: {last}")
+    raise RuntimeError(f"{method} failed: {last}")
+
+
+def peek():
+    """Read-only look at the update queue (getUpdates without an offset confirms nothing)."""
+    d = tg("getUpdates", {"timeout": 0, "limit": 100, "allowed_updates": ["message", "callback_query", "channel_post"]})
+    return d.get("result") or []
 
 
 def _send_text(chat_id, text, html=False, markup=None, reply_to=None):
@@ -245,7 +233,7 @@ def _send_text(chat_id, text, html=False, markup=None, reply_to=None):
         if html:
             a["parse_mode"] = "HTML"
         if markup and j == len(chunks) - 1:
-            a["reply_markup"] = json.dumps(markup)
+            a["reply_markup"] = markup
         if reply_to and j == 0:
             a["reply_to_message_id"] = reply_to
         try:
@@ -377,15 +365,13 @@ _FONTS = {}
 
 
 def _font_path():
-    p = WORK + "/Montserrat.ttf"
-    if os.path.exists(p) and os.path.getsize(p) > 100000:
-        return p
-    try:
-        r = requests.get(FONT_URL, timeout=40)
-        r.raise_for_status()
-        open(p, "wb").write(r.content)
-    except Exception:
-        open(p, "wb").write(drive_get("Montserrat.ttf"))
+    for p in (os.path.join(ROOT, "assets", "Montserrat.ttf"), WORK + "/Montserrat.ttf"):
+        if os.path.exists(p) and os.path.getsize(p) > 100000:
+            return p
+    r = requests.get(FONT_URL, timeout=40)
+    r.raise_for_status()
+    with open(p, "wb") as f:
+        f.write(r.content)
     return p
 
 
@@ -652,22 +638,13 @@ def render_all(spec, post_id, use_minimax=True):
         return dict(ex.map(one, ["instagram", "telegram", "linkedin"]))
 
 
-def public_url(path):
-    d, e = _q(upload_local_file, path)
-    if e or not (d or {}).get("s3_url"):
-        raise RuntimeError(f"upload failed: {e}")
-    u = d["s3_url"]
-    try:
-        r = requests.get(u, allow_redirects=False, timeout=20)
-        if r.status_code in (301, 302, 303, 307, 308) and r.headers.get("Location"):
-            return r.headers["Location"]
-    except Exception:
-        pass
-    return u
-
-
 def _send_photo(chat_id, photo, caption):
-    d = tg("TELEGRAM_SEND_PHOTO", {"chat_id": chat_id, "photo": photo, "caption": caption})
+    """photo is a local file path (uploaded as multipart) or a Telegram file_id."""
+    args = {"chat_id": chat_id, "caption": caption}
+    if os.path.exists(str(photo)):
+        d = tg("sendPhoto", args, files={"photo": photo})
+    else:
+        d = tg("sendPhoto", {**args, "photo": photo})
     res = d.get("result") or {}
     sizes = res.get("photo") or []
     return res.get("message_id"), (sizes[-1]["file_id"] if sizes else None)
@@ -690,7 +667,6 @@ def send_package(state, post_id, post, note=None, use_minimax=True):
     for p, v in imgs.items():
         if v["error"]:
             print(f"MiniMax error ({p}): {v['error']} -> brand template used")
-    urls = {p: public_url(v["path"]) for p, v in imgs.items()}
     so = post.get("signoff")
     def _host(u):
         return re.sub(r"^https?://(www\.)?", "", u).split("/")[0]
@@ -709,12 +685,11 @@ def send_package(state, post_id, post, note=None, use_minimax=True):
     for cid in state["leads"]:
         mids = say(state, header, [cid])
         for p, label in labels:
-            photo = file_ids.get(p) or urls[p]
+            photo = file_ids.get(p) or imgs[p]["path"]
             try:
                 mid, fid = _send_photo(cid, photo, f"{label} · #{post_id}")
             except RuntimeError:
-                urls[p] = public_url(imgs[p]["path"])      # retry once with a fresh upload
-                mid, fid = _send_photo(cid, urls[p], f"{label} · #{post_id}")
+                mid, fid = _send_photo(cid, imgs[p]["path"], f"{label} · #{post_id}")  # retry with a fresh upload
             file_ids[p] = fid or file_ids.get(p)
             mids += [mid] + _send_text(cid, texts[p])
         mids += say(state, "👇 Qaror? Tahrir kerak bo‘lsa, istalgan xabarga <b>reply</b> qilib yozing.", [cid], markup=kb)
@@ -857,6 +832,3 @@ def lint(post):
     if named and not post.get("signoff"):
         P.append(f"signoff should be set: {', '.join(named)}")
     return P
-
-
-print("agent_lib v2 loaded (Drive-backed). Leads max:", MAX_LEADS)

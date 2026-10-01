@@ -16,3 +16,8 @@ venv/
 out/
 *.png
 *.jpg
+!assets/Montserrat.ttf
+
+# Agent runtime
+work/
+data/*.tmp
