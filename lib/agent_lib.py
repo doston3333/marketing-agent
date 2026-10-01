@@ -1,7 +1,7 @@
 # AI Station marketing agent library v3 (Oct 2026).
 # Standalone port of the Composio-workbench v2: state and knowledge live as local files in
 # data/ (AIS_DATA_DIR), Telegram goes straight to the Bot API, secrets come from env vars.
-#   TELEGRAM_BOT_TOKEN  token of @aistation_poster_bot (from @BotFather)
+#   TELEGRAM_BOT_TOKEN  token of @marketingagent67_bot (from @BotFather)
 #   MINIMAX_API_KEY     MiniMax image-01 key
 # Either may instead be put in data/secrets.json as telegram_bot_token / minimax_key (gitignored).
 import base64, io, json, os, re, time, math, random, threading, datetime, html as _html
@@ -660,7 +660,7 @@ def tg_caption(text):
 def send_package(state, post_id, post, note=None, use_minimax=True):
     """Render the 3 images, send idea + images + captions + buttons to every lead, save state."""
     if not state["leads"]:
-        raise RuntimeError("No lead registered: ask the leads to press Start in @aistation_poster_bot")
+        raise RuntimeError("No lead registered: ask the leads to press Start in @marketingagent67_bot")
     spec, caps = post["spec"], post["captions"]
     imgs = render_all(spec, post_id, use_minimax)
     post["images"] = {p: {"minimax": v["minimax"], "error": v["error"]} for p, v in imgs.items()}

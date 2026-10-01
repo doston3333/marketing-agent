@@ -21,7 +21,7 @@ Not included on purpose: `secrets.json` (your MiniMax API key; it's in the Drive
 ```
 Claude Code routine (cloud session, fresh clone of this repo)
    │  git pull → python3 agent.py … → git commit/push data/state.json
-   ├── Telegram Bot API   @aistation_poster_bot, leads' private chats only
+   ├── Telegram Bot API   @marketingagent67_bot, leads' private chats only
    ├── MiniMax image-01   one background per platform (brand template on failure)
    └── this repo          data/state.json = memory between runs, data/knowledge.md = voice guide
 ```
@@ -34,7 +34,7 @@ Claude Code routine (cloud session, fresh clone of this repo)
 
 ## Cloud environment setup
 
-1. **Environment variables**: `TELEGRAM_BOT_TOKEN` (from @BotFather for @aistation_poster_bot) and `MINIMAX_API_KEY`.
+1. **Environment variables**: `TELEGRAM_BOT_TOKEN` (from @BotFather for @marketingagent67_bot) and `MINIMAX_API_KEY`.
 2. **Network access**: allow `api.telegram.org` and `api.minimax.io` (plus `pypi.org` / `files.pythonhosted.org` for `pip install`).
 3. **Git push** from the routine to the branch it runs on, so state is saved.
 4. Check with `python3 agent.py check`: both secrets "set" and the bot username printed.

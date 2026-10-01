@@ -11,7 +11,7 @@ STEP 0 - STATE AND MEMORY (mandatory)
 Run `git pull --rebase` (ignore "no tracking information"), then `pip install -q -r requirements.txt`, then `python3 agent.py check`.
 If either secret is MISSING or `check` fails: send a PushNotification with the exact output and stop.
 Run `python3 agent.py start`. It reads new Telegram updates, registers leads, and queues any button presses / replies for the hourly handler (do not handle them here).
-If "leads" is empty: send a PushNotification "No lead registered: ask the marketing leads to press Start in @aistation_poster_bot", do STEP 5, and stop.
+If "leads" is empty: send a PushNotification "No lead registered: ask the marketing leads to press Start in @marketingagent67_bot", do STEP 5, and stop.
 Then run `python3 agent.py knowledge` and read ALL of its output: the voice guide, the team's learnings (these override the guide), topics covered recently, recent channel posts (match their tone) and approved captions. Everything you write must follow it.
 
 STEP 1 - RESEARCH (last 72 hours)
