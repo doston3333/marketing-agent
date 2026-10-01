@@ -8,7 +8,7 @@ TOOLS
 - State (leads, Telegram offset, posts, history, learnings) is `data/state.json` in this repo. The run starts from a fresh clone, so state only survives if you commit and push it (STEP 5). Never edit lib/agent_lib.py during a run.
 
 STEP 0 - STATE AND MEMORY (mandatory)
-Run `git pull --rebase` (ignore "no tracking information"), then `pip install -q -r requirements.txt`, then `python3 agent.py check`.
+Run `B=$(git ls-remote --symref origin HEAD | sed -n 's#^ref: refs/heads/\(.*\)\tHEAD#\1#p'); git fetch origin "$B" && git checkout -B "$B" "origin/$B"` (B = the repo's default branch; agent state lives there), then `pip install -q -r requirements.txt`, then `python3 agent.py check`.
 If either secret is MISSING or `check` fails: send a PushNotification with the exact output and stop.
 Run `python3 agent.py start`. It reads new Telegram updates, registers leads, and queues any button presses / replies for the hourly handler (do not handle them here).
 If "leads" is empty: send a PushNotification "No lead registered: ask the marketing leads to press Start in @marketingagent67_bot", do STEP 5, and stop.
@@ -35,8 +35,8 @@ STEP 4 - DELIVER
 `python3 agent.py send work/post.json --history` (MiniMax takes ~40-90s; use a 600000 ms timeout). It prints POST_ID and any "MiniMax error" line (fallback template used). If sending fails, retry once, then send a PushNotification with the error.
 
 STEP 5 - SAVE STATE (always, even after a failure above)
-  git add data/state.json && git commit -m "agent: daily post state" && git push
-If the push is rejected, `git pull --rebase` and push again (on a conflict in data/state.json keep the version with the higher "offset" and all posts from both sides).
+  git add data/state.json && git commit -m "agent: daily post state" && git push origin "HEAD:$B"
+If the push is rejected, `git pull --rebase origin "$B"` and push again (on a conflict in data/state.json keep the version with the higher "offset" and all posts from both sides).
 
 FINAL REPORT
 Three lines: the idea and source, whether MiniMax made all three images, whether sign-off was flagged.
