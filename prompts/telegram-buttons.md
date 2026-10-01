@@ -28,7 +28,7 @@ Uzbek Latin with correct o‘ / g‘ (‘ character), singular noun after number
 
 STEP 3 - SAVE STATE (always, whenever STEP 2 ran)
   B=$(git ls-remote --symref origin HEAD | sed -n 's#^ref: refs/heads/\(.*\)\tHEAD#\1#p'); git add data/state.json && git commit -m "agent: telegram actions state" && git push origin "HEAD:$B"
-If the push is rejected, `git pull --rebase origin "$B"` and push again (on a conflict in data/state.json keep the version with the higher "offset" and all posts from both sides).
+If the push is rejected, `git pull --rebase origin "$B"` and push again (on a conflict in data/state.json keep the version with the higher "offset" and all posts from both sides). If it still cannot push (e.g. permission denied), send a PushNotification "Marketing agent could not save state: <exact git error>" - otherwise the next run repeats work.
 
 FINAL REPORT
 One line per action handled.

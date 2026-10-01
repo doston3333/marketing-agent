@@ -36,7 +36,7 @@ STEP 4 - DELIVER
 
 STEP 5 - SAVE STATE (always, even after a failure above)
   B=$(git ls-remote --symref origin HEAD | sed -n 's#^ref: refs/heads/\(.*\)\tHEAD#\1#p'); git add data/state.json && git commit -m "agent: daily post state" && git push origin "HEAD:$B"
-If the push is rejected, `git pull --rebase origin "$B"` and push again (on a conflict in data/state.json keep the version with the higher "offset" and all posts from both sides).
+If the push is rejected, `git pull --rebase origin "$B"` and push again (on a conflict in data/state.json keep the version with the higher "offset" and all posts from both sides). If it still cannot push (e.g. permission denied), send a PushNotification "Marketing agent could not save state: <exact git error>" - otherwise the next run repeats work.
 
 FINAL REPORT
 Three lines: the idea and source, whether MiniMax made all three images, whether sign-off was flagged.
