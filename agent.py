@@ -56,7 +56,7 @@ def main():
         return
     if a.cmd == "peek":
         st = A.load_state()
-        print("UPDATES", len(A.peek()), "PENDING", len(st["pending"]))
+        print("UPDATES", len(A.peek(st)), "PENDING", len(st["pending"]))
         return
 
     state = A.load_state()

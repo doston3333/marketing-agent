@@ -219,9 +219,13 @@ def tg(method, args, tries=3, files=None):
     raise RuntimeError(f"{method} failed: {last}")
 
 
-def peek():
-    """Read-only look at the update queue (getUpdates without an offset confirms nothing)."""
-    d = tg("getUpdates", {"timeout": 0, "limit": 100, "allowed_updates": ["message", "callback_query", "channel_post"]})
+def peek(state=None):
+    """Look at the update queue without consuming anything new. Passing offset = last handled + 1
+    only confirms updates that poll() already processed, so they stop showing up here."""
+    args = {"timeout": 0, "limit": 100, "allowed_updates": ["message", "callback_query", "channel_post"]}
+    if state and state.get("offset"):
+        args["offset"] = state["offset"] + 1
+    d = tg("getUpdates", args)
     return d.get("result") or []
 
 
