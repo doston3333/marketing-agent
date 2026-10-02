@@ -101,7 +101,7 @@ weekdays 09:20 ─┬─ inbox    tender bot: register people who pressed Start,
 | UNGM | notices with beneficiary country Uzbekistan | optional |
 | EBRD | notices searched for Uzbekistan (most now live on ECEPP) | none |
 | IsDB, OSCE | open tender lists | none |
-| TendersOnTime, DevelopmentAid | **off**: Cloudflare blocks headless browsers from cloud IPs; the routine searches them with WebSearch instead | optional |
+| TendersOnTime, DevelopmentAid | **off and ignored**: Cloudflare blocks headless browsers from cloud IPs | - |
 
 The site list, URLs and extraction rules are data, not code: `data/tender_sites.json`. What counts as a fit: `data/tender_profile.md` (edit it in plain words) and `data/tender_keywords.json` (pre-filter). Seen lots and verdicts: `data/tenders.json`.
 

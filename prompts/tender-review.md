@@ -13,7 +13,7 @@ STEP 0 - SYNC (mandatory)
 STEP 1 - COLLECT
 `python3 tender.py scan` - opens every enabled site (UZEX e-Tender and Xarid, eBirja, UzbekistanTenders, GlobalTenders, TenderWeek, TendersInfo, BidDetail, World Bank, ADB, UNGM, EBRD, IsDB, OSCE), signs in where TENDER_<SITE>_USER/_PASS are set, and records the lots it has not seen before. It prints one line per site and a JSON summary with "problems".
 If a site reports 0 items or an error, read its saved page in work/tenders/<site>-<n>.txt to see why (layout change, login wall, block) and mention it in the final report. Do not edit the registry during the run unless the fix is an obvious URL/pattern change you verified with `open`.
-Sites that are switched off because Cloudflare blocks the browser (TendersOnTime, DevelopmentAid; `python3 tender.py sites` shows them as off) are covered by WebSearch: run the "fallback_search" query from data/tender_sites.json plus one with "AI" or "digital" (e.g. `site:developmentaid.org Uzbekistan tender digital`), and treat any open notice you find like a scanned lot (verify it on a page you can open).
+Sites switched off in the registry (`python3 tender.py sites` shows them as off) are ignored: do not search them.
 
 STEP 2 - KNOW WHAT WE WANT
 `python3 tender.py profile` - read ALL of it: what AI Station bids on (strong fit / possible fit / not for us), how to judge a lot, the keyword lists, the team's feedback (it overrides the profile) and the lots already recommended recently (do not recommend them again unless something changed, e.g. a deadline extension).

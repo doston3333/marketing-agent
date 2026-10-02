@@ -1,5 +1,5 @@
 {
- "about": "Tender sites the tender agent visits. mode: capture = read the JSON the page's own scripts load (capture.match = request URL regex, capture.body = fields to overwrite in that request, e.g. a bigger page size; items = path to the list; fields = where title/deadline/... live; link = detail URL template); links = anchors whose href matches pattern, with the text of the card around them; text = split the visible page text at split; worldbank = the official World Bank API. login: optional sign-in page; credentials come from env TENDER_<ID>_USER / TENDER_<ID>_PASS (ID upper-cased, '-' -> '_'). actions: clicks/selects run after load. enabled false = skipped by scan; fallback_search = the web search the routine runs instead.",
+ "about": "Tender sites the tender agent visits. mode: capture = read the JSON the page's own scripts load (capture.match = request URL regex, capture.body = fields to overwrite in that request, e.g. a bigger page size; items = path to the list; fields = where title/deadline/... live; link = detail URL template); links = anchors whose href matches pattern, with the text of the card around them; text = split the visible page text at split; worldbank = the official World Bank API. login: optional sign-in page; credentials come from env TENDER_<ID>_USER / TENDER_<ID>_PASS (ID upper-cased, '-' -> '_'). actions: clicks/selects run after load. enabled false = skipped by scan;",
  "sites": [
   {
    "id": "uzex-etender",
@@ -182,9 +182,8 @@
    "login": {
     "url": "https://www.tendersontime.com/login/"
    },
-   "notes": "Cloudflare blocks headless browsers from cloud IPs (checked Oct 2026), so it is off; the routine searches it with WebSearch instead. Turn it on if it works from your environment.",
-   "enabled": false,
-   "fallback_search": "site:tendersontime.com Uzbekistan tender"
+   "notes": "Off and ignored: Cloudflare blocks headless browsers from cloud IPs (checked Oct 2026).",
+   "enabled": false
   },
   {
    "id": "tendersinfo",
@@ -253,9 +252,8 @@
     "url": "https://www.developmentaid.org/login",
     "two_step": true
    },
-   "notes": "Cloudflare blocks headless browsers from cloud IPs (checked Oct 2026), so it is off; the routine searches it with WebSearch instead. Turn it on if it works from your environment. Member login needed for full notices.",
-   "enabled": false,
-   "fallback_search": "site:developmentaid.org Uzbekistan tender"
+   "notes": "Off and ignored: Cloudflare blocks headless browsers from cloud IPs (checked Oct 2026).",
+   "enabled": false
   },
   {
    "id": "worldbank",
