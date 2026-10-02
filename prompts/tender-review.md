@@ -6,8 +6,8 @@ Everything runs through `python3 tender.py <command>` in the repo root (`python3
 
 STEP 0 - SYNC (mandatory)
 1. `B=$(git ls-remote --symref origin HEAD | sed -n 's#^ref: refs/heads/\(.*\)\tHEAD#\1#p'); git fetch origin "$B" && git checkout -q -B "$B" "origin/$B" && git reset -q --hard "origin/$B"` (this session may be reused; the saved state on GitHub is the truth), then `pip install -q -r requirements-tender.txt`, then `python3 tender.py check`.
-   If playwright is MISSING or the bot line shows an ERROR: PushNotification with the exact output, do STEP 5, stop. If "recipients: NONE": continue (the digest cannot be sent; say so in the final report and PushNotification "Tender agent: nobody has pressed Start in the tender bot yet").
-2. `python3 tender.py inbox` - registers people who pressed Start in the tender bot and returns their replies since the last run.
+   If playwright is MISSING or the bot line shows an ERROR: PushNotification with the exact output, do STEP 5, stop. If "recipients: NONE": continue (the digest cannot be sent; say so in the final report and PushNotification "Tender agent: no recipients - the marketing leads must press Start in @marketingagent67_bot").
+2. `python3 tender.py inbox` - the team's replies since the last run. The digest goes out through the marketing bot (@marketingagent67_bot); the marketing agent is the only reader of that bot and sets aside every reply to a digest and every message starting with "tender" for this agent, so this command just collects them. Never call getUpdates on that bot yourself.
    For each reply: if it is a preference ("qurilish kerak emas", "ko‘proq ta’lim tenderlari", "2 - qiziq emas"), it is already stored as feedback and `profile` will show it; when it is a clear standing rule, also add the matching words to data/tender_keywords.json (strong / medium / negative) so the pre-filter learns too. If it is a question about a tender, answer it briefly with `python3 tender.py say "<html>"` after you have looked (open the lot if needed).
 
 STEP 1 - COLLECT

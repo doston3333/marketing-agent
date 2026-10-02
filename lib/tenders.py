@@ -23,7 +23,7 @@ def esc(s, quote=False):
 
 # ---------------------------------------------------------------- state
 def blank_state():
-    return {"items": {}, "runs": [], "feedback": [], "site_status": {}, "shown": [],
+    return {"items": {}, "runs": [], "feedback": [], "site_status": {}, "shown": [], "sent": [], "ingested": [],
             "bot": {"offset": 0, "chats": [], "names": {}}, "settings": {}}
 
 
@@ -52,6 +52,8 @@ def prune(st, now=None):
         elif d and d < today and it.get("status") == "new":
             it["status"] = "expired"
     st["runs"] = st["runs"][-60:]
+    st["sent"] = st["sent"][-300:]
+    st["ingested"] = st["ingested"][-500:]
     st["feedback"] = st["feedback"][-80:]
 
 
@@ -475,11 +477,27 @@ def recipients(st):
     return A.load_state().get("leads", [])  # fallback: marketing leads via the marketing bot (send-only)
 
 
+def inbox_from_marketing(st):
+    """Replies the marketing agent set aside for us (replies to a digest, or "tender: ..."): it is the only
+    reader of the shared bot, so it parks them in its state.json under tender_inbox."""
+    done = set(st["ingested"])
+    feedback = []
+    for x in A.load_state().get("tender_inbox", []):
+        if x["uid"] in done:
+            continue
+        fb = {"ts": x["ts"], "from": x.get("from"), "chat_id": x.get("chat_id"), "text": x["text"],
+              "reply_to": x.get("reply_to", "")}
+        st["feedback"].append(fb)
+        st["ingested"].append(x["uid"])
+        feedback.append(fb)
+    return {"via": "marketing bot", "feedback": feedback, "chats": recipients(st)}
+
+
 def inbox(st, max_chats=5):
-    """Poll the tender bot: register people who pressed Start, collect their replies as feedback.
-    Only runs with TENDER_BOT_TOKEN (the marketing bot is polled by the marketing agent alone)."""
+    """New replies from the team. With the shared marketing bot (default) they come from the marketing agent's
+    tender_inbox; with an own TENDER_BOT_TOKEN this polls that bot, registering people who pressed Start."""
     if not bot_token():
-        return {"skipped": "TENDER_BOT_TOKEN not set; digest goes through the marketing bot, replies are not read"}
+        return inbox_from_marketing(st)
     b = st["bot"]
     args = {"timeout": 0, "limit": 100, "allowed_updates": ["message"]}
     if b.get("offset"):
@@ -530,6 +548,8 @@ def send_html(st, text):
                 a["text"] = re.sub(r"<[^>]+>", "", chunk)
                 d = tg("sendMessage", a)
             mids.append(d["result"]["message_id"])
+            # so the marketing agent can tell replies to this message apart from post edits
+            st["sent"].append({"chat": cid, "mid": d["result"]["message_id"], "ts": time.time()})
     return mids
 
 
@@ -599,7 +619,8 @@ def digest_html(st, reviews, stats):
         lines.append("Bugun AI Station profiliga mos yangi tender topilmadi.")
     if stats.get("problems"):
         lines.append("⚠️ <i>Ko‘rib bo‘lmadi:</i> " + esc("; ".join(stats["problems"]))[:700])
-    lines.append("<i>Javob yozing: masalan “2 - qiziq emas” yoki “ko‘proq ta’lim tenderlari”.</i>")
+    lines.append("<i>Fikr bildirish uchun shu xabarga reply qiling (masalan: “2 - qiziq emas”) yoki "
+                 "“tender: ...” deb yozing.</i>")
     return "\n\n".join(lines)
 
 

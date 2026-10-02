@@ -78,7 +78,7 @@ def secrets():
 # ---------------------------------------------------------------- state
 DEFAULT_STATE = {"leads": [], "lead_names": {}, "offset": 0, "posts": {}, "history": [], "pending": [],
                  "handled": [], "learnings": [], "msg_map": {}, "channel_posts": [], "prefs": [], "edits": [],
-                 "rejected": [], "settings": {}, "week_plan": {}}
+                 "rejected": [], "settings": {}, "week_plan": {}, "tender_inbox": []}
 
 
 def _blank():
@@ -146,6 +146,8 @@ def _merge(remote, local):
         m[k] = lst[-cap:]
     m["settings"] = {**remote.get("settings", {}), **local.get("settings", {})}
     m["week_plan"] = local.get("week_plan") or remote.get("week_plan") or {}
+    tin = {x["uid"]: x for x in remote.get("tender_inbox", []) + local.get("tender_inbox", [])}
+    m["tender_inbox"] = sorted(tin.values(), key=lambda x: x["uid"])[-200:]
     mm = {**remote.get("msg_map", {}), **local.get("msg_map", {})}
     m["msg_map"] = dict(list(mm.items())[-800:])
     cps = {c["message_id"]: c for c in remote.get("channel_posts", []) + local.get("channel_posts", [])}
@@ -321,6 +323,16 @@ def _name(u):
     return " ".join(x for x in [u.get("first_name"), u.get("last_name")] if x) or u.get("username") or str(u.get("id"))
 
 
+TENDER_ACK = "📑 Tender agentiga yetkazildi, keyingi tender sharhida hisobga olinadi."
+TENDER_PREFIX = re.compile(r"\s*#?(tender|тендер)\b", re.I)
+
+
+def _tender_messages():
+    """chat:message ids of the tender agent's digests (it sends them through this bot, see tenders.py)."""
+    sent = data_json("tenders.json", {}).get("sent", [])
+    return {f"{x['chat']}:{x['mid']}" for x in sent}
+
+
 def poll(state):
     """Read new Telegram updates. Registers up to MAX_LEADS private chats (greets them) and returns
     actions: {"type": "registered"|"button"|"text", ...}. Saves state when anything changed."""
@@ -382,6 +394,16 @@ def poll(state):
         if text.startswith("/start") or (not text and not photo):
             continue
         rt = msg.get("reply_to_message") or {}
+        # replies to a tender digest, or "tender: ...", belong to the tender agent, not to a post edit
+        if (rt and f"{cid}:{rt.get('message_id')}" in _tender_messages()) or TENDER_PREFIX.match(text):
+            state["tender_inbox"].append({"uid": uid, "ts": time.time(), "chat_id": cid,
+                                          "from": _name(msg.get("from", {})), "text": text[:1000],
+                                          "reply_to": (rt.get("text") or "")[:600]})
+            try:
+                _send_text(cid, TENDER_ACK, reply_to=msg["message_id"])
+            except Exception as ex:
+                print("tender ack failed:", ex)
+            continue
         is_idea = bool(photo) or bool(msg.get("forward_origin") or msg.get("forward_date")) or \
             bool(re.match(r"\s*(g.?oya|idea|#idea|#g.?oya)\b", text, re.I))
         if is_idea and not rt:

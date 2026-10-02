@@ -25,7 +25,8 @@ Reviewing + delivering
                               seen unless --keep-rest (lots `new` did not show stay new for the next run)
   digest FILE [--dry-run]     send the Telegram digest for the reviewed lots in FILE (--dry-run prints it)
   say HTML                    send a free-form message to the tender recipients
-  inbox                       read the tender bot: register people who pressed Start, collect their replies
+  inbox                       the team's new replies to tender messages (routed by the marketing agent from the
+                              shared bot; with TENDER_BOT_TOKEN, read from that bot instead)
   feedback add TEXT | feedback list
   save                        commit this agent's data files to the repo's default branch (GitHub API)
 """
@@ -296,6 +297,7 @@ def cmd_digest(a):
         print(text)
         return
     mids = T.send_html(st, text)
+    T.save_state(st)  # keeps the sent message ids, so replies to them are routed back here
     print(f"sent {len(mids)} message(s) to {T.recipients(st)}")
 
 
@@ -340,7 +342,10 @@ def main():
         print(json.dumps(res, ensure_ascii=False, indent=1))
         return
     if a.cmd == "say":
-        print("sent", len(T.send_html(T.load_state(), a.html)), "message(s)")
+        st = T.load_state()
+        n = len(T.send_html(st, a.html))
+        T.save_state(st)
+        print("sent", n, "message(s)")
         return
     if a.cmd == "feedback":
         st = T.load_state()

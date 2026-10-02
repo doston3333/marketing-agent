@@ -80,7 +80,7 @@ Only one reader may poll the bot. When the new routines go live, disable the two
 A second, separate agent in the same repo. Every working day it opens the tender sites, signs in where it has an account, collects the lots it has not seen before, and Claude reviews them against AI Station's profile and sends one Uzbek digest to Telegram: what to bid on, what to watch, why, and the next step.
 
 ```
-weekdays 09:20 ─┬─ inbox    tender bot: register people who pressed Start, read their replies (feedback)
+weekdays 09:20 ─┬─ inbox    the team's replies to tender digests (set aside by the marketing agent's bot reader)
                 ├─ scan     14 sites in a headless browser (+ World Bank API) -> new lots, keyword pre-score
                 ├─ profile  what AI Station bids on + team feedback + recently recommended
                 ├─ Claude   triages every new title, opens the promising lots (tabs, documents, scanned PDFs),
@@ -107,7 +107,7 @@ The site list, URLs and extraction rules are data, not code: `data/tender_sites.
 
 ## Setup
 
-1. **A bot of its own**: create one with @BotFather and set `TENDER_BOT_TOKEN`. Everyone who should get the digest presses Start in it (up to 5 chats; a group works too). Or set `TENDER_CHAT_IDS=id1,id2`. Without `TENDER_BOT_TOKEN` the digest goes through the marketing bot to the marketing leads, send-only; replies then reach the marketing agent, so a separate bot is strongly recommended.
+1. **Telegram**: nothing to set up. The digest goes through the marketing bot (@marketingagent67_bot) to the marketing leads. That bot is read only by the marketing agent: when a lead replies to a tender digest, or writes a message starting with "tender" ("tender: qurilish kerak emas"), it does not treat it as a post edit but parks it in `state.json` → `tender_inbox` and answers "📑 Tender agentiga yetkazildi"; `tender.py inbox` picks those up on the next run. (Optional: a separate bot via `TENDER_BOT_TOKEN`, which this agent then reads itself, for sending the digest to other people or a group; `TENDER_CHAT_IDS=id1,id2` overrides the recipients.)
 2. **Site accounts (optional)**: `TENDER_<SITE>_USER` and `TENDER_<SITE>_PASS`, e.g. `TENDER_UNGM_USER`, `TENDER_GLOBALTENDERS_PASS` (site ids in `python3 tender.py sites`). Check one with `python3 tender.py login ungm`. UZEX and eBirja need no account to read.
 3. **Network access**: the environment must reach the tender sites (`*.uzex.uz`, `ebirja.uz`, `*.ebirja.uz`, `uzbekistantenders.com`, `globaltenders.com`, `tenderweek.com`, `tendersinfo.com`, `biddetail.com`, `search.worldbank.org`, `projects.worldbank.org`, `adb.org`, `*.searchstax.com`, `ungm.org`, `ebrd.com`, `isdb.org`, `procurement.osce.org`) plus `api.telegram.org` and `api.github.com`.
 4. **Routine**: a Claude Code cloud routine in this repo with the prompt `prompts/tender-review.md`, schedule `CRON_TZ=Asia/Tashkent 20 9 * * 1-5`. It installs `requirements-tender.txt` (Playwright, document readers) itself; Chromium comes with the cloud image, and `lib/browser.py` imports the environment's CA bundle into Chromium's store so pages load behind the egress proxy.
