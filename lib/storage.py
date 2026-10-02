@@ -34,7 +34,7 @@ def bundle_bytes():
     buf = io.BytesIO()
     with tarfile.open(fileobj=buf, mode="w:gz") as t:
         for name in sorted(os.listdir(A.DATA)):
-            if name.endswith((".json", ".md")) and not name.endswith(".tmp"):
+            if name.endswith((".json", ".md")) and not name.endswith(".tmp") and not name.startswith("tender"):
                 t.add(os.path.join(A.DATA, name), arcname=name)
     return buf.getvalue(), meta
 

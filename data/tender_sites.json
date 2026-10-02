@@ -1,0 +1,389 @@
+{
+ "about": "Tender sites the tender agent visits. mode: capture = read the JSON the page's own scripts load (capture.match = request URL regex, capture.body = fields to overwrite in that request, e.g. a bigger page size; items = path to the list; fields = where title/deadline/... live; link = detail URL template); links = anchors whose href matches pattern, with the text of the card around them; text = split the visible page text at split; worldbank = the official World Bank API. login: optional sign-in page; credentials come from env TENDER_<ID>_USER / TENDER_<ID>_PASS (ID upper-cased, '-' -> '_'). actions: clicks/selects run after load. enabled false = skipped by scan; fallback_search = the web search the routine runs instead.",
+ "sites": [
+  {
+   "id": "uzex-etender",
+   "name": "UZEX e-Tender",
+   "url": "https://etender.uzex.uz",
+   "mode": "capture",
+   "capture": {
+    "match": "apietender\\.uzex\\.uz/api/common/TradeList",
+    "body": {
+     "To": 500
+    }
+   },
+   "fields": {
+    "id": "id",
+    "title": "name",
+    "deadline": "end_date",
+    "amount": "cost",
+    "currency": "currency_codeabc",
+    "buyer": "seller_name",
+    "region": "region_name|district_name",
+    "category": "category_name"
+   },
+   "link": "https://etender.uzex.uz/lot/{id}",
+   "pages": [
+    {
+     "url": "https://etender.uzex.uz/lots/1/0",
+     "type": "Eng yaxshi taklif"
+    },
+    {
+     "url": "https://etender.uzex.uz/lots/2/0",
+     "type": "Tanlov"
+    }
+   ],
+   "notes": "Bidding needs an E-IMZO digital signature, so there is no password login; all lots and their documents are public.",
+   "detail_tabs": [
+    "Malaka talablari",
+    "Texnik talablar"
+   ],
+   "doc_exclude": "/assets/file/"
+  },
+  {
+   "id": "uzex-xarid",
+   "name": "UZEX Xarid",
+   "url": "https://xarid.uzex.uz",
+   "mode": "capture",
+   "pages": [
+    {
+     "url": "https://xarid.uzex.uz/purchase/competition/list",
+     "capture": {
+      "match": "xarid-api-purchase\\.uzex\\.uz/Common/GetCompetitions",
+      "body": {
+       "to": 300
+      }
+     },
+     "fields": {
+      "id": "id",
+      "title": "category_name",
+      "deadline": "end_date_submitting_offers",
+      "amount": "cost",
+      "currency": "currency_name",
+      "region": "customer_region_name|customer_district_name",
+      "category": "category_name"
+     },
+     "link": "https://xarid.uzex.uz/purchase/competition/detail/{id}",
+     "type": "Tanlov"
+    }
+   ],
+   "notes": "Competitions (tanlov) only; the list carries just the category, so open a lot to read what is bought. Login is by E-IMZO key; listings are public. The auction section (goods: farm produce, medicines, chemicals) is left out."
+  },
+  {
+   "id": "ebirja",
+   "name": "eBirja",
+   "url": "https://ebirja.uz",
+   "mode": "api",
+   "pages": [
+    {
+     "url": "https://xarid-api.ebirja.uz/auction/auction/active",
+     "items": "result.data",
+     "type": "Auksion",
+     "may_be_empty": true,
+     "fields": {
+      "id": "id",
+      "title": "title",
+      "deadline": "auction_end",
+      "amount": "total_sum",
+      "buyer": "company.title",
+      "region": "region.title_uz",
+      "reference": "lot"
+     },
+     "link": "https://ebirja.uz/uz/public-procurement"
+    },
+    {
+     "url": "https://xarid-api.ebirja.uz/offer-request/offer-request/announce-list",
+     "items": "result.data",
+     "type": "Taklif so'rovi",
+     "may_be_empty": true,
+     "fields": {
+      "id": "id",
+      "title": "title",
+      "deadline": "end_date",
+      "amount": "total_price",
+      "buyer": "company.title",
+      "region": "region.title_uz",
+      "reference": "lot"
+     },
+     "link": "https://ebirja.uz/uz/public-procurement"
+    }
+   ],
+   "notes": "Public API of the exchange's state procurement section (first 10 lots of each list; volumes are small). The web pages need the E-IMZO plugin and render blank in a headless browser, so lots are read through the API; search the lot number on ebirja.uz to open one."
+  },
+  {
+   "id": "uzbekistantenders",
+   "name": "UzbekistanTenders",
+   "url": "https://www.uzbekistantenders.com",
+   "mode": "text",
+   "pages": [
+    {
+     "url": "https://www.uzbekistantenders.com/tenders.php",
+     "split": "\\n\\s*View Details\\s*\\n",
+     "id_regex": "UZT Ref No\\.:\\s*(\\d+)",
+     "start": "Subscribers gain full access"
+    }
+   ],
+   "login": {
+    "url": "https://www.uzbekistantenders.com/login.php"
+   },
+   "notes": "Aggregator; full notices and documents need a paid login."
+  },
+  {
+   "id": "globaltenders",
+   "name": "GlobalTenders",
+   "url": "https://www.globaltenders.com",
+   "mode": "text",
+   "pages": [
+    {
+     "url": "https://www.globaltenders.com/government-tenders-uzbekistan",
+     "start": "Showing 1 to",
+     "split": "\\n\\s*View Detail\\s*\\n"
+    }
+   ],
+   "login": {
+    "url": "https://www.globaltenders.com/tender-login/sign-up",
+    "user_selector": "input[name=email]:visible",
+    "pass_selector": "input[name=password]:visible",
+    "submit_selector": "input[type=submit]:visible"
+   },
+   "notes": "Aggregator; details need a paid login."
+  },
+  {
+   "id": "tenderweek",
+   "name": "TenderWeek",
+   "url": "https://tenderweek.com",
+   "mode": "links",
+   "locale": "ru-RU",
+   "pages": [
+    {
+     "url": "https://tenderweek.com/",
+     "pattern": "tenderweek\\.com/tender-\\d+",
+     "id_from_url": "tender-(\\d+)"
+    }
+   ],
+   "login": {
+    "url": "https://tenderweek.com/login",
+    "user_selector": "input[name=email]",
+    "pass_selector": "input[name=password]"
+   },
+   "notes": "Corporate tenders in Uzbekistan (Russian). Contacts and documents may need a free account."
+  },
+  {
+   "id": "tendersontime",
+   "name": "TendersOnTime",
+   "url": "https://www.tendersontime.com",
+   "mode": "links",
+   "pages": [
+    {
+     "url": "https://www.tendersontime.com/uzbekistan-tenders/",
+     "pattern": "tendersontime\\.com/tenders-details/"
+    }
+   ],
+   "login": {
+    "url": "https://www.tendersontime.com/login/"
+   },
+   "notes": "Cloudflare blocks headless browsers from cloud IPs (checked Oct 2026), so it is off; the routine searches it with WebSearch instead. Turn it on if it works from your environment.",
+   "enabled": false,
+   "fallback_search": "site:tendersontime.com Uzbekistan tender"
+  },
+  {
+   "id": "tendersinfo",
+   "name": "TendersInfo",
+   "url": "https://www.tendersinfo.com",
+   "mode": "capture",
+   "capture": {
+    "match": "tendersinfo\\.com/esearch/tender_sector_test",
+    "body": {
+     "length": 100
+    }
+   },
+   "items": "data",
+   "fields": {
+    "id": "site_tender_id",
+    "title": "short_desc",
+    "deadline": "doc_last",
+    "published": "date_c",
+    "country": "region_name",
+    "category": "sector_name",
+    "buyer": "authority_name|purchaser_name"
+   },
+   "pages": [
+    {
+     "url": "https://www.tendersinfo.com/global-uzbekistan-tenders.php"
+    }
+   ],
+   "login": {
+    "url": "https://www.tendersinfo.com/login",
+    "user_selector": "#user_id",
+    "pass_selector": "#password",
+    "submit_selector": "#afgloginbtn"
+   },
+   "notes": "Aggregator; the Uzbekistan table feed returns all live rows (about 90). Details need a paid login."
+  },
+  {
+   "id": "biddetail",
+   "name": "BidDetail",
+   "url": "https://biddetail.com",
+   "mode": "links",
+   "pages": [
+    {
+     "url": "https://biddetail.com/uzbekistan-tenders",
+     "pattern": "biddetail\\.com/(latest|free)-tenders/\\d+",
+     "id_from_url": "tenders/(\\d+)"
+    }
+   ],
+   "login": {
+    "url": "https://biddetail.com/account/logon"
+   },
+   "notes": "Aggregator (mostly UN / development bank notices); documents need a login."
+  },
+  {
+   "id": "developmentaid",
+   "name": "DevelopmentAid",
+   "url": "https://www.developmentaid.org",
+   "mode": "links",
+   "pages": [
+    {
+     "url": "https://www.developmentaid.org/tenders/search?locations=223",
+     "pattern": "developmentaid\\.org/tenders/view/\\d+",
+     "id_from_url": "view/(\\d+)"
+    }
+   ],
+   "login": {
+    "url": "https://www.developmentaid.org/login",
+    "two_step": true
+   },
+   "notes": "Cloudflare blocks headless browsers from cloud IPs (checked Oct 2026), so it is off; the routine searches it with WebSearch instead. Turn it on if it works from your environment. Member login needed for full notices.",
+   "enabled": false,
+   "fallback_search": "site:developmentaid.org Uzbekistan tender"
+  },
+  {
+   "id": "worldbank",
+   "name": "World Bank",
+   "url": "https://projects.worldbank.org",
+   "mode": "worldbank",
+   "pages": [
+    {
+     "url": "https://search.worldbank.org/api/v2/procnotices",
+     "country": "Uzbekistan",
+     "rows": 100
+    }
+   ],
+   "notes": "Official API, Uzbekistan projects only; contract awards are skipped."
+  },
+  {
+   "id": "adb",
+   "name": "Asian Development Bank",
+   "url": "https://www.adb.org",
+   "mode": "capture",
+   "capture": {
+    "match": "searchstax\\.com/.*/emselect"
+   },
+   "items": "response.docs",
+   "fields": {
+    "id": "id",
+    "title": "tm_X3b_en_title",
+    "deadline": "ds_date_closing",
+    "published": "ss_date_formatted",
+    "country": "tm_X3b_en_country",
+    "type": "tm_X3b_en_type",
+    "category": "tm_X3b_en_sector",
+    "reference": "tm_X3b_en_project_number"
+   },
+   "link": "https://www.adb.org{ss_url}",
+   "pages": [
+    {
+     "url": "https://www.adb.org/projects/tenders?searchstax[query]=Uzbekistan&searchstax[page]=1&searchstax[order]=ds_date_posted%20desc"
+    }
+   ],
+   "notes": "Full-text search for Uzbekistan, newest first."
+  },
+  {
+   "id": "ungm",
+   "name": "UNGM",
+   "url": "https://www.ungm.org",
+   "mode": "links",
+   "pages": [
+    {
+     "url": "https://www.ungm.org/Public/Notice",
+     "pattern": "ungm\\.org/Public/Notice/\\d+",
+     "id_from_url": "Notice/(\\d+)",
+     "scroll": 6,
+     "actions": [
+      {
+       "eval": "() => { for (const s of document.querySelectorAll('select.countryPicker')) { for (const o of s.options) o.selected = (o.value === '2510'); s.dispatchEvent(new Event('change', {bubbles: true})); } }"
+      },
+      {
+       "click": "#lnkSearch",
+       "wait": 5000
+      }
+     ],
+     "deadline_regex": "(\\d{1,2}-[A-Za-z]{3}-20\\d\\d) \\d\\d:\\d\\d \\(GMT"
+    }
+   ],
+   "login": {
+    "url": "https://www.ungm.org/Login",
+    "user_selector": "#UserName",
+    "pass_selector": "#Password"
+   },
+   "notes": "Filtered to beneficiary country Uzbekistan (id 2510); 'Multiple destinations' notices are included by UNGM."
+  },
+  {
+   "id": "ebrd",
+   "name": "EBRD",
+   "url": "https://www.ebrd.com",
+   "mode": "capture",
+   "capture": {
+    "match": "ebrd\\.com/bin/ebrd_dxp/filterlistservlet",
+    "body": {
+     "searchKey": "Uzbekistan"
+    }
+   },
+   "items": "searchResult",
+   "fields": {
+    "id": "pagePath",
+    "title": "title",
+    "deadline": "projectCloseDate",
+    "published": "projectIssueDate",
+    "country": "projectCountry",
+    "category": "projectSector",
+    "type": "projectNoticeType"
+   },
+   "link": "{projectUrl}",
+   "pages": [
+    {
+     "url": "https://www.ebrd.com/home/work-with-us/project-procurement/procurement-notices.html",
+     "may_be_empty": true
+    }
+   ],
+   "notes": "Project procurement notices searched for Uzbekistan. Bidding itself is on ECEPP (ecepp.ebrd.com). Most EBRD project notices are now only on ECEPP, so this feed is often empty."
+  },
+  {
+   "id": "isdb",
+   "name": "Islamic Development Bank",
+   "url": "https://www.isdb.org",
+   "mode": "links",
+   "pages": [
+    {
+     "url": "https://www.isdb.org/project-procurement/tenders",
+     "pattern": "isdb\\.org/project-procurement/(tenders|fr/appels-doffres|ar/\\S+)/\\d{4}/",
+     "exclude": "contract-award|attribution"
+    }
+   ],
+   "notes": "Global list; few Uzbekistan notices."
+  },
+  {
+   "id": "osce",
+   "name": "OSCE",
+   "url": "https://procurement.osce.org",
+   "mode": "links",
+   "pages": [
+    {
+     "url": "https://procurement.osce.org/tenders",
+     "pattern": "procurement\\.osce\\.org/tenders/[a-z0-9-]{8,}$"
+    }
+   ],
+   "notes": "All open OSCE tenders (about 25); the Project Co-ordinator in Uzbekistan posts here."
+  }
+ ]
+}

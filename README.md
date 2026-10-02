@@ -71,5 +71,57 @@ Only one reader may poll the bot. When the new routines go live, disable the two
 | `lib/visuals.py` | Image types (photo / card / MiniMax candidates), carousels, LinkedIn PDF. |
 | `data/state.json` | Live state (committed by every run). `state.snapshot.json` is the Oct 1 export it started from. |
 | `data/knowledge.md` | Voice guide + content rules. |
-| `prompts/*.md` | The two routine prompts. |
+| `prompts/*.md` | The routine prompts (marketing: daily-post, telegram-buttons; tenders: tender-review). |
 | `assets/Montserrat.ttf` | Brand font. |
+| `tender.py`, `lib/tenders.py`, `lib/browser.py` | The tender agent (below). |
+
+# Tender agent
+
+A second, separate agent in the same repo. Every working day it opens the tender sites, signs in where it has an account, collects the lots it has not seen before, and Claude reviews them against AI Station's profile and sends one Uzbek digest to Telegram: what to bid on, what to watch, why, and the next step.
+
+```
+weekdays 09:20 ─┬─ inbox    tender bot: register people who pressed Start, read their replies (feedback)
+                ├─ scan     14 sites in a headless browser (+ World Bank API) -> new lots, keyword pre-score
+                ├─ profile  what AI Station bids on + team feedback + recently recommended
+                ├─ Claude   triages every new title, opens the promising lots (tabs, documents, scanned PDFs),
+                │           judges bid / watch / skip, writes the review (Uzbek)
+                ├─ digest   Telegram message to the tender recipients
+                └─ save     commits only the tender files in data/
+```
+
+| Site | How it is read | Login |
+|---|---|---|
+| UZEX e-Tender (etender.uzex.uz) | the site's own lot feed (best-offer + tanlov, up to 500 + all) | E-IMZO only; everything is public |
+| UZEX Xarid (xarid.uzex.uz) | competitions feed (newest 300); auctions (goods) left out | E-IMZO only |
+| eBirja (ebirja.uz) | public API (auctions + requests for offers) | E-IMZO only |
+| UzbekistanTenders, GlobalTenders, TendersInfo, BidDetail | listing pages filtered to Uzbekistan | optional, paid accounts show full notices |
+| TenderWeek | latest tenders page | optional (free account) |
+| World Bank | official procurement API, Uzbekistan | none |
+| ADB | tender search for "Uzbekistan" | none |
+| UNGM | notices with beneficiary country Uzbekistan | optional |
+| EBRD | notices searched for Uzbekistan (most now live on ECEPP) | none |
+| IsDB, OSCE | open tender lists | none |
+| TendersOnTime, DevelopmentAid | **off**: Cloudflare blocks headless browsers from cloud IPs; the routine searches them with WebSearch instead | optional |
+
+The site list, URLs and extraction rules are data, not code: `data/tender_sites.json`. What counts as a fit: `data/tender_profile.md` (edit it in plain words) and `data/tender_keywords.json` (pre-filter). Seen lots and verdicts: `data/tenders.json`.
+
+## Setup
+
+1. **A bot of its own**: create one with @BotFather and set `TENDER_BOT_TOKEN`. Everyone who should get the digest presses Start in it (up to 5 chats; a group works too). Or set `TENDER_CHAT_IDS=id1,id2`. Without `TENDER_BOT_TOKEN` the digest goes through the marketing bot to the marketing leads, send-only; replies then reach the marketing agent, so a separate bot is strongly recommended.
+2. **Site accounts (optional)**: `TENDER_<SITE>_USER` and `TENDER_<SITE>_PASS`, e.g. `TENDER_UNGM_USER`, `TENDER_GLOBALTENDERS_PASS` (site ids in `python3 tender.py sites`). Check one with `python3 tender.py login ungm`. UZEX and eBirja need no account to read.
+3. **Network access**: the environment must reach the tender sites (`*.uzex.uz`, `ebirja.uz`, `*.ebirja.uz`, `uzbekistantenders.com`, `globaltenders.com`, `tenderweek.com`, `tendersinfo.com`, `biddetail.com`, `search.worldbank.org`, `projects.worldbank.org`, `adb.org`, `*.searchstax.com`, `ungm.org`, `ebrd.com`, `isdb.org`, `procurement.osce.org`) plus `api.telegram.org` and `api.github.com`.
+4. **Routine**: a Claude Code cloud routine in this repo with the prompt `prompts/tender-review.md`, schedule `CRON_TZ=Asia/Tashkent 20 9 * * 1-5`. It installs `requirements-tender.txt` (Playwright, document readers) itself; Chromium comes with the cloud image, and `lib/browser.py` imports the environment's CA bundle into Chromium's store so pages load behind the egress proxy.
+5. Check with `python3 tender.py check`.
+
+## Commands
+
+```
+python3 tender.py check | sites | login SITE
+python3 tender.py scan [--site ID ...]           # collect new lots
+python3 tender.py new                            # unreviewed lots for Claude
+python3 tender.py open KEY|URL [--click TAB]     # read one lot (tabs, documents, download buttons)
+python3 tender.py doc URL | doc KEY --click "Faylni yuklab olish"   # document text (pdf/docx/xlsx)
+python3 tender.py profile | review FILE | digest FILE [--dry-run] | say HTML | inbox | save
+```
+
+The two agents never touch each other's state: `tender.py save` commits only the four tender files, and `agent.py save` / the Telegram memory backup skip them.

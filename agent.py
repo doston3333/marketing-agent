@@ -48,6 +48,7 @@ import sources as S  # noqa: E402
 import voice as V  # noqa: E402
 
 DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+TENDER_FILES = ("tenders.json", "tender_sites.json", "tender_keywords.json", "tender_profile.md")  # tender.py saves these
 
 
 def _post(path):
@@ -128,7 +129,7 @@ def main():
     if a.cmd == "save":
         import ghstore
         try:
-            print(ghstore.save(f"agent: state {A.tashkent_now():%Y-%m-%d %H:%M}"))
+            print(ghstore.save(f"agent: state {A.tashkent_now():%Y-%m-%d %H:%M}", exclude=TENDER_FILES))
         except Exception as ex:
             import storage
             print("GitHub save failed:", ex)

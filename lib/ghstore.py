@@ -24,10 +24,13 @@ def _req(method, path, **kw):
     return r.json()
 
 
-def save(message="agent: state", branch=None, tries=3):
-    """Commit every data/*.json|*.md file that differs from the branch head. Returns a short status line."""
+def save(message="agent: state", branch=None, tries=3, only=None, exclude=()):
+    """Commit every data/*.json|*.md file that differs from the branch head. Returns a short status line.
+    only / exclude (file names) keep each agent to its own files, so one agent never overwrites another
+    agent's newer state with the copy it checked out at the start of its run."""
     branch = branch or _req("GET", "")["default_branch"]
-    files = sorted(f for f in os.listdir(A.DATA) if f.endswith((".json", ".md")) and not f.endswith(".tmp"))
+    files = sorted(f for f in os.listdir(A.DATA) if f.endswith((".json", ".md")) and not f.endswith(".tmp")
+                   and (only is None or f in only) and f not in exclude)
     for attempt in range(tries):
         head = _req("GET", f"/git/ref/heads/{branch}")["object"]["sha"]
         base_tree = _req("GET", f"/git/commits/{head}")["tree"]["sha"]
