@@ -11,7 +11,8 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.environ.get("AIS_DATA_DIR", os.path.join(ROOT, "data"))
-CHANNEL_ID = -1002832312156          # public @aistationuz channel: read-only for us, NEVER post
+CHANNEL_ID = -1002832312156          # public @aistationuz channel. Posting happens ONLY via publish_telegram(),
+                                     # only when settings.publish_telegram is on AND a lead pressed "📢 Kanalga joylash".
 MAX_LEADS = 2
 WORK = os.environ.get("AIS_WORK_DIR", os.path.join(ROOT, "work"))
 TG_API = "https://api.telegram.org/bot{token}/{method}"
@@ -76,7 +77,8 @@ def secrets():
 
 # ---------------------------------------------------------------- state
 DEFAULT_STATE = {"leads": [], "lead_names": {}, "offset": 0, "posts": {}, "history": [], "pending": [],
-                 "handled": [], "learnings": [], "msg_map": {}, "channel_posts": []}
+                 "handled": [], "learnings": [], "msg_map": {}, "channel_posts": [], "prefs": [], "edits": [],
+                 "rejected": [], "settings": {}, "week_plan": {}}
 
 
 def _blank():
@@ -129,6 +131,21 @@ def _merge(remote, local):
             pend.append(a)
     m["pending"] = pend
     m["learnings"] = list(dict.fromkeys(remote.get("learnings", []) + local.get("learnings", [])))
+    prefs = {x["rule"]: x for x in remote.get("prefs", [])}
+    for x in local.get("prefs", []):
+        if x["rule"] not in prefs or x.get("count", 1) >= prefs[x["rule"]].get("count", 1):
+            prefs[x["rule"]] = x
+    m["prefs"] = list(prefs.values())
+    for k, cap in (("edits", 60), ("rejected", 40)):
+        seen_k, lst = set(), []
+        for x in remote.get(k, []) + local.get(k, []):
+            key = (x.get("post_id"), x.get("ts"))
+            if key not in seen_k:
+                seen_k.add(key)
+                lst.append(x)
+        m[k] = lst[-cap:]
+    m["settings"] = {**remote.get("settings", {}), **local.get("settings", {})}
+    m["week_plan"] = local.get("week_plan") or remote.get("week_plan") or {}
     mm = {**remote.get("msg_map", {}), **local.get("msg_map", {})}
     m["msg_map"] = dict(list(mm.items())[-800:])
     cps = {c["message_id"]: c for c in remote.get("channel_posts", []) + local.get("channel_posts", [])}
@@ -172,11 +189,43 @@ def set_status(state, post_id, status):
         p["updated"] = time.time()
 
 
-def add_learning(state, text):
-    """Store a standing lesson from the lead's feedback (shown to every future run via load_knowledge)."""
+def add_learning(state, text, context="", explicit=False):
+    """Record a preference distilled from a lead's edit. A rule becomes 'confirmed' when the lead states it
+    as a standing rule (explicit) or when it is inferred from 2+ separate edits; until then it is a candidate."""
+    import sources as S
     text = text.strip()
-    if text and text not in state["learnings"]:
-        state["learnings"].append(f"{tashkent_now():%Y-%m-%d}: {text}")
+    if not text:
+        return None
+    tk = S.tokens(text)
+    for p in state["prefs"]:
+        if S._sim(tk, S.tokens(p["rule"])) >= 0.6:
+            p["count"] = p.get("count", 1) + 1
+            p["contexts"] = sorted(set(p.get("contexts", []) + ([context] if context else [])))
+            p["last"] = f"{tashkent_now():%Y-%m-%d}"
+            if explicit or p["count"] >= 2:
+                p["status"] = "confirmed"
+            return p
+    p = {"rule": text, "count": 1, "contexts": [context] if context else [], "status": "confirmed" if explicit else "candidate",
+         "first": f"{tashkent_now():%Y-%m-%d}", "last": f"{tashkent_now():%Y-%m-%d}"}
+    state["prefs"].append(p)
+    return p
+
+
+def record_edit(state, post_id, old, new, instruction=""):
+    """Keep (draft -> edited) caption pairs: contrastive examples for writing and judging."""
+    for plat in ("instagram", "telegram", "linkedin"):
+        a, b = (old.get("captions") or {}).get(plat), (new.get("captions") or {}).get(plat)
+        if a and b and a.strip() != b.strip():
+            state["edits"].append({"post_id": post_id, "platform": plat, "before": a, "after": b,
+                                   "instruction": instruction[:300], "ts": time.time()})
+
+
+def record_rejection(state, post_id, reason=""):
+    p = state["posts"].get(post_id)
+    if p:
+        state["rejected"].append({"post_id": post_id, "topic": p.get("topic"), "kind": p.get("kind"),
+                                  "reason": reason[:300], "telegram": (p.get("captions") or {}).get("telegram", "")[:600],
+                                  "ts": time.time()})
 
 
 # ---------------------------------------------------------------- Telegram
@@ -305,6 +354,7 @@ def poll(state):
         if not msg or msg.get("chat", {}).get("type") != "private":
             continue
         cid, text = msg["chat"]["id"], (msg.get("text") or msg.get("caption") or "").strip()
+        photo = (msg.get("photo") or [{}])[-1].get("file_id")
         if cid not in state["leads"]:
             if len(state["leads"]) < MAX_LEADS:
                 state["leads"].append(cid)
@@ -320,9 +370,15 @@ def poll(state):
                 except Exception:
                     pass
             continue
-        if not text or text.startswith("/start"):
+        if text.startswith("/start") or (not text and not photo):
             continue
         rt = msg.get("reply_to_message") or {}
+        is_idea = bool(photo) or bool(msg.get("forward_origin") or msg.get("forward_date")) or \
+            bool(re.match(r"\s*(g.?oya|idea|#idea|#g.?oya)\b", text, re.I))
+        if is_idea and not rt:
+            acts.append({"uid": uid, "type": "idea", "text": text, "photo": f"tg:{photo}" if photo else None,
+                         "chat_id": cid, "message_id": msg["message_id"], "from": _name(msg.get("from", {}))})
+            continue
         pid = state["msg_map"].get(f"{cid}:{rt.get('message_id')}") if rt else None
         acts.append({"uid": uid, "type": "text", "text": text, "post_id": pid, "chat_id": cid,
                      "message_id": msg["message_id"], "from": _name(msg.get("from", {}))})
@@ -343,10 +399,11 @@ def take_actions(state):
     out, seen = [], set()
     for a in reversed(acts):
         if a["type"] == "button":
-            if a.get("post_id") in seen:
+            key = (a.get("post_id"), "publish" if a.get("action") in ("pub", "hold") else "review")
+            if key in seen:
                 ack(a["cb_id"], "Eskirgan tugma")
                 continue
-            seen.add(a.get("post_id"))
+            seen.add(key)
         out.append(a)
     return list(reversed(out))
 
@@ -364,7 +421,9 @@ STYLE = {
     "linkedin": "Refined, minimal, premium business image with generous negative space. Keep the subject in the upper right and the lower half calm and dark.",
 }
 COMMON = (" Colour palette: deep indigo night (#0D0D21) with electric blue (#7A7AFB) and cyan (#4FBFFD) light accents."
-          " Absolutely no text, letters, numbers, logos, watermarks, flags or real people.")
+          " Matte surfaces with subtle film grain, soft realistic light, not glossy plastic."
+          " Absolutely no text, letters, numbers, logos, watermarks, flags or real people."
+          " Avoid AI cliches: no robots, humanoids, glowing brains, circuit-board faces, handshake holograms or floating screens.")
 _FONTS = {}
 
 
@@ -620,17 +679,17 @@ def render_all(spec, post_id, use_minimax=True):
     """Render the three platform images. Returns {platform: {"path", "minimax", "error"}}."""
     seed = spec.get("seed", 7)
 
+    import visuals
+
     def one(p):
-        sp, err, art = spec[p], None, None
-        if use_minimax and sp.get("image_prompt"):
-            try:
-                art = minimax(sp["image_prompt"], p)
-            except Exception as ex:
-                err = str(ex)[:200]
+        sp = dict(spec[p])
+        if not use_minimax and (sp.get("art") or "minimax") == "minimax" and not sp.get("art_path"):
+            sp["art"] = "card"
+        art, src, err = visuals.background(p, sp, seed)
         img = compose(p, sp, seed, art)
         path = f"{WORK}/out/{post_id}_{p}_{int(time.time())}.jpg"
         img.save(path, "JPEG", quality=92)
-        return p, {"path": path, "minimax": art is not None, "error": err}
+        return p, {"path": path, "minimax": src in ("minimax", "pinned"), "source": src, "error": err}
 
     _font_path()
     if use_minimax:
@@ -666,11 +725,16 @@ def send_package(state, post_id, post, note=None, use_minimax=True):
     if not state["leads"]:
         raise RuntimeError("No lead registered: ask the leads to press Start in @marketingagent67_bot")
     spec, caps = post["spec"], post["captions"]
+    import visuals
+    old = state["posts"].get(post_id)
+    if old:
+        record_edit(state, post_id, old, post, note or "")
     imgs = render_all(spec, post_id, use_minimax)
-    post["images"] = {p: {"minimax": v["minimax"], "error": v["error"]} for p, v in imgs.items()}
+    post["images"] = {p: {"minimax": v["minimax"], "source": v.get("source"), "error": v["error"]} for p, v in imgs.items()}
     for p, v in imgs.items():
         if v["error"]:
-            print(f"MiniMax error ({p}): {v['error']} -> brand template used")
+            print(f"Image error ({p}): {v['error']} -> brand template used")
+    slides = visuals.render_carousel(post, post_id, {p: v["path"] for p, v in imgs.items()}) if post.get("carousel") else {}
     so = post.get("signoff")
     def _host(u):
         return re.sub(r"^https?://(www\.)?", "", u).split("/")[0]
@@ -695,6 +759,22 @@ def send_package(state, post_id, post, note=None, use_minimax=True):
             except RuntimeError:
                 mid, fid = _send_photo(cid, imgs[p]["path"], f"{label} · #{post_id}")  # retry with a fresh upload
             file_ids[p] = fid or file_ids.get(p)
+            if slides.get(p):
+                media = [{"type": "photo", "media": f"attach://s{i}"} for i in range(len(slides[p][:10]))]
+                media[0]["caption"] = f"{label} carousel · #{post_id}"
+                try:
+                    d = tg("sendMediaGroup", {"chat_id": cid, "media": media},
+                           files={f"s{i}": x for i, x in enumerate(slides[p][:10])})
+                    mids += [m.get("message_id") for m in d.get("result") or []]
+                except RuntimeError as ex:
+                    print("carousel send failed:", ex)
+                if p == "linkedin" and slides.get("linkedin_pdf"):
+                    try:
+                        d = tg("sendDocument", {"chat_id": cid, "caption": f"LinkedIn PDF carousel · #{post_id}"},
+                               files={"document": slides["linkedin_pdf"]})
+                        mids.append((d.get("result") or {}).get("message_id"))
+                    except RuntimeError as ex:
+                        print("pdf send failed:", ex)
             mids += [mid] + _send_text(cid, texts[p])
         mids += say(state, "👇 Qaror? Tahrir kerak bo‘lsa, istalgan xabarga <b>reply</b> qilib yozing.", [cid], markup=kb)
         for m in mids:
@@ -712,27 +792,100 @@ def send_package(state, post_id, post, note=None, use_minimax=True):
     return post
 
 
+def md_to_html(text):
+    """Telegram caption markdown (**bold**, [text](url)) -> Telegram HTML."""
+    t = esc(text)
+    t = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", t)
+    t = re.sub(r"\[([^\]]+)\]\((https?://[^)\s]+)\)", lambda m: f'<a href="{m.group(2)}">{m.group(1)}</a>', t)
+    return t
+
+
+def publish_telegram(state, post_id):
+    """Post the approved Telegram version to the public channel. Call only after a lead pressed the publish button."""
+    if not state.get("settings", {}).get("publish_telegram"):
+        raise RuntimeError("publishing to the channel is off (agent.py settings publish_telegram on)")
+    post = state["posts"][post_id]
+    if post.get("status") != "approved":
+        raise RuntimeError(f"post {post_id} is not approved")
+    if (post.get("published") or {}).get("telegram"):
+        return post["published"]["telegram"]
+    cap = md_to_html(tg_caption(post["captions"]["telegram"]))
+    photo = (post.get("file_ids") or {}).get("telegram")
+    if len(cap) <= 1024:
+        d = tg("sendPhoto", {"chat_id": CHANNEL_ID, "photo": photo, "caption": cap, "parse_mode": "HTML"})
+        mid = d["result"]["message_id"]
+    else:
+        d = tg("sendPhoto", {"chat_id": CHANNEL_ID, "photo": photo})
+        mid = d["result"]["message_id"]
+        tg("sendMessage", {"chat_id": CHANNEL_ID, "text": cap, "parse_mode": "HTML", "disable_web_page_preview": True})
+    post.setdefault("published", {})["telegram"] = {"message_id": mid, "at": tashkent_now().isoformat(timespec="minutes"),
+                                                   "url": f"https://t.me/aistationuz/{mid}"}
+    post["updated"] = time.time()
+    return post["published"]["telegram"]
+
+
+def publish_markup(post_id):
+    return {"inline_keyboard": [[{"text": "📢 Kanalga joylash", "callback_data": f"pub|{post_id}"},
+                                 {"text": "⏸ Keyinroq", "callback_data": f"hold|{post_id}"}]]}
+
+
+def data_json(name, default=None):
+    raw = drive_get(name)
+    return json.loads(raw.decode()) if raw else (default if default is not None else {})
+
+
+def save_json(name, obj):
+    drive_put(name, json.dumps(obj, ensure_ascii=False, indent=1))
+
+
 # ---------------------------------------------------------------- knowledge + lint
 def load_knowledge(state=None):
+    """Everything the writer needs before drafting: guide, rules learned from the leads, measured style targets,
+    phrases the agent over-uses, contrastive edits, rejected ideas, recent topics and performance."""
     state = state or load_state()
     kb = drive_get("knowledge.md")
     print(kb.decode() if kb else "(knowledge.md missing)")
-    print("\n## TEAM LEARNINGS (override the guide)")
-    print("\n".join("- " + x for x in state["learnings"]) or "- none yet")
-    cutoff = (tashkent_now() - datetime.timedelta(days=14)).strftime("%Y%m%d")
-    print("\n## TOPICS COVERED RECENTLY (last 14 days, do not repeat)")
+    conf = [p for p in state.get("prefs", []) if p.get("status") == "confirmed"]
+    cand = [p for p in state.get("prefs", []) if p.get("status") != "confirmed"]
+    print("\n## TEAM RULES (confirmed; these override the guide)")
+    print("\n".join(f"- {p['rule']}" + (f" [{', '.join(p['contexts'])}]" if p.get("contexts") else "") for p in conf)
+          or "- none yet")
+    for x in state.get("learnings", []):
+        print(f"- {x}")
+    if cand:
+        print("\n## CANDIDATE RULES (seen once; follow when it fits, they become rules when repeated)")
+        print("\n".join(f"- {p['rule']}" for p in cand[-12:]))
+    style = data_json("style.json")
+    if style:
+        print("\n## MEASURED HOUSE STYLE (from the team's own @aistationuz posts; aim for these numbers on Telegram)")
+        print(json.dumps(style.get("telegram_human", style), ensure_ascii=False))
+    sl = data_json("slop.json", {}).get("phrases", [])
+    if sl:
+        print("\n## PHRASES THE AGENT OVER-USES (auto-detected vs the human posts; do not use)")
+        print(", ".join(f"'{x[0]}'" for x in sl[:30]))
+    ed = state.get("edits", [])[-4:]
+    if ed:
+        print("\n## RECENT EDITS BY THE LEADS (draft -> what they wanted; learn the pattern)")
+        for e in ed:
+            print(f"--- {e['platform']} #{e['post_id']} ({e.get('instruction') or 'edited'})\nBEFORE: {e['before'][:400]}\nAFTER:  {e['after'][:400]}")
+    rj = state.get("rejected", [])[-5:]
+    if rj:
+        print("\n## REJECTED IDEAS (do not pitch similar)")
+        print("\n".join(f"- {r.get('topic')} ({r.get('reason') or 'no reason given'})" for r in rj))
+    cutoff = (tashkent_now() - datetime.timedelta(days=21)).strftime("%Y%m%d")
+    print("\n## TOPICS COVERED RECENTLY (last 21 days, do not repeat)")
     print("\n".join(f"- {h['date']}: {h['topic']} ({h.get('source', '')})" for h in state["history"] if h["date"] >= cutoff) or "- none")
-    print("\n## RECENT @aistationuz CHANNEL POSTS (match this tone)")
-    for c in state["channel_posts"][-5:]:
-        print("---\n" + c["text"][:900])
-    if not state["channel_posts"]:
-        print("- none captured yet")
+    perf = data_json("performance.json")
+    if perf.get("summary"):
+        print("\n## WHAT PERFORMS ON @aistationuz (views vs channel median; >1 = above normal)")
+        print(json.dumps(perf["summary"], ensure_ascii=False))
     print("\n## APPROVED CAPTIONS (what good looks like)")
     ap = [p for p in state["posts"].values() if p.get("status") == "approved"][-2:]
     for p in ap:
         print(f"--- {p.get('topic')}\n[IG]\n{p['captions']['instagram']}\n[TG]\n{p['captions']['telegram']}\n[LI]\n{p['captions']['linkedin']}")
     if not ap:
         print("- none yet")
+    print("\nFor voice examples on today's topic run: python3 agent.py examples \"<topic>\"")
 
 
 CLICHES = ["game-changer", "game changer", "fast-paced", "revolutionize", "revolutionise", "unlock the", "unleash",
@@ -741,6 +894,7 @@ CLICHES = ["game-changer", "game changer", "fast-paced", "revolutionize", "revol
            "paradigm", "synergy", "next level", "the future is here", "stay tuned",
            "tez o‘zgaruvchan", "tez sur'at", "inqilobiy", "kelajak shu yerda", "kelajak bugun", "yangi davr boshlan",
            "imkoniyatlar eshigini", "o‘yin qoidalarini", "hayratlanarli", "ajoyib imkoniyat"]
+SLOP = []  # filled from data/slop.json at import (phrases the agent over-uses vs the human archive)
 FORBIDDEN = ["applications open", "apply now", "qabul ochiq", "qabul boshlandi", "ro‘yxatdan o‘ting",
              "ariza topshiring", "kursimizga yoziling", "o‘quvchilarimiz", "talabalarimiz", "bitiruvchilarimiz"]
 
@@ -749,9 +903,36 @@ def _words(t):
     return len(re.findall(r"\w[\w‘’'-]*", t))
 
 
+KINDS = ["news", "opportunity", "educational", "story", "case", "roundup", "event", "announcement"]
+PILLARS = ["academy", "studio", "corporate", "ventures", "news"]
+
+
+def lint_warnings(post):
+    """Soft checks against the measured house style (printed, never blocking)."""
+    W = []
+    style = data_json("style.json").get("telegram_human") or {}
+    tgc = (post.get("captions") or {}).get("telegram", "")
+    if style and tgc:
+        sents = [x for x in re.split(r"(?<=[.!?])\s+|\n+", tgc) if len(x.split()) >= 3]
+        if sents:
+            mean = sum(len(x.split()) for x in sents) / len(sents)
+            if style.get("sentence_words_mean") and mean > style["sentence_words_mean"] * 1.5:
+                W.append(f"telegram: sentences average {mean:.0f} words; house style is {style['sentence_words_mean']}")
+    for k, v in (post.get("captions") or {}).items():
+        if re.search(r"\b(not (just|only)|emas,? balki)\b", v, re.I):
+            W.append(f"{k}: 'not just X but Y' construction reads as AI")
+        if len(re.findall(r"\b\w+, \w+,? (and|va) \w+\b", v)) >= 2:
+            W.append(f"{k}: several lists of three; vary the rhythm")
+    return W
+
+
 def lint(post):
     """Mechanical checks. Returns a list of problems; [] means pass."""
     P = []
+    if post.get("kind") not in KINDS:
+        P.append(f"kind must be one of {KINDS}")
+    if post.get("pillar") not in PILLARS:
+        P.append(f"pillar must be one of {PILLARS}")
     caps, spec = post.get("captions", {}), post.get("spec", {})
     for k in ("instagram", "telegram", "linkedin"):
         if not caps.get(k):
@@ -770,9 +951,13 @@ def lint(post):
         for c in CLICHES:
             if c in low:
                 P.append(f"{k}: cliché '{c}'")
-        for c in FORBIDDEN:
+        external_opp = post.get("kind") == "opportunity" and not re.search(r"academy|akademiya|ais academy", low)
+        for c in ([] if external_opp else FORBIDDEN):
             if c in low:
                 P.append(f"{k}: forbidden phrase '{c}' (no enrollment/applications claims)")
+        for c in SLOP:
+            if c in low:
+                P.append(f"{k}: over-used agent phrase '{c}' (see slop.json)")
     uz = {"caption.instagram": caps["instagram"], "caption.telegram": caps["telegram"]}
     for p in ("instagram", "telegram"):
         for f in ("headline", "subline", "tag"):
@@ -796,6 +981,25 @@ def lint(post):
         P.append(f"instagram: body {_words(body)} words (want 80-150)")
     if "](" in ig or "http" in ig:
         P.append("instagram: links do not work on Instagram, remove them")
+    if "**" in ig or "__" in ig:
+        P.append("instagram: no **markdown** (Instagram shows the asterisks)")
+    if "**" in caps["linkedin"]:
+        P.append("linkedin: no **markdown** (LinkedIn shows the asterisks)")
+    car = post.get("carousel") or {}
+    for plat, slides in car.items():
+        if not (3 <= len(slides) <= 9):
+            P.append(f"carousel.{plat}: {len(slides)} slides (want 3-9 plus the cover)")
+        for i, sl in enumerate(slides):
+            if len(str(sl.get("title", "")).replace("[[", "").replace("]]", "").split()) > 10:
+                P.append(f"carousel.{plat}[{i}]: title over 10 words")
+            if len(str(sl.get("body", "")).split()) > 45:
+                P.append(f"carousel.{plat}[{i}]: body over 45 words")
+            if plat == "instagram" and re.search(r"\b[oOgG]['`’]", str(sl.get("title", "")) + str(sl.get("body", ""))):
+                P.append(f"carousel.{plat}[{i}]: write o‘ / g‘ with the ‘ character")
+    for p in ("instagram", "telegram", "linkedin"):
+        sp = spec[p]
+        if sp.get("art") == "photo" and not sp.get("photo"):
+            P.append(f"spec.{p}: art=photo needs a photo (article URL, image URL or tg:<file_id>)")
     tgc = caps["telegram"]
     if re.search(r"(^|\s)#\w", tgc):
         P.append("telegram: no hashtags")
@@ -823,8 +1027,8 @@ def lint(post):
             P.append(f"spec.{p}.headline: needs one [[highlight]]")
         elif sum(len(x.split()) for x in hl) > 3:
             P.append(f"spec.{p}.headline: highlight max 3 words")
-        if not spec[p].get("image_prompt"):
-            P.append(f"spec.{p}: image_prompt missing")
+        if (spec[p].get("art") or "minimax") == "minimax" and not spec[p].get("image_prompt"):
+            P.append(f"spec.{p}: image_prompt missing (or set art to photo/card)")
     if len(str(spec["instagram"].get("subline") or "").split()) > 12:
         P.append("spec.instagram.subline: max 12 words")
     if spec["linkedin"].get("stat") and not spec["linkedin"].get("stat_label"):
@@ -836,3 +1040,9 @@ def lint(post):
     if named and not post.get("signoff"):
         P.append(f"signoff should be set: {', '.join(named)}")
     return P
+
+
+try:
+    SLOP = [x[0] for x in data_json("slop.json", {}).get("phrases", []) if x[1] >= 3]
+except Exception:
+    SLOP = []

@@ -19,18 +19,33 @@ Not included on purpose: `secrets.json` (your MiniMax API key; it's in the Drive
 ## How it runs now (Claude Code cloud routines)
 
 ```
-Claude Code routine (cloud session, fresh clone of this repo)
-   │  git pull → python3 agent.py … → git commit/push data/state.json
-   ├── Telegram Bot API   @marketingagent67_bot, leads' private chats only
-   ├── MiniMax image-01   one background per platform (brand template on failure)
-   └── this repo          data/state.json = memory between runs, data/knowledge.md = voice guide
+daily 08:50 ─┬─ start      Telegram: register leads, store lead ideas (photos / forwards / "g‘oya: ...")
+             ├─ metrics    @aistationuz archive with views -> what performs (performance.json)
+             ├─ collect    ~700 items: 13 Telegram channels, 14 RSS feeds, Google News (EN/RU), Hacker News
+             │             -> clustered + scored story bank (story_bank.json, kept 7 days)
+             ├─ knowledge  guide + team rules + measured house style + over-used phrases + leads' edits
+             ├─ today      weekly plan slot (content_plan.json) + opportunities + lead ideas + top stories
+             ├─ Claude     picks, deep-reads, verifies, writes (examples by topic+views, 3 hooks, judge, editor pass)
+             ├─ render     image candidates (MiniMax concept / real photo tinted to brand / brand card) -> Claude looks
+             └─ send       package (+ carousel album + LinkedIn PDF) to the leads; commits data/ back to git
+hourly :07 ── buttons ✅ 🎨 ✍️ 💡 📢, reply-edits (learned as rules), ideas
 ```
 
-- **Claude does the thinking** (research, picking the idea, writing captions and image prompts, rewriting on request).
-- **`agent.py` / `lib/agent_lib.py` do the mechanics**: `check`, `peek`, `start`, `actions`, `knowledge`, `show`, `lint`, `send`, `ack`, `status`, `say`, `learn` (`python3 agent.py -h`).
-- Two routines, prompts in `prompts/`: daily post (08:50 Tashkent) and Telegram buttons (hourly :07, 09:07-21:07).
-- Each routine run starts from a fresh clone, so it commits `data/state.json` back at the end. That commit is the agent's memory.
-- Only the leads' private chats get messages. The public @aistationuz channel (`CHANNEL_ID = -1002832312156`) is read-only.
+- **Claude does the thinking**: choosing the story, judging candidates, writing, judging its own drafts, looking at images.
+- **The code does the mechanics** (`python3 agent.py -h`): collection, clustering, scoring, archive, style fingerprint, rendering, Telegram.
+- **Learning loop**: leads' edits are stored as before/after pairs and distilled into rules (confirmed after 2 edits or when stated as a rule); rejected ideas are remembered; channel views feed `performance.json`; on Mondays `style` re-measures the house style and the phrases the agent over-uses.
+- **Publishing**: off by default. `python3 agent.py settings publish_telegram on` adds a "📢 Kanalga joylash" button after approval (the bot must be an admin of @aistationuz). Instagram/LinkedIn are still posted by the leads.
+
+| Data file | What it is |
+|---|---|
+| `data/state.json` | Leads, posts, history, rules learned, edits, rejections, settings |
+| `data/story_bank.json` | Scored story clusters from all sources |
+| `data/archive.json` | Every public @aistationuz post with views |
+| `data/performance.json` | Views vs channel median by post kind / series / author |
+| `data/style.json`, `data/slop.json` | Measured house style; phrases the agent over-uses |
+| `data/content_plan.json` | Pillars, weekly series, priority rules |
+| `data/ideas.json` | Idea bank: lead ideas + evergreen ideas |
+| `data/knowledge.md` | Voice guide |
 
 ## Cloud environment setup
 
@@ -50,7 +65,10 @@ Only one reader may poll the bot. When the new routines go live, disable the two
 | Path | What it is |
 |---|---|
 | `agent.py` | CLI the routines call. |
-| `lib/agent_lib.py` | Engine: state, Telegram, MiniMax, Pillow brand renderer, lint, knowledge loader. |
+| `lib/agent_lib.py` | Engine: state, Telegram, MiniMax, Pillow brand renderer, lint, knowledge, publishing. |
+| `lib/sources.py` | Source collectors, clustering, scoring, story bank. |
+| `lib/voice.py` | Channel archive, example retrieval, style fingerprint, over-used phrases. |
+| `lib/visuals.py` | Image types (photo / card / MiniMax candidates), carousels, LinkedIn PDF. |
 | `data/state.json` | Live state (committed by every run). `state.snapshot.json` is the Oct 1 export it started from. |
 | `data/knowledge.md` | Voice guide + content rules. |
 | `prompts/*.md` | The two routine prompts. |

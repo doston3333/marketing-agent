@@ -1,0 +1,54 @@
+{
+ "channel_median_views": 170.0,
+ "summary": {
+  "kind": {
+   "other": {
+    "posts": 15,
+    "median_eng": 1.08
+   },
+   "partnership": {
+    "posts": 31,
+    "median_eng": 0.89
+   },
+   "educational": {
+    "posts": 8,
+    "median_eng": 1.22
+   },
+   "greeting": {
+    "posts": 8,
+    "median_eng": 0.99
+   },
+   "event": {
+    "posts": 5,
+    "median_eng": 1.02
+   },
+   "opportunity": {
+    "posts": 5,
+    "median_eng": 2.03
+   }
+  },
+  "series": {
+   "-": {
+    "posts": 72,
+    "median_eng": 0.96
+   }
+  },
+  "by": {
+   "team": {
+    "posts": 72,
+    "median_eng": 0.96
+   }
+  },
+  "photo": {
+   "True": {
+    "posts": 56,
+    "median_eng": 0.96
+   },
+   "False": {
+    "posts": 16,
+    "median_eng": 1.02
+   }
+  }
+ },
+ "updated": 1790915128.041128
+}

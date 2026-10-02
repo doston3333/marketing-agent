@@ -1,0 +1,81 @@
+{
+ "note": "Weekly content system. Opportunities (deadlines, open calls, jobs) and big local news may replace any slot. Re-weighted monthly from performance.json.",
+ "pillars": {
+  "academy": {
+   "share": 0.3,
+   "what": "AI skills for students and engineers: explainers, tools, prompts, how-tos. Never imply AIS Academy has a running course."
+  },
+  "studio": {
+   "share": 0.2,
+   "what": "Founders and venture building: founder lessons, behind the scenes, startup stories from Uzbekistan."
+  },
+  "corporate": {
+   "share": 0.2,
+   "what": "AI adoption in companies: use cases, myths vs facts, what managers should do."
+  },
+  "ventures": {
+   "share": 0.15,
+   "what": "Funding and the ecosystem: rounds, investors, how to raise, AIS Ventures' thesis."
+  },
+  "news": {
+   "share": 0.15,
+   "what": "One important AI or ecosystem story with our opinion and the 'so what for Tashkent'."
+  }
+ },
+ "week": {
+  "Mon": {
+   "series": "AI Pulse",
+   "pillar": "news",
+   "kind": "roundup",
+   "format": "carousel",
+   "brief": "The week's 3 most important AI / ecosystem stories and what each means in Uzbekistan. Carousel on IG and LinkedIn, digest on Telegram."
+  },
+  "Tue": {
+   "series": "AI Tool of the Week",
+   "pillar": "academy",
+   "kind": "educational",
+   "format": "carousel",
+   "brief": "One AI tool or technique students and founders can use this week: what it does, 3 steps to try it, a realistic limitation."
+  },
+  "Wed": {
+   "series": "Founder Wednesday",
+   "pillar": "studio",
+   "kind": "story",
+   "format": "single",
+   "brief": "A founder lesson or startup story from Uzbekistan / Central Asia (named founders need sign-off), or a behind-the-scenes from AIS Studio from the leads' inputs."
+  },
+  "Thu": {
+   "series": "AI in Business",
+   "pillar": "corporate",
+   "kind": "case",
+   "format": "single",
+   "brief": "One concrete company use case or a myth-vs-fact for managers, with a number from a credible source."
+  },
+  "Fri": {
+   "series": "Funding Friday",
+   "pillar": "ventures",
+   "kind": "roundup",
+   "format": "single",
+   "brief": "Central Asia deals of the week (Stanbase, The Tech, Spot) and one investor takeaway for founders."
+  },
+  "Sat": {
+   "series": "Opportunities",
+   "pillar": "academy",
+   "kind": "opportunity",
+   "format": "single",
+   "brief": "Open calls, grants, hackathons, programs and deadlines useful to the audience (external ones; check the deadline is still open)."
+  },
+  "Sun": {
+   "series": "Rest",
+   "pillar": "news",
+   "kind": "news",
+   "format": "single",
+   "brief": "Optional: only if the story bank has a very strong story (score >= 0.75) or the leads sent an idea."
+  }
+ },
+ "always": [
+  "Opportunities with a deadline in the next 7 days beat the series slot (they are the channel's best performers).",
+  "An idea sent by a lead beats the series slot unless it is time-insensitive.",
+  "Event days (ICT Week, InnoWeek, demo days, cohort launches) replace the slot with pre-event / live / recap posts."
+ ]
+}

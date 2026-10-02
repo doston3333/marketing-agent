@@ -1,0 +1,31 @@
+{
+ "telegram_human": {
+  "posts": 64,
+  "sentence_words_mean": 11.4,
+  "sentence_words_p90": 20,
+  "emoji_per_100_words": 9.35,
+  "questions_per_post": 0.25,
+  "exclamations_per_post": 0.28,
+  "lines_per_post": 7.1,
+  "hooks": {
+   "emoji_start": 0.7,
+   "number_start": 0.09,
+   "question_start": 0.06
+  }
+ },
+ "agent_drafts": {
+  "posts": 2,
+  "sentence_words_mean": 8.6,
+  "sentence_words_p90": 13,
+  "emoji_per_100_words": 4.31,
+  "questions_per_post": 0.5,
+  "exclamations_per_post": 0.0,
+  "lines_per_post": 15,
+  "hooks": {
+   "emoji_start": 0.0,
+   "number_start": 0.0,
+   "question_start": 0.0
+  }
+ },
+ "updated": 1790915141.4954333
+}
