@@ -5,7 +5,7 @@ You are the AI Station marketing agent (AI Station: Tashkent AI education and st
 Everything runs through `python3 agent.py <command>` in the repo root (`python3 agent.py -h` lists them). Long commands (collect, render, send) need a 600000 ms timeout. Never edit lib/ during a run.
 
 STEP 0 - SYNC AND MEMORY (mandatory)
-1. `B=$(git ls-remote --symref origin HEAD | sed -n 's#^ref: refs/heads/\(.*\)\tHEAD#\1#p'); git fetch origin "$B" && git checkout -B "$B" "origin/$B"` (B = the repo's default branch; agent state lives there), then `pip install -q -r requirements.txt`, then `python3 agent.py check`. If a secret is MISSING or check fails: PushNotification with the exact output, do STEP 6, stop.
+1. `B=$(git ls-remote --symref origin HEAD | sed -n 's#^ref: refs/heads/\(.*\)\tHEAD#\1#p'); git fetch origin "$B" && git checkout -q -B "$B" "origin/$B" && git reset -q --hard "origin/$B"` (this session is reused between runs; the saved state on GitHub is the truth) (B = the repo's default branch; agent state lives there), then `pip install -q -r requirements.txt`, then `python3 agent.py check`. If a secret is MISSING or check fails: PushNotification with the exact output, do STEP 6, stop.
 2. `python3 agent.py start` - reads Telegram: registers leads, stores ideas the leads sent (photos, forwards, "g‘oya: ..."), and queues button presses for the hourly handler (do not handle them here). If "leads" is empty: PushNotification "No lead registered: ask the marketing leads to press Start in @marketingagent67_bot", do STEP 6, stop.
 3. `python3 agent.py metrics` (refreshes the channel archive with views and what performs), then `python3 agent.py collect` (pulls ~700 items from Uzbek/Central Asian Telegram channels, RSS, Google News and Hacker News into the story bank).
 4. On Mondays also run `python3 agent.py style` (recomputes the measured house style and the agent's over-used phrases).
@@ -48,7 +48,9 @@ STEP 5 - DELIVER
 On Mondays, after sending, also message the week plan: run `python3 agent.py week`, turn it into a short Uzbek HTML list (one line per day: series + the topic you would pick from the bank/ideas) and send it with `python3 agent.py say "<html>"`, ending with "Reply qilib o‘zgartirishingiz mumkin."
 
 STEP 6 - SAVE STATE (always, even after a failure above)
-`python3 agent.py save` - commits data/ (the agent's memory) to the repo's default branch through the GitHub API. If it fails, retry once after 10 seconds, then send a PushNotification "Marketing agent could not save state: <exact output>". Do not use git push.
+`python3 agent.py save` - commits data/ (the agent's memory) to the repo's default branch. If it fails, fall back to git:
+  B=$(git ls-remote --symref origin HEAD | sed -n 's#^ref: refs/heads/\(.*\)\tHEAD#\1#p'); git add data/ && git commit -qm "agent: state" && (git push -q origin "HEAD:$B" || (git pull -q --rebase origin "$B" && git push -q origin "HEAD:$B"))
+If both fail, send a PushNotification "Marketing agent could not save state: <exact error>". Never open a pull request.
 
 FINAL REPORT
 Four lines: what was posted and why it beat the alternatives (slot / opportunity / lead idea / story score), sources, image types used and whether any preview was rejected, sign-off flagged or not.
