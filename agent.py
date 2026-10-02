@@ -32,6 +32,7 @@ Images + sending
   send FILE [--id ID] [--note TEXT] [--history] [--no-minimax]
 
 Memory (survives fresh sessions without git push)
+  save                        commit data/ to the repo's default branch via the GitHub API (GITHUB_TOKEN)
   restore                     unpack the newest pinned data/ bundle from the private storage channel
   backup                      upload data/ as a new pinned bundle to the storage channel
 
@@ -93,7 +94,7 @@ def main():
     ap = argparse.ArgumentParser(description="AI Station marketing agent")
     sub = ap.add_subparsers(dest="cmd", required=True)
     for c in ("check", "peek", "start", "actions", "knowledge", "collect", "today", "week", "metrics", "style",
-              "backup", "restore"):
+              "backup", "restore", "save"):
         sub.add_parser(c)
     p = sub.add_parser("show"); p.add_argument("post_id")
     p = sub.add_parser("lint"); p.add_argument("file")
@@ -123,6 +124,18 @@ def main():
         st = A.load_state()
         print("leads:", st["leads"], "offset:", st["offset"], "posts:", len(st["posts"]),
               "settings:", st.get("settings"))
+        return
+    if a.cmd == "save":
+        import ghstore
+        try:
+            print(ghstore.save(f"agent: state {A.tashkent_now():%Y-%m-%d %H:%M}"))
+        except Exception as ex:
+            import storage
+            print("GitHub save failed:", ex)
+            res = storage.backup()
+            print("fallback:", res)
+            if res.startswith("no storage chat"):
+                sys.exit(1)
         return
     if a.cmd in ("backup", "restore"):
         import storage
