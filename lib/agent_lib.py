@@ -271,7 +271,7 @@ def tg(method, args, tries=3, files=None):
 def peek(state=None):
     """Look at the update queue without consuming anything new. Passing offset = last handled + 1
     only confirms updates that poll() already processed, so they stop showing up here."""
-    args = {"timeout": 0, "limit": 100, "allowed_updates": ["message", "callback_query", "channel_post"]}
+    args = {"timeout": 0, "limit": 100, "allowed_updates": ["message", "callback_query", "channel_post", "my_chat_member"]}
     if state and state.get("offset"):
         args["offset"] = state["offset"] + 1
     d = tg("getUpdates", args)
@@ -324,7 +324,7 @@ def _name(u):
 def poll(state):
     """Read new Telegram updates. Registers up to MAX_LEADS private chats (greets them) and returns
     actions: {"type": "registered"|"button"|"text", ...}. Saves state when anything changed."""
-    args = {"timeout": 0, "limit": 100, "allowed_updates": ["message", "callback_query", "channel_post"]}
+    args = {"timeout": 0, "limit": 100, "allowed_updates": ["message", "callback_query", "channel_post", "my_chat_member"]}
     if state.get("offset"):
         args["offset"] = state["offset"] + 1
     d = tg("TELEGRAM_GET_UPDATES", args)
@@ -334,6 +334,15 @@ def poll(state):
         uid = u["update_id"]
         state["offset"] = max(state.get("offset", 0), uid)
         changed = True
+        if "my_chat_member" in u:
+            mc = u["my_chat_member"]
+            ch = mc.get("chat", {})
+            if ch.get("type") == "channel" and mc.get("new_chat_member", {}).get("status") == "administrator" \
+                    and ch.get("id") != CHANNEL_ID:
+                lst = state.setdefault("settings", {}).setdefault("admin_channels", [])
+                if ch["id"] not in [c["id"] for c in lst]:
+                    lst.append({"id": ch["id"], "title": ch.get("title"), "by": _name(mc.get("from", {}))})
+            continue
         if "channel_post" in u:
             cp = u["channel_post"]
             txt = cp.get("text") or cp.get("caption")

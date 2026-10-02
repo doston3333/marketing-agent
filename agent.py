@@ -31,6 +31,10 @@ Images + sending
   render FILE [--id ID] [--n 2]   make background candidates + previews to look at; pin one with spec.<p>.art_path
   send FILE [--id ID] [--note TEXT] [--history] [--no-minimax]
 
+Memory (survives fresh sessions without git push)
+  restore                     unpack the newest pinned data/ bundle from the private storage channel
+  backup                      upload data/ as a new pinned bundle to the storage channel
+
 Learning loop
   metrics                     refresh the @aistationuz archive (views), link agent posts, update performance.json
   style                       recompute the house-style fingerprint and the over-used phrase list
@@ -88,7 +92,8 @@ def cmd_today(state, day=None):
 def main():
     ap = argparse.ArgumentParser(description="AI Station marketing agent")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for c in ("check", "peek", "start", "actions", "knowledge", "collect", "today", "week", "metrics", "style"):
+    for c in ("check", "peek", "start", "actions", "knowledge", "collect", "today", "week", "metrics", "style",
+              "backup", "restore"):
         sub.add_parser(c)
     p = sub.add_parser("show"); p.add_argument("post_id")
     p = sub.add_parser("lint"); p.add_argument("file")
@@ -118,6 +123,10 @@ def main():
         st = A.load_state()
         print("leads:", st["leads"], "offset:", st["offset"], "posts:", len(st["posts"]),
               "settings:", st.get("settings"))
+        return
+    if a.cmd in ("backup", "restore"):
+        import storage
+        print(storage.backup() if a.cmd == "backup" else storage.restore())
         return
     if a.cmd == "peek":
         st = A.load_state()
