@@ -26,7 +26,7 @@ Put your best idea first. Write work/shortlist.json:
               "why": <Uzbek, 1-2 sentences: what happened + our so-what for the audience>,
               "url": <main source url or null>,
               "kind", "pillar", "series", "format", "story_id"?, "idea_id"?, "photo"?, "angle": <English note to yourself: the takeaway you would write>}, ... 10 items]}
-Uzbek rules apply to title and why (o‘/g‘ with ‘, singular after numbers, no em dashes, no hype words). Then `python3 agent.py shortlist send work/shortlist.json`. It sends the numbered list with source links and a one-choice poll to each lead; the first vote picks the idea and is built by the hourly handler. Do not build a post in this run.
+Uzbek rules apply to title and why (o‘/g‘ with ‘, singular after numbers, no em dashes, no hype words). Then `python3 agent.py shortlist send work/shortlist.json`. It sends the numbered list with source links and a one-choice poll to each lead; the first vote picks the idea and is built by the hourly handler. If nobody votes by 14:00 Tashkent (setting autopick_hour), the hourly handler picks idea #1 - so rank honestly: #1 must be the one you would post. Do not build a post in this run.
 On Mondays, after the shortlist, also message the week plan: run `python3 agent.py week`, turn it into a short Uzbek HTML list (one line per day: series + the topic you would pick from the bank/ideas) and send it with `python3 agent.py say "<html>"`, ending with "Reply qilib o‘zgartirishingiz mumkin."
 
 BUILDING THE PICKED POST (STEPS 2-5; run by the hourly handler for a "pick" action, never in this morning run)

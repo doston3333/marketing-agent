@@ -10,7 +10,7 @@ Telegram + state
   say HTML [--chat ID] [--publish-buttons POST_ID]   message the leads (or one chat)
   status POST_ID STATUS [--reason TEXT]               approved / rejected / sent (rejected keeps the reason)
   publish POST_ID             post the approved Telegram version to @aistationuz (only after a lead pressed 📢)
-  settings [KEY VALUE]        show or set settings, e.g. settings publish_telegram on
+  settings [KEY VALUE]        show or set settings, e.g. settings publish_telegram on, settings autopick_hour 14 (or off)
 
 Finding what to post
   shortlist send FILE         send today's 2-10 ideas (JSON list) to the leads as a list + Telegram poll; first vote picks
@@ -151,7 +151,7 @@ def main():
         return
     if a.cmd == "peek":
         st = A.load_state()
-        print("UPDATES", len(A.peek(st)), "PENDING", len(st["pending"]))
+        print("UPDATES", len(A.peek(st)), "PENDING", len(st["pending"]) + (1 if A.autopick_due(st) else 0))
         return
     if a.cmd == "collect":
         st = A.load_state()

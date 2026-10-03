@@ -513,27 +513,70 @@ def _poll_pick(state, uid, pa):
         i = opts[0]
         if i >= len(sl["ideas"]):
             return None
-        sl["status"] = "picked"
-        sl["picked"] = {"index": i, "by": who, "at": time.time()}
-        for pid, pinfo in sl["polls"].items():
-            if pid != pa["poll_id"]:
-                try:
-                    tg("stopPoll", {"chat_id": pinfo["chat_id"], "message_id": pinfo["message_id"]}, tries=1)
-                except Exception:
-                    pass
-        try:
-            say(state, f"🗳 <b>{esc(who)}</b> {i + 1}-g‘oyani tanladi: {esc(sl['ideas'][i]['title'])}\n"
-                       f"Post tayyorlanmoqda, 1 soat ichida yuboraman.")
-        except Exception as ex:
-            print("pick notice failed:", ex)
-        return {"uid": uid, "type": "pick", "shortlist": date, "index": i, "idea": sl["ideas"][i], "from": who,
-                "chat_id": (pa.get("user") or {}).get("id")}
+        act = _pick(state, date, sl, i, who, keep_poll=pa["poll_id"])
+        act.update({"uid": uid, "chat_id": (pa.get("user") or {}).get("id")})
+        return act
     return None
+
+
+AUTOPICK_HOUR = 14  # Tashkent hour; override with `agent.py settings autopick_hour 15` (or "off")
+
+
+def _pick(state, date, sl, i, who, keep_poll=None, auto=False):
+    """Mark idea i of a shortlist as picked, close the polls still open and tell the leads."""
+    sl["status"] = "picked"
+    sl["picked"] = {"index": i, "by": who, "at": time.time(), "auto": auto}
+    for pid, pinfo in sl.get("polls", {}).items():
+        if pid != keep_poll:
+            try:
+                tg("stopPoll", {"chat_id": pinfo["chat_id"], "message_id": pinfo["message_id"]}, tries=1)
+            except Exception:
+                pass
+    title = esc(sl["ideas"][i]["title"])
+    msg = (f"⏰ Soat {_autopick_hour(state)}:00 gacha ovoz bo‘lmadi, shuning uchun eng yaxshi deb bilgan "
+           f"{i + 1}-g‘oyani tanladim: {title}\nPost tayyorlanmoqda, 1 soat ichida yuboraman." if auto else
+           f"🗳 <b>{esc(who)}</b> {i + 1}-g‘oyani tanladi: {title}\nPost tayyorlanmoqda, 1 soat ichida yuboraman.")
+    try:
+        say(state, msg)
+    except Exception as ex:
+        print("pick notice failed:", ex)
+    return {"type": "pick", "shortlist": date, "index": i, "idea": sl["ideas"][i], "from": who}
+
+
+def _autopick_hour(state):
+    h = (state.get("settings") or {}).get("autopick_hour", AUTOPICK_HOUR)
+    try:
+        return int(h)
+    except (TypeError, ValueError):
+        return None  # "off"
+
+
+def autopick_due(state):
+    """Today's shortlist if nobody voted and the auto-pick hour has passed, else None."""
+    h, now = _autopick_hour(state), tashkent_now()
+    date = now.strftime("%Y%m%d")
+    sl = state.get("shortlists", {}).get(date)
+    if h is None or not sl or sl.get("status") != "open" or now.hour < h:
+        return None
+    return date
+
+
+def autopick(state):
+    """Pick the first-ranked idea of today's shortlist when nobody voted by the auto-pick hour."""
+    date = autopick_due(state)
+    if not date:
+        return None
+    act = _pick(state, date, state["shortlists"][date], 0, "auto", auto=True)
+    act["uid"] = f"autopick-{date}"
+    return act
 
 
 def take_actions(state):
     """For the hourly handler: queued actions from the daily run + fresh ones, marked as handled."""
     acts = list(state.get("pending", [])) + poll(state)
+    auto = autopick(state)  # after poll(): a vote that just arrived wins over the auto-pick
+    if auto:
+        acts.append(auto)
     acts = [a for a in acts if a.get("uid") not in set(state.get("handled", []))]
     state["handled"] += [a["uid"] for a in acts]
     state["pending"] = []
