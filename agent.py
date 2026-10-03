@@ -13,6 +13,8 @@ Telegram + state
   settings [KEY VALUE]        show or set settings, e.g. settings publish_telegram on
 
 Finding what to post
+  shortlist send FILE         send today's 2-10 ideas (JSON list) to the leads as a list + Telegram poll; first vote picks
+  shortlist show [DATE]       print a shortlist (default today) with its status and the picked idea
   collect                     pull ~700 items from Telegram channels, RSS, Google News, HN into the story bank
   candidates [--n 20]         top story clusters with signals (velocity, engagement, novelty, tags)
   story ID [STATUS]           show a story, or mark it posted / rejected / evergreen
@@ -25,6 +27,7 @@ Writing
   examples "TOPIC" [--k 3]    the team's most similar high-performing posts (voice examples for this topic)
   learn TEXT [--context C] [--explicit]   store a preference from a lead's edit (confirmed when repeated/explicit)
   show POST_ID                print a stored post as JSON (to edit and resend)
+  replace FILE --platform P --old TEXT --new TEXT   swap one exact passage in one caption (quoted-reply edits)
   lint FILE                   lint a post JSON file; exit 1 if there are problems (prints style warnings too)
 
 Images + sending
@@ -111,6 +114,10 @@ def main():
     p = sub.add_parser("candidates"); p.add_argument("--n", type=int, default=20)
     p = sub.add_parser("story"); p.add_argument("id"); p.add_argument("status", nargs="?")
     p = sub.add_parser("examples"); p.add_argument("topic"); p.add_argument("--k", type=int, default=3)
+    p = sub.add_parser("shortlist"); p.add_argument("op", choices=["send", "show"]); p.add_argument("arg", nargs="?")
+    p = sub.add_parser("replace"); p.add_argument("file"); p.add_argument("--platform", required=True,
+                                                                          choices=["instagram", "telegram", "linkedin"])
+    p.add_argument("--old", required=True); p.add_argument("--new", required=True)
     p = sub.add_parser("idea"); p.add_argument("op", choices=["add", "list", "done"]); p.add_argument("text", nargs="?")
     p.add_argument("--pillar", default=""); p.add_argument("--photo"); p.add_argument("--source", default="lead")
     a = ap.parse_args()
@@ -199,6 +206,18 @@ def main():
         for w in A.lint_warnings(post):
             print("warn:", w)
         sys.exit(1 if probs else 0)
+    if a.cmd == "replace":
+        post = _post(a.file)
+        cap = post["captions"][a.platform]
+        n = cap.count(a.old)
+        if n != 1:
+            sys.exit(f"the passage occurs {n} times in the {a.platform} caption; it must occur exactly once "
+                     "(copy it exactly from `show`, or include more words around it)")
+        post["captions"][a.platform] = cap.replace(a.old, a.new)
+        with open(a.file, "w", encoding="utf-8") as f:
+            json.dump(post, f, ensure_ascii=False, indent=1)
+        print(f"replaced in {a.platform}:\n- {a.old}\n+ {a.new}")
+        return
     if a.cmd == "render":
         import visuals
         post = _post(a.file)
@@ -210,7 +229,7 @@ def main():
     state = A.load_state()
     if a.cmd == "start":
         acts = A.poll(state)
-        queued = [x for x in acts if x["type"] in ("button", "text")]
+        queued = [x for x in acts if x["type"] in ("button", "text", "pick")]
         ideas = [x for x in acts if x["type"] == "idea"]
         if ideas:
             bank = A.data_json("ideas.json", {"ideas": []})
@@ -275,6 +294,10 @@ def main():
             if post["story_id"] in bank.get("stories", {}):
                 bank["stories"][post["story_id"]]["status"] = "posted"
                 A.save_json("story_bank.json", bank)
+        sl = state.get("shortlists", {}).get(post.get("shortlist") or "")
+        if sl:
+            sl["status"], sl["post_id"] = "done", pid
+            A.save_state(state)
         if post.get("idea_id"):
             ib = A.data_json("ideas.json", {"ideas": []})
             for i in ib["ideas"]:
@@ -282,6 +305,20 @@ def main():
                     i["status"] = "used"
             A.save_json("ideas.json", ib)
         print("POST_ID", pid)
+    elif a.cmd == "shortlist":
+        date = A.tashkent_now().strftime("%Y%m%d")
+        if a.op == "send":
+            if not a.arg:
+                sys.exit("usage: shortlist send FILE")
+            data = _post(a.arg)
+            ideas = data["ideas"] if isinstance(data, dict) else data
+            polls = A.send_shortlist(state, date, ideas, intro=data.get("intro", "") if isinstance(data, dict) else "")
+            print(f"shortlist {date}: {len(ideas)} ideas, poll sent to {len(polls)} lead(s)")
+        else:
+            sl = state.get("shortlists", {}).get(a.arg or date)
+            if not sl:
+                sys.exit(f"no shortlist for {a.arg or date}; known: {', '.join(sorted(state.get('shortlists', {})))}")
+            print(json.dumps({k: v for k, v in sl.items() if k != "polls"}, ensure_ascii=False, indent=1))
     elif a.cmd == "ack":
         A.ack(a.cb_id, a.text)
     elif a.cmd == "status":

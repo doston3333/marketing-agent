@@ -78,7 +78,10 @@ def secrets():
 # ---------------------------------------------------------------- state
 DEFAULT_STATE = {"leads": [], "lead_names": {}, "offset": 0, "posts": {}, "history": [], "pending": [],
                  "handled": [], "learnings": [], "msg_map": {}, "channel_posts": [], "prefs": [], "edits": [],
-                 "rejected": [], "settings": {}, "week_plan": {}, "tender_inbox": []}
+                 "rejected": [], "settings": {}, "week_plan": {}, "tender_inbox": [], "shortlists": {}}
+
+
+SL_RANK = {"open": 0, "picked": 1, "done": 2}  # shortlist status order (see send_shortlist)
 
 
 def _blank():
@@ -146,6 +149,13 @@ def _merge(remote, local):
         m[k] = lst[-cap:]
     m["settings"] = {**remote.get("settings", {}), **local.get("settings", {})}
     m["week_plan"] = local.get("week_plan") or remote.get("week_plan") or {}
+    sls = dict(remote.get("shortlists", {}))
+    for k, v in local.get("shortlists", {}).items():
+        r = sls.get(k)
+        # a pick recorded by one run must not be undone by another run's older copy
+        if not r or SL_RANK.get(v.get("status"), 0) >= SL_RANK.get(r.get("status"), 0):
+            sls[k] = v
+    m["shortlists"] = dict(sorted(sls.items())[-14:])
     tin = {x["uid"]: x for x in remote.get("tender_inbox", []) + local.get("tender_inbox", [])}
     m["tender_inbox"] = sorted(tin.values(), key=lambda x: x["uid"])[-200:]
     mm = {**remote.get("msg_map", {}), **local.get("msg_map", {})}
@@ -270,10 +280,13 @@ def tg(method, args, tries=3, files=None):
     raise RuntimeError(f"{method} failed: {last}")
 
 
+UPDATE_TYPES = ["message", "callback_query", "channel_post", "my_chat_member", "poll_answer"]
+
+
 def peek(state=None):
     """Look at the update queue without consuming anything new. Passing offset = last handled + 1
     only confirms updates that poll() already processed, so they stop showing up here."""
-    args = {"timeout": 0, "limit": 100, "allowed_updates": ["message", "callback_query", "channel_post", "my_chat_member"]}
+    args = {"timeout": 0, "limit": 100, "allowed_updates": UPDATE_TYPES}
     if state and state.get("offset"):
         args["offset"] = state["offset"] + 1
     d = tg("getUpdates", args)
@@ -336,7 +349,7 @@ def _tender_messages():
 def poll(state):
     """Read new Telegram updates. Registers up to MAX_LEADS private chats (greets them) and returns
     actions: {"type": "registered"|"button"|"text", ...}. Saves state when anything changed."""
-    args = {"timeout": 0, "limit": 100, "allowed_updates": ["message", "callback_query", "channel_post", "my_chat_member"]}
+    args = {"timeout": 0, "limit": 100, "allowed_updates": UPDATE_TYPES}
     if state.get("offset"):
         args["offset"] = state["offset"] + 1
     d = tg("TELEGRAM_GET_UPDATES", args)
@@ -360,6 +373,11 @@ def poll(state):
             txt = cp.get("text") or cp.get("caption")
             if txt and cp.get("chat", {}).get("id") == CHANNEL_ID:
                 state["channel_posts"].append({"message_id": cp["message_id"], "date": cp.get("date"), "text": txt[:1500]})
+            continue
+        if "poll_answer" in u:
+            act = _poll_pick(state, uid, u["poll_answer"])
+            if act:
+                acts.append(act)
             continue
         if "callback_query" in u:
             cq = u["callback_query"]
@@ -411,12 +429,106 @@ def poll(state):
                          "chat_id": cid, "message_id": msg["message_id"], "from": _name(msg.get("from", {}))})
             continue
         pid = state["msg_map"].get(f"{cid}:{rt.get('message_id')}") if rt else None
-        acts.append({"uid": uid, "type": "text", "text": text, "post_id": pid, "chat_id": cid,
-                     "message_id": msg["message_id"], "from": _name(msg.get("from", {}))})
+        act = {"uid": uid, "type": "text", "text": text, "post_id": pid, "chat_id": cid,
+               "message_id": msg["message_id"], "from": _name(msg.get("from", {}))}
+        # the lead selected part of a message and replied to just that part (Telegram "quote")
+        quote = ((msg.get("quote") or {}).get("text") or "").strip()
+        if quote:
+            act["quote"] = quote
+        if pid:
+            act["platform"] = _which_caption(state["posts"].get(pid), quote or (rt.get("text") or rt.get("caption") or ""))
+        acts.append(act)
     state["lead_chat_id"] = state["leads"][0] if state["leads"] else None
     if changed:
         save_state(state)
     return acts
+
+
+def _norm(t):
+    return re.sub(r"\s+", " ", re.sub(r"\*\*", "", t or "")).strip()
+
+
+def _which_caption(post, text):
+    """Which platform caption a replied-to (or quoted) text belongs to: instagram / telegram / linkedin, or None."""
+    t = _norm(text)
+    if not post or len(t) < 3:
+        return None
+    caps = post.get("captions") or {}
+    for p in ("instagram", "telegram", "linkedin"):
+        if t in _norm(caps.get(p)):
+            return p
+    for p in ("instagram", "telegram", "linkedin"):  # the reply is to a long caption: match its opening
+        if _norm(caps.get(p))[:120] and _norm(caps.get(p))[:120] in t:
+            return p
+    return None
+
+
+def send_shortlist(state, date, ideas, intro=""):
+    """Send today's idea shortlist (2-10 ideas) to every lead: a numbered HTML list with sources, then a
+    one-choice Telegram poll. The first vote picks the idea; the hourly handler then builds the post."""
+    if not state["leads"]:
+        raise RuntimeError("No lead registered: ask the leads to press Start in @marketingagent67_bot")
+    if not 2 <= len(ideas) <= 10:
+        raise ValueError(f"a shortlist needs 2-10 ideas, got {len(ideas)}")
+    for i, x in enumerate(ideas):
+        if not x.get("title"):
+            raise ValueError(f"idea {i + 1} has no title")
+    lines = [f"<b>🗳 Bugungi post uchun {len(ideas)} ta g‘oya</b>" + (f"\n{esc(intro)}" if intro else "")]
+    for i, x in enumerate(ideas, 1):
+        src = x.get("url")
+        tail = f' · <a href="{esc(src)}">manba</a>' if src else ""
+        lines.append(f"<b>{i}. {esc(x['title'])}</b>\n{esc(x.get('why', ''))}{tail}")
+    lines.append("👇 Pastdagi so‘rovnomada bittasini tanlang. Post tanlovdan keyin 1 soat ichida tayyor bo‘ladi.")
+    polls = {}
+    for cid in state["leads"]:
+        say(state, "\n\n".join(lines), [cid])
+        opts = [{"text": f"{i}. {x['title']}"[:100]} for i, x in enumerate(ideas, 1)]
+        d = tg("sendPoll", {"chat_id": cid, "question": f"Bugun ({date}) qaysi g‘oya bo‘yicha post qilamiz?"[:300],
+                            "options": opts, "is_anonymous": False, "allows_multiple_answers": False})
+        res = d.get("result") or {}
+        polls[res["poll"]["id"]] = {"chat_id": cid, "message_id": res.get("message_id")}
+    state["shortlists"][date] = {"ideas": ideas, "polls": polls, "status": "open", "sent_at": time.time()}
+    save_state(state)
+    return polls
+
+
+def _poll_pick(state, uid, pa):
+    """A lead voted in a shortlist poll. The first vote picks the idea (status 'picked'), closes the other
+    leads' polls and tells everyone; later or retracted votes are ignored."""
+    for date, sl in state.get("shortlists", {}).items():
+        if pa.get("poll_id") not in sl.get("polls", {}):
+            continue
+        opts = pa.get("option_ids") or []
+        who = _name(pa.get("user") or {})
+        if not opts:
+            return None
+        if sl.get("status") != "open":
+            chosen = sl.get("picked", {})
+            try:
+                _send_text(sl["polls"][pa["poll_id"]]["chat_id"],
+                           f"ℹ️ Bu so‘rovnomada {chosen.get('by', 'jamoa')} allaqachon {chosen.get('index', 0) + 1}-g‘oyani tanlagan.")
+            except Exception:
+                pass
+            return None
+        i = opts[0]
+        if i >= len(sl["ideas"]):
+            return None
+        sl["status"] = "picked"
+        sl["picked"] = {"index": i, "by": who, "at": time.time()}
+        for pid, pinfo in sl["polls"].items():
+            if pid != pa["poll_id"]:
+                try:
+                    tg("stopPoll", {"chat_id": pinfo["chat_id"], "message_id": pinfo["message_id"]}, tries=1)
+                except Exception:
+                    pass
+        try:
+            say(state, f"🗳 <b>{esc(who)}</b> {i + 1}-g‘oyani tanladi: {esc(sl['ideas'][i]['title'])}\n"
+                       f"Post tayyorlanmoqda, 1 soat ichida yuboraman.")
+        except Exception as ex:
+            print("pick notice failed:", ex)
+        return {"uid": uid, "type": "pick", "shortlist": date, "index": i, "idea": sl["ideas"][i], "from": who,
+                "chat_id": (pa.get("user") or {}).get("id")}
+    return None
 
 
 def take_actions(state):
