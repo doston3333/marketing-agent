@@ -45,10 +45,7 @@ STEP 4 - READ AND JUDGE (for every shortlisted lot)
 STEP 5 - DELIVER AND SAVE
 1. `python3 tender.py digest work/review.json --dry-run` - read it once as the lead would: correct facts, clear next steps, no duplicates. Fix review.json and re-run review if needed.
 2. `python3 tender.py digest work/review.json` - sends it (even on a day with no fitting lot: the short "nothing today" message tells the team the agent ran). If it fails, retry once, then PushNotification with the error.
-3. `python3 tender.py save` - commits ONLY the tender agent's data files (data/tenders.json, tender_sites.json, tender_keywords.json, tender_profile.md) to the repo's default branch. If it fails, fall back to git:
-   B=$(git ls-remote --symref origin HEAD | sed -n 's#^ref: refs/heads/\(.*\)\tHEAD#\1#p'); git add data/tenders.json data/tender_sites.json data/tender_keywords.json data/tender_profile.md && git commit -qm "tender agent: state" && (git push -q origin "HEAD:$B" || (git pull -q --rebase origin "$B" && git push -q origin "HEAD:$B"))
-   Never `git add data/` as a whole (the marketing agent owns the other files). If both fail, PushNotification "Tender agent could not save state: <exact error>". Never open a pull request.
-After a successful save, re-run the STEP 0.1 sync command (fetch + checkout + reset --hard) so the local checkout matches GitHub; that is all "commit your changes" means for this agent. Never `git commit` or `git push` the tender files yourself while the API save works.
+3. `python3 tender.py save` - commits ONLY the tender agent's data files (data/tenders.json, tender_sites.json, tender_keywords.json, tender_profile.md) to the repo's default branch: through the GitHub API, or, when the API refuses, with its own git commit + push of just those files, and it leaves the local checkout in sync with GitHub. Run nothing else around it: no resync before it (that would wipe today's state), no manual `git add` / `commit` / `push` after it. Never `git add data/` as a whole (the marketing agent owns the other files). If it exits with an error, PushNotification "Tender agent could not save state: <exact output>". Never open a pull request.
 Always do STEP 5.3, even after a failure earlier.
 
 FINAL REPORT

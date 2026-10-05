@@ -180,7 +180,19 @@ def cmd_open(a):
     print(text[:a.max] + ("\n[... cut, read the saved file for the rest]" if len(text) > a.max else ""))
 
 
-def doc_text(path):
+def _need(binary, package):
+    """Install a command-line extractor on first use (fresh cloud sessions start without them)."""
+    import shutil
+    if not shutil.which(binary):
+        for cmd in (["apt-get", "install", "-y", "-q", package], ["apt-get", "update", "-q"],
+                    ["apt-get", "install", "-y", "-q", package]):
+            subprocess.run(cmd, capture_output=True, timeout=300)
+            if shutil.which(binary):
+                break
+    return shutil.which(binary)
+
+
+def doc_text(path, depth=0):
     ext = path.lower().rsplit(".", 1)[-1]
     if ext == "pdf":
         r = subprocess.run(["pdftotext", "-layout", path, "-"], capture_output=True, text=True)
@@ -198,6 +210,30 @@ def doc_text(path):
         wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
         return "\n".join(" | ".join("" if v is None else str(v) for v in row)
                          for ws in wb.worksheets for row in ws.iter_rows(values_only=True))
+    if ext in ("doc", "xls", "rtf"):  # old Office formats, common in Uzbek tender packs
+        tool = {"doc": "catdoc", "rtf": "catdoc", "xls": "xls2csv"}[ext]
+        if _need(tool, "catdoc"):
+            r = subprocess.run([tool, path], capture_output=True, text=True)
+            if r.returncode == 0:
+                return r.stdout
+        return f"(could not read .{ext}; file saved at {path})"
+    if ext in ("zip", "rar", "7z") and depth < 2:  # tender packs (TZ + forms) often come zipped
+        out_dir = path + "_files"
+        os.makedirs(out_dir, exist_ok=True)
+        if ext == "zip":
+            import zipfile
+            zipfile.ZipFile(path).extractall(out_dir)
+        elif not ((_need("bsdtar", "libarchive-tools")
+                   and subprocess.run(["bsdtar", "-xf", path, "-C", out_dir], capture_output=True).returncode == 0)
+                  or (_need("unar", "unar")
+                      and subprocess.run(["unar", "-q", "-f", "-o", out_dir, path], capture_output=True).returncode == 0)):
+            return f"(could not unpack .{ext}; file saved at {path})"
+        parts = []
+        for root, _, files in os.walk(out_dir):
+            for f in sorted(files):
+                fp = os.path.join(root, f)
+                parts.append(f"===== {os.path.relpath(fp, out_dir)} =====\n{doc_text(fp, depth + 1)}")
+        return "\n\n".join(parts) or "(empty archive)"
     return f"(no text extractor for .{ext}; file saved at {path})"
 
 
@@ -214,12 +250,13 @@ def cmd_doc(a):
             path = br.download(site, url, os.path.join(d, name))
     if "." not in name:  # no extension in the URL: sniff the bytes
         head = open(path, "rb").read(4)
-        ext = "pdf" if head.startswith(b"%PDF") else ("docx" if head.startswith(b"PK") else "bin")
+        ext = "pdf" if head.startswith(b"%PDF") else "docx" if head.startswith(b"PK") else \
+            "rar" if head.startswith(b"Rar!") else "doc" if head.startswith(b"\xd0\xcf\x11\xe0") else "bin"
         os.rename(path, path + "." + ext)
         path += "." + ext
     text = doc_text(path)
     print(f"saved: {path} ({os.path.getsize(path) // 1024} KB, {len(text)} chars of text)\n")
-    if len(text.strip()) < 200 and path.lower().endswith(".pdf"):
+    if len(text.strip()) < 200 and path.lower().endswith(".pdf"):  # scanned
         print("This looks like a scanned PDF (no text layer): open the saved file with the Read tool "
               "(pages \"1-5\" and so on) to read it as images.")
     print(text[:a.max] + ("\n[... cut]" if len(text) > a.max else ""))
@@ -302,12 +339,48 @@ def cmd_digest(a):
 
 
 def cmd_save(a):
+    """GitHub API first; if the session may not write through the API, a git commit of only the tender files.
+    Either way the local checkout ends in sync with GitHub, so nothing is left to commit by hand."""
     import ghstore
+    msg = f"tender agent: state {A.tashkent_now():%Y-%m-%d %H:%M}"
+    git = lambda *args: subprocess.run(["git", *args], cwd=A.ROOT, capture_output=True, text=True)  # noqa: E731
+    branch = re.search(r"ref: refs/heads/(\S+)\s+HEAD", git("ls-remote", "--symref", "origin", "HEAD").stdout)
+    branch = branch.group(1) if branch else None
+
+    def sync():
+        git("fetch", "-q", "origin", branch)
+        git("checkout", "-q", "-B", branch, f"origin/{branch}")
+        git("reset", "-q", "--hard", f"origin/{branch}")
+
     try:
-        print(ghstore.save(f"tender agent: state {A.tashkent_now():%Y-%m-%d %H:%M}", only=T.OWN_FILES))
+        print(ghstore.save(msg, only=T.OWN_FILES))
+        if branch:
+            sync()
+        return
     except Exception as ex:
-        print("GitHub save failed:", ex)
+        print("GitHub API save failed:", str(ex)[:200], "- falling back to git")
+    if not branch:
+        print("git fallback failed: cannot find the default branch")
         sys.exit(1)
+    files = [f"data/{f}" for f in T.OWN_FILES if os.path.exists(os.path.join(A.DATA, f))]
+    snap = {f: open(os.path.join(A.ROOT, f), "rb").read() for f in files}
+    for attempt in range(3):  # another agent may push meanwhile: rebuild on the newest head and retry
+        sync()
+        for f, raw in snap.items():
+            with open(os.path.join(A.ROOT, f), "wb") as fh:
+                fh.write(raw)
+        git("add", *files)
+        if not git("diff", "--cached", "--quiet").returncode:
+            print(f"nothing to save (tender files already match {branch})")
+            return
+        git("commit", "-q", "-m", msg)
+        r = git("push", "-q", "origin", f"HEAD:{branch}")
+        if r.returncode == 0:
+            print(f"saved {len(files)} tender file(s) to {branch} with git ({git('rev-parse', '--short', 'HEAD').stdout.strip()})")
+            return
+        print(f"push attempt {attempt + 1} failed:", r.stderr.strip()[:200])
+    print("git fallback failed")
+    sys.exit(1)
 
 
 def main():
