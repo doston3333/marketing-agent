@@ -73,7 +73,7 @@ Write as one AI Station team member who works with founders every week (first pe
 
 ## Choosing the image (set spec.<platform>.art)
 - "photo": real people, places, events, products. Use the article URL (its lead photo is used, tinted to brand colours), an image URL, or tg:<file_id> of a photo a lead sent. Best for events, founders, local news.
-- "card": no background art, the brand template. Best when the post is a number, a deadline, a quote or an opportunity.
+- "card": no background art, the plain brand background. Best when the phrase itself is the message (a deadline, a number, a short quote).
 - "minimax": a concept illustration from image_prompt. Only for abstract ideas (strategy, trends, explainers).
 - Mix within a post is fine (e.g. Instagram photo, LinkedIn card). Do not use MiniMax for every post.
 - After `agent.py render`, LOOK at every preview. Reject: a photo that is not about this story, any letters/garbage text in the art, deformed objects, the generic glossy "AI art" look, a headline that is hard to read. Pin the best with spec.<p>.art_path; if none is good, use "card".
@@ -84,11 +84,11 @@ Write as one AI Station team member who works with founders every week (first pe
 - LinkedIn gets the slides as a PDF document post (the leads upload the PDF).
 
 ## Image cards (spec)
-- Instagram: tag 2-3 Uzbek words; headline max 9 words; subline max 12 words; optional stat.
-- Telegram: tag; headline max 7 words; optional stat.
-- LinkedIn: tag in English; headline = the English takeaway (max 12 words); subline one line of context; stat + stat_label.
-- 1-3 words in [[ ]] are highlighted in cyan: highlight the word that carries the meaning, not filler.
-- A stat must be short ("$50M", "3x", "120+") and copied exactly from the source.
+- The image carries only the AI Station logo and ONE short phrase (spec.<p>.headline). Nothing else: no tag pill, no subline, no stat block, no footer. The caption does the explaining.
+- Phrase: Instagram max 7 words (Uzbek), Telegram max 6 words (Uzbek), LinkedIn max 8 words (English). One short sentence or phrase, the takeaway or the hook, not a summary of the post.
+- Optional: up to 3 words in [[ ]] are highlighted in cyan; use it on the word that carries the meaning, or not at all.
+- A number or date in the phrase must be copied exactly from the source.
+- Do not set tag, subline, stat or stat_label (lint flags them). Carousels are the only place for more text, and we are not targeting them for now.
 - image_prompt: English, 1-2 sentences, one concrete visual metaphor (not "AI concept"). Instagram = vivid cinematic 3D, Telegram = wide editorial illustration, LinkedIn = refined minimal business image. Never text, logos, real people, brand products or flags.
 
 ## Content governance (hard rules)
@@ -107,7 +107,7 @@ Write as one AI Station team member who works with founders every week (first pe
 5. No banned words, no em dashes, correct o‘/g‘, singular after numbers.
 6. Read the Uzbek aloud: it sounds like a person from Tashkent, not a translation.
 7. Platform format rules followed (lengths, hashtags, Telegram ending, no IG links).
-8. Headlines fit the word limits and the [[highlight]] is on the meaning word.
+8. Each image has only the logo and one short phrase within the word limit; any [[highlight]] is on the meaning word.
 9. Sign-off flagged if any partner, client or named startup appears.
 10. Nothing implies AIS Academy enrollment or open applications.
 11. None of the "AI tells" above; sentence lengths vary; it matches the measured house style in `knowledge`.

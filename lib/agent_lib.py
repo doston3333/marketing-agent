@@ -748,22 +748,9 @@ def _logo(width):
     return lg.resize((width, int(lg.height * width / lg.width)), Image.LANCZOS)
 
 
-def _pill(d, x, y, text, size):
-    tf = F(600, size)
-    track = 4
-    text = clean(text).upper()
-    tw = sum(d.textlength(c, font=tf) + track for c in text) - track
-    h = int(size * 2.2)
-    d.rounded_rectangle([x, y, x + tw + 2 * size, y + h], radius=h // 2, outline=CYAN + (255,), width=2)
-    cx = x + size
-    for ch in text:
-        d.text((cx, y + (h - size) / 2 - size * 0.12), ch, font=tf, fill=CYAN + (255,))
-        cx += d.textlength(ch, font=tf) + track
-    return h
-
-
 def compose(platform, sp, seed=7, art=None):
-    """Draw the AI Station layer for one platform. sp = spec[platform]."""
+    """Draw the AI Station layer for one platform: the logo and one short phrase (sp["headline"]), nothing else.
+    Other spec fields (tag, subline, stat, stat_label) are not drawn; carousels have their own slide layout."""
     W, H = SIZES[platform]
     if art is not None:
         img = _cover(art, W, H)
@@ -771,66 +758,29 @@ def compose(platform, sp, seed=7, art=None):
     else:
         img = _template_bg(platform, seed)
     d = ImageDraw.Draw(img)
-    cfg = {"instagram": dict(M=80, logo=240, maxw=W - 160, hs=(88, 50), hmax=5, sub=34, stat=112, tag=21, foot=25, top=0.42),
-           "telegram": dict(M=64, logo=200, maxw=int(W * 0.5), hs=(70, 40), hmax=4, sub=0, stat=104, tag=18, foot=21, top=0.2),
-           "linkedin": dict(M=88, logo=230, maxw=W - 176, hs=(80, 46), hmax=4, sub=32, stat=104, tag=20, foot=24, top=0.40)}[platform]
+    cfg = {"instagram": dict(M=80, logo=220, maxw=W - 160, hs=(108, 64), hmax=3),
+           "telegram": dict(M=64, logo=190, maxw=int(W * 0.52), hs=(86, 52), hmax=3),
+           "linkedin": dict(M=88, logo=210, maxw=W - 176, hs=(100, 60), hmax=3)}[platform]
     M, maxw = cfg["M"], cfg["maxw"]
     img.alpha_composite(_logo(cfg["logo"]), (M, int(M * 1.05)))
-    footer_y = H - int(M * 1.25)
-    ff = F(500, cfg["foot"])
-    if platform == "telegram":
-        d.text((M, footer_y), "aistation.uz   ·   @aistationuz", font=ff, fill=mix(WHITE, 0.62))
-    else:
-        d.line([(M, footer_y - 30), (W - M, footer_y - 30)], fill=mix(WHITE, 0.18), width=2)
-        d.text((M, footer_y), "aistation.uz", font=ff, fill=mix(WHITE, 0.62))
-        right = "@aistationuz" if platform == "instagram" else "AI Station · Tashkent"
-        d.text((W - M - d.textlength(right, font=ff), footer_y), right, font=ff, fill=mix(WHITE, 0.62))
-
-    sub = clean(sp.get("subline")) if cfg["sub"] else ""
-    stat = clean(sp.get("stat"))
-    stat_label = clean(sp.get("stat_label")) if platform == "linkedin" else ""
-    toks = _tokens(clean(sp["headline"]))
-    sf = F(500, cfg["sub"] or 30)
-    sub_lines = _wrap(sub, sf, maxw, d)[:3] if sub else []
-    sub_h = len(sub_lines) * int((cfg["sub"] or 30) * 1.42)
-    min_top = H * cfg["top"]
+    toks = _tokens(clean(sp.get("headline") or ""))
     for size in range(cfg["hs"][0], cfg["hs"][1] - 1, -4):
         hf = F(800, size)
-        hl_lines = _wrap_tokens(toks, hf, maxw, d)
-        lh = int(size * 1.16)
-        stat_size = cfg["stat"] if size >= cfg["hs"][0] - 16 else int(cfg["stat"] * 0.8)
-        block = len(hl_lines) * lh + (sub_h + 34 if sub_lines else 0) + (int(stat_size * 1.25) + 10 if stat else 0) + int(cfg["tag"] * 2.2) + 30
-        if len(hl_lines) <= cfg["hmax"] and footer_y - 60 - block >= min_top:
+        lines = _wrap_tokens(toks, hf, maxw, d)
+        if len(lines) <= cfg["hmax"]:
             break
-    y_sub = footer_y - 60 - sub_h
-    y_head = y_sub - (34 if sub_lines else 0) - len(hl_lines) * lh
-    anchor = y_head
-    if stat:
-        stf = F(800, stat_size)
-        y_stat = y_head - int(stat_size * 1.25) - 10
-        d.text((M - 4, y_stat), stat, font=stf, fill=BLUE + (255,))
-        if stat_label:
-            lf = F(500, 26)
-            sx = M + d.textlength(stat, font=stf) + 26
-            lab = _wrap(stat_label, lf, W - M - sx, d)[:3]
-            ly = y_stat + int(stat_size * 0.55) - len(lab) * 17
-            for ln in lab:
-                d.text((sx, ly), ln, font=lf, fill=mix(WHITE, 0.75))
-                ly += 34
-        anchor = y_stat
-    _pill(d, M, anchor - int(cfg["tag"] * 2.2) - 26, sp.get("tag") or "Ecosystem news", cfg["tag"])
-    y = y_head
-    for line in hl_lines:
+    lh = int(size * 1.14)
+    y = H - int(M * 1.35) - len(lines) * lh
+    if platform == "telegram":
+        y = (H - len(lines) * lh) // 2 + int(M * 0.6)
+    for line in lines:
         x = M
         for i, (w, hl) in enumerate(line):
-            t = w + (" " if i < len(line) - 1 else "")
+            gap = i < len(line) - 1 and not re.match(r"[,.:;!?)]", line[i + 1][0])
+            t = w + (" " if gap else "")
             d.text((x, y), t, font=hf, fill=(CYAN if hl else WHITE) + (255,))
             x += d.textlength(t, font=hf)
         y += lh
-    y = y_sub
-    for ln in sub_lines:
-        d.text((M, y), ln, font=sf, fill=mix(WHITE, 0.82))
-        y += int(cfg["sub"] * 1.42)
     return img.convert("RGB")
 
 
@@ -1203,22 +1153,23 @@ def lint(post):
     n = _words(re.sub(r"#\w+", "", li))
     if not (120 <= n <= 200):
         P.append(f"linkedin: {n} words (want 120-200)")
-    for p, mx in (("instagram", 9), ("telegram", 7), ("linkedin", 12)):
+    for p, mx in (("instagram", 7), ("telegram", 6), ("linkedin", 8)):
         h = str(spec[p].get("headline") or "")
         hw = len(h.replace("[[", "").replace("]]", "").split())
+        if not hw:
+            P.append(f"spec.{p}.headline: missing (the one short phrase on the image)")
         if hw > mx:
-            P.append(f"spec.{p}.headline: {hw} words (max {mx})")
+            P.append(f"spec.{p}.headline: {hw} words (max {mx}: one short phrase)")
         hl = re.findall(r"\[\[(.+?)\]\]", h)
-        if not hl or h.count("[[") != h.count("]]"):
-            P.append(f"spec.{p}.headline: needs one [[highlight]]")
+        if h.count("[[") != h.count("]]") or len(hl) > 1:
+            P.append(f"spec.{p}.headline: at most one [[highlight]]")
         elif sum(len(x.split()) for x in hl) > 3:
             P.append(f"spec.{p}.headline: highlight max 3 words")
+        for f in ("tag", "subline", "stat", "stat_label"):
+            if spec[p].get(f):
+                P.append(f"spec.{p}.{f}: not drawn any more (image = logo + one phrase); remove it")
         if (spec[p].get("art") or "minimax") == "minimax" and not spec[p].get("image_prompt"):
             P.append(f"spec.{p}: image_prompt missing (or set art to photo/card)")
-    if len(str(spec["instagram"].get("subline") or "").split()) > 12:
-        P.append("spec.instagram.subline: max 12 words")
-    if spec["linkedin"].get("stat") and not spec["linkedin"].get("stat_label"):
-        P.append("spec.linkedin: stat without stat_label")
     if not post.get("sources"):
         P.append("sources missing")
     txt = " ".join(caps.values()).lower()
