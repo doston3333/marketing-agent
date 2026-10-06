@@ -1,5 +1,5 @@
 {
- "channel_median_views": 171,
+ "channel_median_views": 171.0,
  "summary": {
   "kind": {
    "other": {
@@ -16,11 +16,11 @@
    },
    "greeting": {
     "posts": 8,
-    "median_eng": 1.0
+    "median_eng": 1.01
    },
    "event": {
     "posts": 5,
-    "median_eng": 1.01
+    "median_eng": 1.02
    },
    "opportunity": {
     "posts": 5,
@@ -46,9 +46,9 @@
    },
    "False": {
     "posts": 16,
-    "median_eng": 1.01
+    "median_eng": 1.02
    }
   }
  },
- "updated": 1791172344.6793544
+ "updated": 1791258691.1828709
 }
