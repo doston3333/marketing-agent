@@ -7,7 +7,7 @@
     "median_eng": 1.11
    },
    "partnership": {
-    "posts": 33,
+    "posts": 34,
     "median_eng": 0.91
    },
    "educational": {
@@ -23,25 +23,25 @@
     "median_eng": 1.05
    },
    "opportunity": {
-    "posts": 5,
+    "posts": 6,
     "median_eng": 2.1
    }
   },
   "series": {
    "-": {
-    "posts": 74,
-    "median_eng": 1.0
+    "posts": 76,
+    "median_eng": 0.99
    }
   },
   "by": {
    "team": {
-    "posts": 74,
-    "median_eng": 1.0
+    "posts": 76,
+    "median_eng": 0.99
    }
   },
   "photo": {
    "True": {
-    "posts": 58,
+    "posts": 60,
     "median_eng": 0.95
    },
    "False": {
@@ -50,5 +50,5 @@
    }
   }
  },
- "updated": 1791604297.4560719
+ "updated": 1791690655.9528859
 }
