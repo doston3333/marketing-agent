@@ -30,13 +30,13 @@
   "series": {
    "-": {
     "posts": 76,
-    "median_eng": 0.99
+    "median_eng": 1.0
    }
   },
   "by": {
    "team": {
     "posts": 76,
-    "median_eng": 0.99
+    "median_eng": 1.0
    }
   },
   "photo": {
@@ -50,5 +50,5 @@
    }
   }
  },
- "updated": 1791690655.9528859
+ "updated": 1791777058.0689952
 }

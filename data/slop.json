@@ -1,6 +1,127 @@
 {
- "phrases": [],
- "agent_texts": 3,
- "human_texts": 65,
- "updated": 1791172350.8056443
+ "phrases": [
+  [
+   "aistation aistationuz",
+   10,
+   136.0
+  ],
+  [
+   "yuboring aistation",
+   8,
+   108.8
+  ],
+  [
+   "yuboring aistation aistationuz",
+   8,
+   108.8
+  ],
+  [
+   "do‘stingizga yuboring",
+   5,
+   68.0
+  ],
+  [
+   "bizning maslahat",
+   5,
+   68.0
+  ],
+  [
+   "do‘stingizga yuboring aistation",
+   5,
+   68.0
+  ],
+  [
+   "do‘stingizga yuboring aistation aistationuz",
+   5,
+   68.0
+  ],
+  [
+   "aistationuz startap",
+   4,
+   54.4
+  ],
+  [
+   "aistation aistationuz startap",
+   4,
+   54.4
+  ],
+  [
+   "yuboring aistation aistationuz startap",
+   4,
+   54.4
+  ],
+  [
+   "launch scale",
+   10,
+   45.3
+  ],
+  [
+   "learn build",
+   10,
+   45.3
+  ],
+  [
+   "build launch",
+   10,
+   45.3
+  ],
+  [
+   "learn build launch",
+   10,
+   45.3
+  ],
+  [
+   "build launch scale",
+   10,
+   45.3
+  ],
+  [
+   "learn build launch scale",
+   10,
+   45.3
+  ],
+  [
+   "qurayotgan do‘stingizga",
+   3,
+   40.8
+  ],
+  [
+   "park ventures",
+   3,
+   40.8
+  ],
+  [
+   "aistationuz ai",
+   3,
+   40.8
+  ],
+  [
+   "qurayotgan do‘stingizga yuboring",
+   3,
+   40.8
+  ],
+  [
+   "it park ventures",
+   3,
+   40.8
+  ],
+  [
+   "aistation aistationuz ai",
+   3,
+   40.8
+  ],
+  [
+   "qurayotgan do‘stingizga yuboring aistation",
+   3,
+   40.8
+  ],
+  [
+   "yuboring aistation aistationuz ai",
+   3,
+   40.8
+  ]
+ ],
+ "agent_texts": 10,
+ "human_texts": 68,
+ "updated": 1791777070.907186
 }
