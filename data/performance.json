@@ -42,7 +42,7 @@
   "photo": {
    "True": {
     "posts": 61,
-    "median_eng": 0.96
+    "median_eng": 0.98
    },
    "False": {
     "posts": 17,
@@ -50,5 +50,5 @@
    }
   }
  },
- "updated": 1792036290.953098
+ "updated": 1792122684.0443628
 }
