@@ -1,31 +1,31 @@
 {
  "telegram_human": {
-  "posts": 68,
-  "sentence_words_mean": 11.3,
-  "sentence_words_p90": 20,
-  "emoji_per_100_words": 9.54,
-  "questions_per_post": 0.25,
-  "exclamations_per_post": 0.28,
-  "lines_per_post": 7.2,
+  "posts": 71,
+  "sentence_words_mean": 11.2,
+  "sentence_words_p90": 19,
+  "emoji_per_100_words": 9.55,
+  "questions_per_post": 0.24,
+  "exclamations_per_post": 0.3,
+  "lines_per_post": 7.3,
   "hooks": {
-   "emoji_start": 0.72,
-   "number_start": 0.09,
+   "emoji_start": 0.7,
+   "number_start": 0.08,
    "question_start": 0.06
   }
  },
  "agent_drafts": {
-  "posts": 10,
-  "sentence_words_mean": 8.7,
+  "posts": 16,
+  "sentence_words_mean": 8.4,
   "sentence_words_p90": 13,
-  "emoji_per_100_words": 4.73,
-  "questions_per_post": 0.1,
+  "emoji_per_100_words": 4.9,
+  "questions_per_post": 0.25,
   "exclamations_per_post": 0.0,
-  "lines_per_post": 16.4,
+  "lines_per_post": 17.1,
   "hooks": {
    "emoji_start": 0.0,
-   "number_start": 0.1,
+   "number_start": 0.12,
    "question_start": 0.0
   }
  },
- "updated": 1791777070.8905075
+ "updated": 1792381912.9589517
 }

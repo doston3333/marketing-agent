@@ -2,126 +2,146 @@
  "phrases": [
   [
    "aistation aistationuz",
-   10,
-   136.0
+   15,
+   133.1
   ],
   [
    "yuboring aistation",
    8,
-   108.8
+   71.0
   ],
   [
    "yuboring aistation aistationuz",
    8,
-   108.8
+   71.0
   ],
   [
-   "do‘stingizga yuboring",
-   5,
-   68.0
+   "aistationuz startap",
+   7,
+   62.1
+  ],
+  [
+   "aistation aistationuz startap",
+   7,
+   62.1
+  ],
+  [
+   "aistationuz ai",
+   6,
+   53.2
+  ],
+  [
+   "launch scale",
+   16,
+   47.3
+  ],
+  [
+   "learn build",
+   16,
+   47.3
+  ],
+  [
+   "build launch",
+   16,
+   47.3
+  ],
+  [
+   "learn build launch",
+   16,
+   47.3
+  ],
+  [
+   "build launch scale",
+   16,
+   47.3
+  ],
+  [
+   "learn build launch scale",
+   16,
+   47.3
   ],
   [
    "bizning maslahat",
    5,
-   68.0
+   44.4
+  ],
+  [
+   "do‘stingizga yuboring",
+   5,
+   44.4
+  ],
+  [
+   "saqlab qo‘ying",
+   5,
+   44.4
   ],
   [
    "do‘stingizga yuboring aistation",
    5,
-   68.0
+   44.4
+  ],
+  [
+   "aistation aistationuz ai",
+   5,
+   44.4
   ],
   [
    "do‘stingizga yuboring aistation aistationuz",
    5,
-   68.0
+   44.4
   ],
   [
-   "aistationuz startap",
+   "shuning uchun",
    4,
-   54.4
-  ],
-  [
-   "aistation aistationuz startap",
-   4,
-   54.4
+   35.5
   ],
   [
    "yuboring aistation aistationuz startap",
    4,
-   54.4
-  ],
-  [
-   "launch scale",
-   10,
-   45.3
-  ],
-  [
-   "learn build",
-   10,
-   45.3
-  ],
-  [
-   "build launch",
-   10,
-   45.3
-  ],
-  [
-   "learn build launch",
-   10,
-   45.3
-  ],
-  [
-   "build launch scale",
-   10,
-   45.3
-  ],
-  [
-   "learn build launch scale",
-   10,
-   45.3
-  ],
-  [
-   "qurayotgan do‘stingizga",
-   3,
-   40.8
+   35.5
   ],
   [
    "park ventures",
    3,
-   40.8
+   26.6
   ],
   [
-   "aistationuz ai",
+   "qurayotgan do‘stingizga",
    3,
-   40.8
+   26.6
+  ],
+  [
+   "ai talaba",
+   3,
+   26.6
+  ],
+  [
+   "talaba uchun",
+   3,
+   26.6
   ],
   [
    "qurayotgan do‘stingizga yuboring",
    3,
-   40.8
+   26.6
   ],
   [
    "it park ventures",
    3,
-   40.8
-  ],
-  [
-   "aistation aistationuz ai",
-   3,
-   40.8
+   26.6
   ],
   [
    "qurayotgan do‘stingizga yuboring aistation",
    3,
-   40.8
+   26.6
   ],
   [
    "yuboring aistation aistationuz ai",
    3,
-   40.8
+   26.6
   ]
  ],
- "agent_texts": 10,
- "human_texts": 68,
- "updated": 1791777070.907186
+ "agent_texts": 16,
+ "human_texts": 71,
+ "updated": 1792381912.9781618
 }
