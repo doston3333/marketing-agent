@@ -1,5 +1,5 @@
 {
- "channel_median_views": 172.0,
+ "channel_median_views": 173,
  "summary": {
   "kind": {
    "other": {
@@ -8,7 +8,7 @@
    },
    "partnership": {
     "posts": 35,
-    "median_eng": 0.91
+    "median_eng": 0.92
    },
    "educational": {
     "posts": 8,
@@ -16,39 +16,39 @@
    },
    "greeting": {
     "posts": 8,
-    "median_eng": 1.03
+    "median_eng": 1.02
    },
    "event": {
     "posts": 6,
     "median_eng": 1.1
    },
    "opportunity": {
-    "posts": 7,
-    "median_eng": 2.01
+    "posts": 9,
+    "median_eng": 0.85
    }
   },
   "series": {
    "-": {
-    "posts": 79,
-    "median_eng": 0.99
+    "posts": 81,
+    "median_eng": 0.98
    }
   },
   "by": {
    "team": {
-    "posts": 79,
-    "median_eng": 0.99
+    "posts": 81,
+    "median_eng": 0.98
    }
   },
   "photo": {
    "True": {
-    "posts": 61,
-    "median_eng": 0.99
+    "posts": 62,
+    "median_eng": 1.0
    },
    "False": {
-    "posts": 18,
-    "median_eng": 1.0
+    "posts": 19,
+    "median_eng": 0.97
    }
   }
  },
- "updated": 1792381898.871611
+ "updated": 1792468308.016401
 }
