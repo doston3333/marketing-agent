@@ -1,5 +1,5 @@
 {
- "channel_median_views": 173,
+ "channel_median_views": 173.0,
  "summary": {
   "kind": {
    "other": {
@@ -24,7 +24,7 @@
    },
    "opportunity": {
     "posts": 9,
-    "median_eng": 0.85
+    "median_eng": 0.87
    }
   },
   "series": {
@@ -50,5 +50,5 @@
    }
   }
  },
- "updated": 1792468308.016401
+ "updated": 1792554683.7818923
 }
