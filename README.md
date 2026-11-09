@@ -49,10 +49,15 @@ hourly :07 ── buttons ✅ 🎨 ✍️ 💡 📢, reply-edits (learned as rul
 
 ## Cloud environment setup
 
-1. **Environment variables**: `TELEGRAM_BOT_TOKEN` (from @BotFather for @marketingagent67_bot) and `MINIMAX_API_KEY`.
-2. **Network access**: allow `api.telegram.org` and `api.minimax.io` (plus `pypi.org` / `files.pythonhosted.org` for `pip install`).
+1. **Environment variables**: `TELEGRAM_BOT_TOKEN` (from @BotFather for @marketingagent67_bot) and an image key: `MINIMAX_API_KEY` or `OPENROUTER_API_KEY`.
+   - With a MiniMax key, concept art comes from MiniMax image-01 (about $0.0035 per image).
+   - With only an OpenRouter key, it comes from `OPENROUTER_IMAGE_MODEL` (default `black-forest-labs/flux-3-image-klein`, about $0.011 per image at `OPENROUTER_IMAGE_RESOLUTION=1.5K`), asked for in 4:5 / 16:9 / 1:1 so nothing is cropped. Any model listed at `https://openrouter.ai/api/v1/images/models` works; the code reads its supported aspect ratios and resolutions.
+   - `IMAGE_PROVIDER=minimax|openrouter` picks one when both keys are set. The post spec still calls this art type `"minimax"`.
+2. **Network access**: allow `api.telegram.org` and `api.minimax.io` or `openrouter.ai` (plus `pypi.org` / `files.pythonhosted.org` for `pip install`).
 3. **Git push** from the routine to the branch it runs on, so state is saved.
-4. Check with `python3 agent.py check`: both secrets "set" and the bot username printed.
+4. Check with `python3 agent.py check`: the bot token and the image key "set", and the bot username printed.
+
+Tests (offline): `python3 -m unittest discover -s tests`.
 
 The Montserrat font is vendored in `assets/` (SIL Open Font License), so no font download is needed at run time.
 

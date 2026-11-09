@@ -1,4 +1,4 @@
-# Image types for the AI Station agent (MiniMax stays the generator for concept art).
+# Image types for the AI Station agent (concept art comes from MiniMax, or from OpenRouter when there is no MiniMax key).
 # Per platform, spec[p]["art"] picks the background:
 #   "minimax" (default when image_prompt is set)  concept illustration, several candidates possible
 #   "photo"   a real photo: spec[p]["photo"] = article URL (its og:image is used), image URL, "tg:<file_id>"

@@ -3,7 +3,8 @@
 # data/ (AIS_DATA_DIR), Telegram goes straight to the Bot API, secrets come from env vars.
 #   TELEGRAM_BOT_TOKEN  token of @marketingagent67_bot (from @BotFather)
 #   MINIMAX_API_KEY     MiniMax image-01 key
-# Either may instead be put in data/secrets.json as telegram_bot_token / minimax_key (gitignored).
+#   OPENROUTER_API_KEY  OpenRouter key: concept art from OPENROUTER_IMAGE_MODEL when there is no MiniMax key
+# Any of these may instead be put in data/secrets.json as telegram_bot_token / minimax_key / openrouter_key (gitignored).
 import base64, io, json, os, re, time, math, random, threading, datetime, html as _html
 import requests
 from concurrent.futures import ThreadPoolExecutor
@@ -18,6 +19,12 @@ WORK = os.environ.get("AIS_WORK_DIR", os.path.join(ROOT, "work"))
 TG_API = "https://api.telegram.org/bot{token}/{method}"
 os.makedirs(WORK + "/out", exist_ok=True)
 MM_URL = "https://api.minimax.io/v1/image_generation"
+OR_URL = "https://openrouter.ai/api/v1/images"
+OR_MODEL = os.environ.get("OPENROUTER_IMAGE_MODEL", "black-forest-labs/flux-3-image-klein")
+OR_RESOLUTION = os.environ.get("OPENROUTER_IMAGE_RESOLUTION", "1.5K")  # 1.5K covers the 1350 px Instagram canvas
+# Aspect ratio per platform, best first; the art is cover-cropped onto the canvas, so a near match is fine.
+OR_ASPECTS = {"instagram": ("4:5", "3:4", "2:3"), "telegram": ("16:9", "2:1", "3:2"), "linkedin": ("1:1",)}
+_OR_PARAMS = {}  # model -> supported_parameters on OpenRouter (read once per run)
 FONT_URL = "https://raw.githubusercontent.com/google/fonts/main/ofl/montserrat/Montserrat%5Bwght%5D.ttf"
 TG_LINKS = ("\n\n🌐 [Website](https://aistation.uz) | [Instagram](https://www.instagram.com/aistationuz) | "
             "[LinkedIn](https://www.linkedin.com/company/109457182) | [YouTube](https://www.youtube.com/@AI_Station_UZ)")
@@ -69,7 +76,8 @@ def secrets():
     if not _SECRETS:
         raw = drive_get("secrets.json")
         _SECRETS.update(json.loads(raw.decode()) if raw else {})
-        for env, key in (("MINIMAX_API_KEY", "minimax_key"), ("TELEGRAM_BOT_TOKEN", "telegram_bot_token")):
+        for env, key in (("MINIMAX_API_KEY", "minimax_key"), ("TELEGRAM_BOT_TOKEN", "telegram_bot_token"),
+                         ("OPENROUTER_API_KEY", "openrouter_key")):
             if os.environ.get(env):
                 _SECRETS[key] = os.environ[env]
     return _SECRETS
@@ -784,7 +792,88 @@ def compose(platform, sp, seed=7, art=None):
     return img.convert("RGB")
 
 
+def image_provider():
+    """Which service draws concept art: IMAGE_PROVIDER (minimax / openrouter) when set and its key exists,
+    else MiniMax when its key is set, else OpenRouter. None when there is no image key at all."""
+    s = secrets()
+    want = (os.environ.get("IMAGE_PROVIDER") or "").strip().lower()
+    if want in ("minimax", "openrouter"):
+        return want if s.get(f"{want}_key") else None
+    if s.get("minimax_key"):
+        return "minimax"
+    if s.get("openrouter_key"):
+        return "openrouter"
+    return None
+
+
 def minimax(prompt, platform):
+    """Concept art for one platform. The art type keeps the name "minimax" (prompts and saved posts use it);
+    the picture comes from MiniMax image-01 or, without a MiniMax key, from an OpenRouter image model."""
+    prov = image_provider()
+    if prov == "openrouter":
+        return openrouter_image(prompt, platform)
+    if prov is None:
+        raise RuntimeError("no image key: set MINIMAX_API_KEY or OPENROUTER_API_KEY")
+    return _minimax_image(prompt, platform)
+
+
+def _or_params(model):
+    """The model's supported parameters on OpenRouter, read once per run ({} when they cannot be read)."""
+    if model not in _OR_PARAMS:
+        try:
+            r = requests.get(f"https://openrouter.ai/api/v1/images/models/{model}/endpoints", timeout=30)
+            eps = r.json().get("endpoints") or []
+            _OR_PARAMS[model] = (eps[0].get("supported_parameters") or {}) if eps else {}
+        except Exception:
+            _OR_PARAMS[model] = {}
+    return _OR_PARAMS[model]
+
+
+def _or_pick(params, name, wanted):
+    """The first wanted value the model accepts for an enum parameter, in the model's own spelling; else None."""
+    vals = {str(v).lower(): v for v in ((params.get(name) or {}).get("values") or [])}
+    for w in wanted:
+        if w.lower() in vals:
+            return vals[w.lower()]
+    return None
+
+
+def openrouter_image(prompt, platform):
+    key = secrets().get("openrouter_key")
+    if not key:
+        raise RuntimeError("no OpenRouter key (OPENROUTER_API_KEY)")
+    body = {"model": OR_MODEL, "prompt": prompt.strip() + " " + STYLE[platform] + COMMON, "n": 1}
+    params = _or_params(OR_MODEL)
+    if params:
+        for name, wanted in (("aspect_ratio", OR_ASPECTS[platform]), ("resolution", (OR_RESOLUTION,)),
+                             ("output_format", ("png", "jpeg"))):
+            v = _or_pick(params, name, wanted)
+            if v is not None:
+                body[name] = v
+    else:  # parameters unknown: the documented aspect_ratio only
+        body["aspect_ratio"] = OR_ASPECTS[platform][0]
+    headers = {"Authorization": "Bearer " + key, "X-Title": "AI Station marketing agent"}
+    last = None
+    for i in range(2):
+        try:
+            r = requests.post(OR_URL, headers=headers, json=body, timeout=180)
+            j = r.json() if r.content else {}
+            item = (j.get("data") or [{}])[0] if r.status_code == 200 else {}
+            if item.get("b64_json"):
+                return Image.open(io.BytesIO(base64.b64decode(item["b64_json"]))).convert("RGB")
+            if item.get("url"):
+                return Image.open(io.BytesIO(requests.get(item["url"], timeout=60).content)).convert("RGB")
+            err = j.get("error")
+            last = f"{r.status_code} {(err.get('message') if isinstance(err, dict) else err) or r.text[:200]}"
+            if r.status_code in (400, 401, 402, 403, 404):  # bad request / key / no credit / refused / no such model
+                break
+        except Exception as ex:
+            last = str(ex)
+        time.sleep(3)
+    raise RuntimeError(f"OpenRouter {OR_MODEL}: {last}")
+
+
+def _minimax_image(prompt, platform):
     key = secrets().get("minimax_key")
     if not key:
         raise RuntimeError("no MiniMax key in secrets.json")
@@ -924,7 +1013,7 @@ def send_package(state, post_id, post, note=None, use_minimax=True):
     state["posts"][post_id] = post
     save_state(state)
     mm = sum(v["minimax"] for v in imgs.values())
-    print(f"Sent #{post_id} to {sent} lead(s); MiniMax images: {mm}/3")
+    print(f"Sent #{post_id} to {sent} lead(s); AI concept images ({image_provider() or 'none'}): {mm}/3")
     return post
 
 

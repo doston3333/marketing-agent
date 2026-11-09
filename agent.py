@@ -125,7 +125,9 @@ def main():
     if a.cmd == "check":
         s = A.secrets()
         print("TELEGRAM_BOT_TOKEN:", "set" if s.get("telegram_bot_token") else "MISSING")
-        print("MINIMAX_API_KEY:", "set" if s.get("minimax_key") else "MISSING")
+        prov = A.image_provider()
+        print("IMAGE KEY:", f"set ({prov}{': ' + A.OR_MODEL if prov == 'openrouter' else ''})" if prov
+              else "MISSING (set MINIMAX_API_KEY or OPENROUTER_API_KEY)")
         if s.get("telegram_bot_token"):
             me = A.tg("getMe", {})["result"]
             print("bot:", "@" + me.get("username", "?"))
