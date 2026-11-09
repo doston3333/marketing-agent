@@ -1585,17 +1585,6 @@
    ],
    "status": "seen"
   },
-  "adb:3y8wre-tender_search_index-entity:node/1182821:en": {
-   "site": "adb",
-   "title": "National Social Safeguards Specialist (UZB: Bukhara District Heating Network Project)",
-   "url": "https://www.adb.org/node/1182821",
-   "deadline": "2026-10-28",
-   "first_seen": 1791346968.869865,
-   "last_seen": 1792729379.7071478,
-   "score": 0,
-   "hits": [],
-   "status": "seen"
-  },
   "ungm:316996": {
    "site": "ungm",
    "title": "Invitation to Bid for the Supply, Delivery, Assembly and Training of 2 units Combine Harvesters with Spare parts for the Ministry Agriculture, Addis Ababa, Ethiopia",
@@ -2021,26 +2010,6 @@
    "hits": [],
    "status": "seen"
   },
-  "adb:3y8wre-tender_search_index-entity:node/1183076:en": {
-   "site": "adb",
-   "title": "Consulting Firm for the Public Confidence Survey of Legal Entities, UZB (DRMTF)",
-   "url": "https://www.adb.org/node/1183076",
-   "deadline": "2026-10-29",
-   "first_seen": 1791778963.6367662,
-   "last_seen": 1792729379.7071478,
-   "score": 2,
-   "hits": [
-    "consult",
-    "geo"
-   ],
-   "status": "seen",
-   "detail": {
-    "text": "type: Firm | published: 08 Oct 2026 | reference: 51350-007",
-    "type": "Firm",
-    "published": "08 Oct 2026",
-    "reference": "51350-007"
-   }
-  },
   "ungm:317556": {
    "site": "ungm",
    "title": "Supply and installation of Green Library mobile capsule in Namangan City",
@@ -2365,37 +2334,6 @@
    "deadline": "2026-10-29",
    "first_seen": 1791865365.405123,
    "last_seen": 1791951719.7565603,
-   "score": 0,
-   "hits": [],
-   "status": "seen"
-  },
-  "adb:3y8wre-tender_search_index-entity:node/1183246:en": {
-   "site": "adb",
-   "title": "Consulting Firm for the Public Confidence Survey of Individual Taxpayers, UZB (DRMTF)",
-   "url": "https://www.adb.org/node/1183246",
-   "deadline": "2026-10-30",
-   "first_seen": 1791865371.79689,
-   "last_seen": 1792729379.7071478,
-   "score": 2,
-   "hits": [
-    "consult",
-    "geo"
-   ],
-   "status": "seen",
-   "detail": {
-    "text": "type: Firm | published: 09 Oct 2026 | reference: 51350-007",
-    "type": "Firm",
-    "published": "09 Oct 2026",
-    "reference": "51350-007"
-   }
-  },
-  "adb:3y8wre-tender_search_index-entity:node/1176401:en": {
-   "site": "adb",
-   "title": "Adoption-Ready Wastewater Discharge Standards and Enforcement Instruments (ACT Subprogram 3, Policy Action 3.6(i)–(ii))",
-   "url": "https://www.adb.org/node/1176401",
-   "deadline": "2026-10-30",
-   "first_seen": 1791865371.79689,
-   "last_seen": 1792124538.2626095,
    "score": 0,
    "hits": [],
    "status": "seen"
@@ -3349,17 +3287,6 @@
    "deadline": "2026-10-30",
    "first_seen": 1792124532.48051,
    "last_seen": 1792124532.48051,
-   "score": 0,
-   "hits": [],
-   "status": "seen"
-  },
-  "adb:3y8wre-tender_search_index-entity:node/1183571:en": {
-   "site": "adb",
-   "title": "Climate Finance, Inclusive Transition and Sustainability Governance - TOR2 Toshbus",
-   "url": "https://www.adb.org/node/1183571",
-   "deadline": "2026-11-02",
-   "first_seen": 1792124538.2626095,
-   "last_seen": 1792470217.147157,
    "score": 0,
    "hits": [],
    "status": "seen"
@@ -12683,1451 +12610,13 @@
    "hits": [],
    "status": "seen"
   },
-  "adb:5b44fc414a0c": {
-   "site": "adb",
-   "title": "Loan No. 3265-IND: Orissa Integrated Irrigated Agriculture and Water Management Investment Program (OIIAWMIP) - Project 2 [NCB-PAT17-18-19-HLC3-4-MCI2-3]",
-   "url": "https://www.adb.org/node/175833",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:637135ea6741": {
-   "site": "adb",
-   "title": "Grant Nos. 0280/0281/0282-AFG: Energy Sector Development Investment Program-Tranche 3 [DABS/019/Goods/ICB] REBIDDING",
-   "url": "https://www.adb.org/node/176576",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:8a5480b5f85b": {
-   "site": "adb",
-   "title": "Loan No. 2830-IND: Madhya Pradesh Energy Efficiency Improvement Investment Program [MPMKVVCL/FSP/F-29]",
-   "url": "https://www.adb.org/node/176526",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:74bbc359d33d": {
-   "site": "adb",
-   "title": "Loan No. 2830-IND: Madhya Pradesh Energy Efficiency Improvement Investment Program [MPMKVVCL/FSP/F-28]",
-   "url": "https://www.adb.org/node/176525",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:c7ae9d848d76": {
-   "site": "adb",
-   "title": "Loan No.3114-PRC: Guangdong Chaonan Water Resources Development and Protection Demonstration Project",
-   "url": "https://www.adb.org/node/176522",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:8bfbc4f09435": {
-   "site": "adb",
-   "title": "Loan No. 2913-BAN: Coastal Climate Resilient Infrastructure Project [CCRIP/ADB/GOPA/BR/2015/W-19]",
-   "url": "https://www.adb.org/node/176517",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:2e0d3322adf5": {
-   "site": "adb",
-   "title": "Loan No. 3135-BAN: Irrigation Management Improvement Project [CW-03]",
-   "url": "https://www.adb.org/node/176477",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": -2,
-   "hits": [
-    "-irrigation"
-   ],
-   "status": "new"
-  },
-  "adb:9db7e98694cc": {
-   "site": "adb",
-   "title": "Loan No. 2913-BAN: Coastal Climate Resilient Infrastructure Project [CCRIP/ADB/PIROJ/UZR/2015/W-17]",
-   "url": "https://www.adb.org/node/176330",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:7938a10623e2": {
-   "site": "adb",
-   "title": "Loan No. 2733-SRI: Sustainable Power Sector Support [CEB/TCP/DGM/SPSSBFP/2015/02]",
-   "url": "https://www.adb.org/node/176328",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:1e831469b73a": {
-   "site": "adb",
-   "title": "Loan No. 2733-SRI: Sustainable Power Sector Support [CEB/TCP/DGM/SPSSBFP/2015/01]",
-   "url": "https://www.adb.org/node/176327",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:195261905334": {
-   "site": "adb",
-   "title": "Loan No. 3275-UZB: Djizzak Sanitation System Development Project [DS-WW-03/01]",
-   "url": "https://www.adb.org/node/176266",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:77cb354b35a9": {
-   "site": "adb",
-   "title": "L2682/2683-VIE, Sustainable Rural Infrastructure Development Project in the Northern Mountain Provinces (SRIDP)",
-   "url": "https://www.adb.org/node/176214",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:6fd07fcaaede": {
-   "site": "adb",
-   "title": "Loan No. 48424-KAZ:CAREC Corridors 1 and 6 Connector Road (Aktobe-Makat) Improvement Project [ICB-01]",
-   "url": "https://www.adb.org/node/176205",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:589155728fbb": {
-   "site": "adb",
-   "title": "Loan No. 3150-ARM: Power Transmission Rehabilitation Project [ADB-L3150-ARM/EPSO/ICB] EXTENDED",
-   "url": "https://www.adb.org/node/176069",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:799b02b65e48": {
-   "site": "adb",
-   "title": "Loan No.3217-PRC: Yunnan Pu'er Regional Integrated Road Network Development Project[Provincial Highway S245 Line Ning’er to Jiangcheng to LongfuNJL-Sub 1, NJL-Sub 2, NJL-Sub 3, NJL-Sub 4, NJL-Sub 5 NCB Bid No.: 0733-152103842901]",
-   "url": "https://www.adb.org/node/176061",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": -2,
-   "hits": [
-    "-highway"
-   ],
-   "status": "new"
-  },
-  "adb:6141765691fd": {
-   "site": "adb",
-   "title": "Loan No.3217-PRC: Yunnan Pu'er Regional Integrated Road Network Development Project[Provincial Highway S245 Line Ning’er to Jiangcheng to LongfuNJL-Sub 1, NJL-Sub 2, NJL-Sub 3, NJL-Sub 4, NJL-Sub 5 NCB Bid No.: 0733-152103842901]",
-   "url": "https://www.adb.org/node/176060",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": -2,
-   "hits": [
-    "-highway"
-   ],
-   "status": "new"
-  },
-  "adb:d5b77c24edf9": {
-   "site": "adb",
-   "title": "Loan No. 2969-VIE: Greater Mekong Sub-region Corridor Towns Development Project- 2969-01/2015-LB-UR: Construction of Lao Bao urban roads",
-   "url": "https://www.adb.org/node/176032",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": -2,
-   "hits": [
-    "-construction of"
-   ],
-   "status": "new"
-  },
-  "adb:050e2faa92e5": {
-   "site": "adb",
-   "title": "Loan No. 2947-SRI: Greater Colombo Water and Wastewater Management Improvement Investment Program - Project 1 [GCWWMIIP/ADB/BUILD/ELLIE/NCB/02R] EXTENDED",
-   "url": "https://www.adb.org/node/176002",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:69cc51aadd2d": {
-   "site": "adb",
-   "title": "Loan/Grant Nos. L2878/G0298-BAN(SF): Urban Primary Health Care Services Delivery Project (UPHCSDP) [med]",
-   "url": "https://www.adb.org/node/175976",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:ffe5c27821ed": {
-   "site": "adb",
-   "title": "Loan No 2682/2683-VIE, Sustainable Rural Infrastructure Development Project in the Northern Mountain Provinces (SRIDP)",
-   "url": "https://www.adb.org/node/175944",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:2a8e626f84b2": {
-   "site": "adb",
-   "title": "Loan No 2682/2683-VIE, Sustainable Rural Infrastructure Development Project in the Northern Mountain Provinces (SRIDP)",
-   "url": "https://www.adb.org/node/175943",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:4d8ecc3062f2": {
-   "site": "adb",
-   "title": "Loan No. 2936-LAO(SF): GMS Flood and Drought Risk Management and Mitigation Project[001-ICB-W/GMS-FDM Rehabilitation of Vientiane Flood Protection Embankment]",
-   "url": "https://www.adb.org/node/175867",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:4a8bc410215f": {
-   "site": "adb",
-   "title": "Grant No. 0352-TAJ: Building Climate Resilience in the Pyanj River Basin [BCR/ICB/CW/2015/2]",
-   "url": "https://www.adb.org/node/175454",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:e57b881aad77": {
-   "site": "adb",
-   "title": "Loan No 2682/2683-VIE, Sustainable Rural Infrastructure Development Project in the Northern Mountain Provinces (SRIDP)[Package: Construction of Water Reservoir for Domestic Use for H’Mong people in Meo Vac – Dong Van District, Ha Giang Province. Contract",
-   "url": "https://www.adb.org/node/175590",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": -2,
-   "hits": [
-    "-construction of"
-   ],
-   "status": "new"
-  },
-  "adb:6921ca793f81": {
-   "site": "adb",
-   "title": "Loan 2682/2683-VIE, Sustainable Rural Infrastructure Development Project in the Northern Mountain Provinces (SRIDP)",
-   "url": "https://www.adb.org/node/175588",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:9f6c79d9ceee": {
-   "site": "adb",
-   "title": "Loan No. 3096-PAK: Power Distribution Enhancement Investment Program – Tranche 4 [ADB-TRANCHE-IV-FESCO-04-2015 (NCB)] REBIDDING",
-   "url": "https://www.adb.org/node/175497",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:508afdf59471": {
-   "site": "adb",
-   "title": "Loan No. 2727-PAK: Power Distribution Enhancement Investment Program - Tranche 2 [ADB-MEPCO-01-2015 (NCB)]",
-   "url": "https://www.adb.org/node/175496",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:67db4a5b43c1": {
-   "site": "adb",
-   "title": "46422-003 MYA: GMS EWEC Eindu to Kawkareik Road Improvement Project[ICB1-ED-KKR GMS EWEC Eindu to Kawkareik Road Improvement Project Lot 1: ICB1-ED-KKR-L1 Lot 2: ICB1-ED-KKR-L2]",
-   "url": "https://www.adb.org/node/175471",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:bac1dc5008e5": {
-   "site": "adb",
-   "title": "Loan No. 2681-IND: Bihar Power System Improvement Project [Packages K,L,M,N,O,Q,R,S,T,U,V]",
-   "url": "https://www.adb.org/node/175413",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:b2213643b6be": {
-   "site": "adb",
-   "title": "2573-PRC: Guiyang Integrated Water Resources Management (Sector) Project[I-A.2-CW-1 Huaxi County Hongyan Reservoir Subproject]",
-   "url": "https://www.adb.org/node/175359",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:3dd290329707": {
-   "site": "adb",
-   "title": "0767-FSM: Chuuk Water Supply and Sanitation Project [02AF]",
-   "url": "https://www.adb.org/node/1142361",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": -2,
-   "hits": [
-    "-water supply"
-   ],
-   "status": "new"
-  },
-  "adb:0281f3cf010d": {
-   "site": "adb",
-   "title": "4498-IND: Sustainable and Inclusive Tourism Development Project in Himachal Pradesh [SITDP-HP_W07]",
-   "url": "https://www.adb.org/node/1142356",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:4f2cf962b008": {
-   "site": "adb",
-   "title": "Loan 4689-KGZ: Bishkek Low-Carbon Municipal Building Upgrading Pilot / P57037-014-KGZ: Bishkek Low-Carbon Municipal Building Upgrading Pilot – Additional Financing [1A]",
-   "url": "https://www.adb.org/node/1140821",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:579e80e88270": {
-   "site": "adb",
-   "title": "Improving the Science, Technology, Engineering, and Mathematics (STEM) Secondary Education Project",
-   "url": "https://www.adb.org/node/1140436",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "education"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:360b84bf3ec0": {
-   "site": "adb",
-   "title": "Improving Access to Health Services for Disadvantaged Groups Investment Program - Tranche 1",
-   "url": "https://www.adb.org/node/1140311",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:c2a683353926": {
-   "site": "adb",
-   "title": "Improving Access to Health Services for Disadvantaged Groups Investment Program - Tranche 1",
-   "url": "https://www.adb.org/node/1140306",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:e9cc69415d49": {
-   "site": "adb",
-   "title": "Maharashtra Tertiary Care and Medical Education Sector Development Program",
-   "url": "https://www.adb.org/node/1140281",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": -1,
-   "hits": [
-    "education",
-    "-medical"
-   ],
-   "status": "new"
-  },
-  "adb:43dd303bc43d": {
-   "site": "adb",
-   "title": "P59329 AZE: Railways Electrification, Signaling and Telecommunication Project (Bilajari-Yalama)",
-   "url": "https://www.adb.org/node/1140161",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "communication"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:81c955a0ddf2": {
-   "site": "adb",
-   "title": "58265-001 BHU: Solar Farm Expansion Project",
-   "url": "https://www.adb.org/node/1140111",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": -2,
-   "hits": [
-    "-solar"
-   ],
-   "status": "new"
-  },
-  "adb:e0ee17539b9c": {
-   "site": "adb",
-   "title": "L3313-MON: Regional Upgrades of Sanitary and Phytosanitary Measures for Trade Project [G-6]",
-   "url": "https://www.adb.org/node/1138256",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:a565c90350ff": {
-   "site": "adb",
-   "title": "1010/1011- KIR: South Tarawa Renewable Energy Project (Phase-2)",
-   "url": "https://www.adb.org/node/1138156",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:65038346e993": {
-   "site": "adb",
-   "title": "Improving Workforce Readiness in Punjab Project (IWRPP)",
-   "url": "https://www.adb.org/node/1137996",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:8fa3c4b6f1d8": {
-   "site": "adb",
-   "title": "Improving Workforce Readiness in Punjab Project (IWRPP)",
-   "url": "https://www.adb.org/node/1137991",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:89d64f4252ff": {
-   "site": "adb",
-   "title": "Improving Workforce Readiness in Punjab Project (IWRPP)",
-   "url": "https://www.adb.org/node/1137981",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:49c9fff10a2a": {
-   "site": "adb",
-   "title": "Improving Access to Health Services for Disadvantaged Groups Investment Program - Tranche 1",
-   "url": "https://www.adb.org/node/1137756",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:aad27fdd8657": {
-   "site": "adb",
-   "title": "Maharashtra Tertiary Care and Medical Education Sector Development Program",
-   "url": "https://www.adb.org/node/1138016",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": -1,
-   "hits": [
-    "education",
-    "-medical"
-   ],
-   "status": "new"
-  },
-  "adb:82a4bd309cce": {
-   "site": "adb",
-   "title": "Greater Mekong Subregion Border Areas Health Project (GMS-BAHP)",
-   "url": "https://www.adb.org/node/1136841",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:fd0366d3ec79": {
-   "site": "adb",
-   "title": "0958-TAJ: Resilient Livelihoods and Empowerment of Rural Women Project [G12]",
-   "url": "https://www.adb.org/node/1136851",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "women"
-   ],
-   "status": "new",
-   "detail": {
-    "text": "country: TAJ",
-    "country": "TAJ"
-   }
-  },
-  "adb:5608206890e7": {
-   "site": "adb",
-   "title": "Greater Mekong Subregion Border Areas Health Project (GMS-BAHP)",
-   "url": "https://www.adb.org/node/1136836",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:c6ab3aa09964": {
-   "site": "adb",
-   "title": "Greater Mekong Subregion Border Areas Health Project (GMS-BAHP)",
-   "url": "https://www.adb.org/node/1136831",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:4c3bc3020910": {
-   "site": "adb",
-   "title": "Greater Mekong Subregion Border Areas Health Project (GMS-BAHP)",
-   "url": "https://www.adb.org/node/1136826",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:946a0df2bf72": {
-   "site": "adb",
-   "title": "Grant 0644-MON: Regional Road Development and Maintenance Project–Additional Financing — G3: Weigh-in-Motion Digital Platforms",
-   "url": "https://www.adb.org/node/1136786",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 3,
-   "hits": [
-    "platform"
-   ],
-   "status": "new",
-   "detail": {
-    "text": "country: MON",
-    "country": "MON"
-   }
-  },
-  "adb:55545b527f68": {
-   "site": "adb",
-   "title": "L4646/G1041-KGZ Climate Change and Disaster Resilient Water Resources Sector Project – Additional Financing [W-OCB-4]",
-   "url": "https://www.adb.org/node/1136736",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:72bb95f0e260": {
-   "site": "adb",
-   "title": "4548-SRI: Power System Strengthening and Renewable Energy Integration Project (PSSREIP)",
-   "url": "https://www.adb.org/node/1136416",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "integration"
-   ],
-   "status": "new",
-   "detail": {
-    "text": "country: SRI",
-    "country": "SRI"
-   }
-  },
-  "adb:5328afd7cf2e": {
-   "site": "adb",
-   "title": "Greater Mekong Subregion Health Security Project",
-   "url": "https://www.adb.org/node/1135411",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:ce919ac601cf": {
-   "site": "adb",
-   "title": "Loan 4419-MON/Loan 4420-MON/Grant 0929-MON: Border Efficiency for Sustainable Trade Project - CW-01: Construction and Commissioning of Khavirga Border Crossing Point Facilities and Infrastructure",
-   "url": "https://www.adb.org/node/1134601",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:a14960da3d22": {
-   "site": "adb",
-   "title": "Loan 4419-MON/Loan 4420-MON/Grant 0929-MON: Border Efficiency for Sustainable Trade Project - CW-01: Construction and Commissioning of Khavirga Border Crossing Point Facilities and Infrastructure",
-   "url": "https://www.adb.org/node/1134596",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:0249fc0120dd": {
-   "site": "adb",
-   "title": "L4627/L4628/G1035/TA10595-BAN: Khulna Water Supply Project (Phase 2) [W-04]",
-   "url": "https://www.adb.org/node/1134016",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": -2,
-   "hits": [
-    "-water supply"
-   ],
-   "status": "new"
-  },
-  "adb:890b18659fe8": {
-   "site": "adb",
-   "title": "Loan 4567-PAK: Power Distribution Strengthening Project (PDSP)",
-   "url": "https://www.adb.org/node/1133491",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:6e7431eb259b": {
-   "site": "adb",
-   "title": "4498-IND: Sustainable and Inclusive Tourism Development Project in Himachal Pradesh [SITDP-HP_W11] [Extended]",
-   "url": "https://www.adb.org/node/1131691",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:5617e3c06ae8": {
-   "site": "adb",
-   "title": "Loan 4490/Grant 0966-VAN: Luganville Resilient Urban Water Supply and Sanitation Project [CW-1]",
-   "url": "https://www.adb.org/node/1130501",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": -2,
-   "hits": [
-    "-water supply"
-   ],
-   "status": "new"
-  },
-  "adb:e95463276369": {
-   "site": "adb",
-   "title": "4396-PAK: Developing Resilient Environments and Advancing Municipal Services in Punjab Project [REBID-DREAMS-I-CW-01-RWASA] [Extended]",
-   "url": "https://www.adb.org/node/1129146",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:7c8cdf93bfa8": {
-   "site": "adb",
-   "title": "Loan 4109-NEP: Electricity Grid Modernization Project – Additional Financing",
-   "url": "https://www.adb.org/node/1126971",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": -2,
-   "hits": [
-    "-electricity"
-   ],
-   "status": "new"
-  },
-  "adb:0e47e8e276fd": {
-   "site": "adb",
-   "title": "Loan No. 4520(COL), Loan No. 8485, Grant No. 0983(SF), Grant No. 0984(EF): South Asia Subregional Economic Cooperation Electricity Transmission and Distribution Strengthening Project (Package No. P-13)",
-   "url": "https://www.adb.org/node/1126446",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": -2,
-   "hits": [
-    "-electricity"
-   ],
-   "status": "new"
-  },
-  "adb:99ab783d69fc": {
-   "site": "adb",
-   "title": "56300-001:IND Madhya Pradesh Renewable Energy Scaling Up Project",
-   "url": "https://www.adb.org/node/1116736",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:eff9a4c87302": {
-   "site": "adb",
-   "title": "Energy Sector Specialist",
-   "url": "https://www.adb.org/node/1137466",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:539921a7bab8": {
-   "site": "adb",
-   "title": "Technical Consultant Assessing Investible Business Models and Gaps in the Bamboo Value Chain",
-   "url": "https://www.adb.org/node/1137561",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "consult"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:1c69b3101ae2": {
-   "site": "adb",
-   "title": "TON: Senior Environmental and Social Management Officer",
-   "url": "https://www.adb.org/node/1138706",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:1ec0685bc044": {
-   "site": "adb",
-   "title": "LOCAL ASSESSMENT ASSOCIATE",
-   "url": "https://www.adb.org/node/1142676",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "assessment"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:9f3c56fc1936": {
-   "site": "adb",
-   "title": "LOCAL ASSESSMENT ASSOCIATE",
-   "url": "https://www.adb.org/node/1142681",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "assessment"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:bd4486fcdb40": {
-   "site": "adb",
-   "title": "Internal Audit Services",
-   "url": "https://www.adb.org/node/1142686",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "it services"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:18898528e9b0": {
-   "site": "adb",
-   "title": "Environmental Policy and Planning Expert",
-   "url": "https://www.adb.org/node/1142691",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "expert"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:59394d00ae1c": {
-   "site": "adb",
-   "title": "Civil Society Brief Writer – Solomon Islands",
-   "url": "https://www.adb.org/node/1142696",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:2d2d0d610931": {
-   "site": "adb",
-   "title": "Cambodia Gender Expert (Digital Sector)",
-   "url": "https://www.adb.org/node/1142701",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "expert"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:0e611bb2c6bb": {
-   "site": "adb",
-   "title": "Business Process Re-engineering of the Public Debt Management System",
-   "url": "https://www.adb.org/node/1142706",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:31ca3b85a928": {
-   "site": "adb",
-   "title": "Project Management Specialist",
-   "url": "https://www.adb.org/node/1142711",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:df7a3699cfaa": {
-   "site": "adb",
-   "title": "International Health and Gender Specialist",
-   "url": "https://www.adb.org/node/1142716",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:02d1a1627292": {
-   "site": "adb",
-   "title": "Strengthening Project Readiness, Procurement and Financial Management in Southeast Asia",
-   "url": "https://www.adb.org/node/1142721",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:091b6c3c8f50": {
-   "site": "adb",
-   "title": "Education Policy Specialist",
-   "url": "https://www.adb.org/node/1142396",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "education"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:abd0b8a92d25": {
-   "site": "adb",
-   "title": "SRI Advocacy and Partnerships Specialist",
-   "url": "https://www.adb.org/node/1133876",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:f6706a41790a": {
-   "site": "adb",
-   "title": "Knowledge Sharing and Coordination Expert (Technical Coordinator)",
-   "url": "https://www.adb.org/node/1142366",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "expert"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:47ab8133c72b": {
-   "site": "adb",
-   "title": "Data Supervision and Analysis Specialist",
-   "url": "https://www.adb.org/node/1142371",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "data"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:e482067ac8cc": {
-   "site": "adb",
-   "title": "National Survey Leader/Supervisor 2",
-   "url": "https://www.adb.org/node/1142376",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:53892b61d8aa": {
-   "site": "adb",
-   "title": "National Survey Leader/Supervisor 3",
-   "url": "https://www.adb.org/node/1142381",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:48a5865feb36": {
-   "site": "adb",
-   "title": "Knowledge Management Specialist",
-   "url": "https://www.adb.org/node/1142386",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:7b2ef39fe21e": {
-   "site": "adb",
-   "title": "Research Analyst",
-   "url": "https://www.adb.org/node/1142391",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "research"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:8a7ce3d7fe8e": {
-   "site": "adb",
-   "title": "Associate",
-   "url": "https://www.adb.org/node/1142401",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:cb459f2e9bc1": {
-   "site": "adb",
-   "title": "sub-engineer PTDPIU",
-   "url": "https://www.adb.org/node/1142406",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:6120e9d22d18": {
-   "site": "adb",
-   "title": "Financial Consultant - KAZ KGZ: Almaty-Issyk Kul Alternative Road Project",
-   "url": "https://www.adb.org/node/1142411",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "consult"
-   ],
-   "status": "new",
-   "detail": {
-    "text": "country: KAZ",
-    "country": "KAZ"
-   }
-  },
-  "adb:46b70fc79c8a": {
-   "site": "adb",
-   "title": "TSCFP Impact and Results Specialist",
-   "url": "https://www.adb.org/node/1142416",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:f80b8d284422": {
-   "site": "adb",
-   "title": "National Survey Leader/Supervisor 1",
-   "url": "https://www.adb.org/node/1142421",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:9e7fb39202f4": {
-   "site": "adb",
-   "title": "PMC For Trans South-South Java Road Project",
-   "url": "https://www.adb.org/node/1142426",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:3247e9b145ba": {
-   "site": "adb",
-   "title": "civil-Engineer",
-   "url": "https://www.adb.org/node/1142431",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:374c8565cd3f": {
-   "site": "adb",
-   "title": "ADPR 2027- poverty (Economic Researcher/Analyst/Data Scientist)",
-   "url": "https://www.adb.org/node/1142436",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 2,
-   "hits": [
-    "data",
-    "research"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:acee4df83ae7": {
-   "site": "adb",
-   "title": "National Survey Specialist/Team Leader",
-   "url": "https://www.adb.org/node/1142441",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:bac916b4700c": {
-   "site": "adb",
-   "title": "Project Implementation Support Consultant (Bangalore, Davanagere,Mysore & Mangalore)",
-   "url": "https://www.adb.org/node/1128741",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "consult"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:a21e15d7a0d8": {
-   "site": "adb",
-   "title": "Project Implementation Support Consultant (Belgaum, Bellary Gulbarga & Dharwad)",
-   "url": "https://www.adb.org/node/1128791",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "consult"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:36ec1a68f280": {
-   "site": "adb",
-   "title": "Infrastructure Engineer for KGZ CARE (Nat'l)",
-   "url": "https://www.adb.org/node/1136506",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:e48e58ddac63": {
-   "site": "adb",
-   "title": "Project Management Unit (PMU) Environmental/Social Safeguards and Gender Specialist",
-   "url": "https://www.adb.org/node/1138321",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:0ab031d7f052": {
-   "site": "adb",
-   "title": "Civil Engineer",
-   "url": "https://www.adb.org/node/1141846",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:a3c19bc101e2": {
-   "site": "adb",
-   "title": "National Water Resource Expert (Kyrgyz Republic)",
-   "url": "https://www.adb.org/node/1141851",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "expert"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:5dbb88d3bad8": {
-   "site": "adb",
-   "title": "Institutional Development Coordinator/Deputy PMO Director",
-   "url": "https://www.adb.org/node/1141881",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:fae9e723dd99": {
-   "site": "adb",
-   "title": "National Water Resource Expert (Kazakhstan)",
-   "url": "https://www.adb.org/node/1141891",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "expert"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:56930df5cee5": {
-   "site": "adb",
-   "title": "Trade Facilitation and Customs Administration Expert",
-   "url": "https://www.adb.org/node/1141916",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "expert"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:3fdbd0e14603": {
-   "site": "adb",
-   "title": "Gender Specialist",
-   "url": "https://www.adb.org/node/1141931",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:33a16e780646": {
-   "site": "adb",
-   "title": "PMO Procurement Assistant",
-   "url": "https://www.adb.org/node/1141941",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:8522e4209aa2": {
-   "site": "adb",
-   "title": "GIS Specialist with Remote Sensing Experience",
-   "url": "https://www.adb.org/node/1141956",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:902d9b49da24": {
-   "site": "adb",
-   "title": "Nature Financing Specialist",
-   "url": "https://www.adb.org/node/1141966",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:4e63f37a5590": {
-   "site": "adb",
-   "title": "Environmental Safeguards Expert",
-   "url": "https://www.adb.org/node/1141971",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "expert"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:4db0be5d0b00": {
-   "site": "adb",
-   "title": "TSCFP Middle Office Analyst Consultant (fixed-rate)",
-   "url": "https://www.adb.org/node/1141991",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "consult"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:1e4f25adf396": {
-   "site": "adb",
-   "title": "Hydrology and Water Resources Management Specialist",
-   "url": "https://www.adb.org/node/1142031",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 0,
-   "hits": [],
-   "status": "new"
-  },
-  "adb:66301fa7ea99": {
-   "site": "adb",
-   "title": "Financial Modelling Consultant",
-   "url": "https://www.adb.org/node/1142061",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "consult"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:da53180826ec": {
-   "site": "adb",
-   "title": "Higher Education Project Coordinator",
-   "url": "https://www.adb.org/node/1142146",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "education"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:1a1f5b3ef58c": {
-   "site": "adb",
-   "title": "Monitoring and Evaluation Expert",
-   "url": "https://www.adb.org/node/1142216",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "expert"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
-  "adb:c42ad510bd43": {
-   "site": "adb",
-   "title": "IFRS/ESG Reporting Support National Consultant",
-   "url": "https://www.adb.org/node/1130906",
-   "deadline": null,
-   "first_seen": 1794244002.0051804,
-   "last_seen": 1794244276.7522943,
-   "score": 1,
-   "hits": [
-    "consult"
-   ],
-   "status": "new",
-   "detail": {
-    "text": ""
-   }
-  },
   "tendersontime:current-repair-building-ministry-health-muynok-district-912fd20": {
    "site": "tendersontime",
    "title": "Current Repair of the Building of the Ministry of Health of Muynok District",
    "url": "https://www.tendersontime.com/tenders-details/current-repair-building-ministry-health-muynok-district-912fd20/",
    "deadline": "2026-11-16",
    "first_seen": 1794244249.9808462,
-   "last_seen": 1794244280.8201795,
+   "last_seen": 1794244410.754667,
    "score": -2,
    "hits": [
     "-repair"
@@ -14140,7 +12629,7 @@
    "url": "https://www.tendersontime.com/tenders-details/construction-12x30-national-wrestling-gym-31st-general-secondary-school-located-pakhtaabad-mfi-nish-912fd1f/",
    "deadline": "2026-11-16",
    "first_seen": 1794244249.9808462,
-   "last_seen": 1794244280.8201795,
+   "last_seen": 1794244410.754667,
    "score": -1,
    "hits": [
     "school",
@@ -14154,7 +12643,7 @@
    "url": "https://www.tendersontime.com/tenders-details/construction-modern-childrens-sports-field-football-field-18x36-size-and-workout-vacant-land-sc-912fd1e/",
    "deadline": "2026-11-16",
    "first_seen": 1794244249.9808462,
-   "last_seen": 1794244280.8201795,
+   "last_seen": 1794244410.754667,
    "score": -1,
    "hits": [
     "school",
@@ -14168,7 +12657,7 @@
    "url": "https://www.tendersontime.com/tenders-details/on-improvement-water-drainage-system-territory-mfi-912fd1d/",
    "deadline": "2026-11-16",
    "first_seen": 1794244249.9808462,
-   "last_seen": 1794244280.8201795,
+   "last_seen": 1794244410.754667,
    "score": 0,
    "hits": [],
    "status": "new"
@@ -14179,7 +12668,7 @@
    "url": "https://www.tendersontime.com/tenders-details/construction-childrens-playground-dmtt-no-1-kagon-city-912fd1c/",
    "deadline": "2026-11-16",
    "first_seen": 1794244249.9808462,
-   "last_seen": 1794244280.8201795,
+   "last_seen": 1794244410.754667,
    "score": -2,
    "hits": [
     "-construction of"
@@ -14192,7 +12681,7 @@
    "url": "https://www.tendersontime.com/tenders-details/improving-technical-condition-rezaksoy-reservoir-912fd1b/",
    "deadline": "2026-11-16",
    "first_seen": 1794244249.9808462,
-   "last_seen": 1794244280.8201795,
+   "last_seen": 1794244410.754667,
    "score": 0,
    "hits": [],
    "status": "new"
@@ -14203,7 +12692,7 @@
    "url": "https://www.tendersontime.com/tenders-details/renovation-kitchen-mtt-building-no-7-located-bozachi-mfi-karovulbazar-district-covering-outdoor-c-912fd1a/",
    "deadline": "2026-11-16",
    "first_seen": 1794244249.9808462,
-   "last_seen": 1794244280.8201795,
+   "last_seen": 1794244410.754667,
    "score": -2,
    "hits": [
     "-repair"
@@ -14216,7 +12705,7 @@
    "url": "https://www.tendersontime.com/tenders-details/according-working-project-construction-wastewater-networks-shorchi-district-surkhandarya-region-912fd19/",
    "deadline": "2026-11-25",
    "first_seen": 1794244249.9808462,
-   "last_seen": 1794244280.8201795,
+   "last_seen": 1794244410.754667,
    "score": -2,
    "hits": [
     "-construction of"
@@ -14229,7 +12718,7 @@
    "url": "https://www.tendersontime.com/tenders-details/no-2-public-health-college-named-after-nukus-abu-ali-ibn-sina-912fd18/",
    "deadline": "2026-11-16",
    "first_seen": 1794244249.9808462,
-   "last_seen": 1794244280.8201795,
+   "last_seen": 1794244410.754667,
    "score": 0,
    "hits": [],
    "status": "new"
@@ -14240,7 +12729,7 @@
    "url": "https://www.tendersontime.com/tenders-details/surrounding-school-49-creating-artificial-turf-football-field-repairing-classrooms-replacing-old-912fd17/",
    "deadline": "2026-11-16",
    "first_seen": 1794244249.9808462,
-   "last_seen": 1794244280.8201795,
+   "last_seen": 1794244410.754667,
    "score": -1,
    "hits": [
     "school",
@@ -14254,7 +12743,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1740771/karakalpakstan-and-khorezm-local-roads-network-reconstruction-project",
    "deadline": "2026-12-01",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 3,
    "hits": [
     "information system",
@@ -14273,7 +12762,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1242817/machines-that-do-not-require-installation-for-water-supply-and-sewerage-systems-in-bukhara-region-pa",
    "deadline": "2026-11-30",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": -6,
    "hits": [
     "-sewer",
@@ -14288,7 +12777,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1744232/anora-water-savings-governance-and-incentive-framework-for-climate-smart-irrigation-in-uzbekistan",
    "deadline": null,
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": -2,
    "hits": [
     "-irrigation"
@@ -14301,7 +12790,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1744233/anora-investment-pipeline-operationalization-and-financing-readiness-support-in-uzbekistan",
    "deadline": null,
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": -2,
    "hits": [
     "-pipe"
@@ -14314,7 +12803,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1744366/rfps-2026-9207165-long-term-agreement-for-regional-tokenization-and-card-payment-gateway-services-fo",
    "deadline": "2026-11-30",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 1,
    "hits": [
     "consult"
@@ -14330,7 +12819,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1744362/lrps-2026-9207155-long-term-agreement-with-regional-payment-service-providers-for-asia-pacific-regio",
    "deadline": "2026-11-30",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 1,
    "hits": [
     "consult"
@@ -14346,7 +12835,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1744238/49056-fergana-hospital",
    "deadline": null,
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 0,
    "hits": [],
    "status": "new"
@@ -14357,7 +12846,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1744236/53054-navis-ix",
    "deadline": null,
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 0,
    "hits": [],
    "status": "new"
@@ -14368,7 +12857,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1743718/project-preparation-assistance-enhancing-access-to-tertiary-education-through-student-loan-mechanis",
    "deadline": "2026-11-13",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 3,
    "hits": [
     "consult",
@@ -14386,7 +12875,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1744130/modernisation-of-infrastructure-in-samarkand-region",
    "deadline": "2026-12-04",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 0,
    "hits": [],
    "status": "new"
@@ -14397,7 +12886,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1743717/project-preparation-assistance-enhancing-access-to-tertiary-education-through-student-loan-mechanis",
    "deadline": "2026-11-13",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 4,
    "hits": [
     "consult",
@@ -14416,7 +12905,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1743491/52909-local-innovation-for-transformation",
    "deadline": null,
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 3,
    "hits": [
     "innovation"
@@ -14432,7 +12921,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1733748/for-the-provision-of-advisory-services-to-deliver-a-detailed-study-on-emerging-market-and-developing",
    "deadline": "2026-11-13",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 3,
    "hits": [
     "advisory",
@@ -14450,7 +12939,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1743516/uzbekistan-digital-inclusion-project-consulting-services-for-the-training-and-professional-developme",
    "deadline": "2026-11-20",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 6,
    "hits": [
     "training",
@@ -14469,7 +12958,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1743204/eu-security-sector-governance-facility",
    "deadline": "2026-12-18",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 1,
    "hits": [
     "consult"
@@ -14485,7 +12974,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1743630/okazanie-professionalnyx-inzenernyx-uslug-po-razrabotke-proektno-smetnoi-dokume",
    "deadline": "2026-11-20",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 5,
    "hits": [
     "consult",
@@ -14505,7 +12994,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1743264/event-management-services-for-the-b51-forum",
    "deadline": "2026-11-12",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 3,
    "hits": [
     "consult",
@@ -14523,7 +13012,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1730055/facility-supporting-interreg-next-programmes2021-2027and-preparatory-activities-for-the-next-mff-pro",
    "deadline": "2026-12-04",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 1,
    "hits": [
     "consult"
@@ -14539,7 +13028,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1743379/national-consultant-for-coordination-of-muynak-master-plan-and-urd-risks",
    "deadline": "2026-11-16",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 2,
    "hits": [
     "consult",
@@ -14556,7 +13045,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1743450/construction-of-sewage-network-in-karmana-city",
    "deadline": "2027-01-08",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": -2,
    "hits": [
     "-construction of"
@@ -14569,7 +13058,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1743388/regional-tc-org-to-accelerate-npoc-tb-diagnostics-in-asia-region",
    "deadline": "2026-11-25",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 4,
    "hits": [
     "accelerat",
@@ -14586,7 +13075,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1726947/provision-of-expert-services-to-support-transportation-logistics-projects-and-sector-development",
    "deadline": "2026-11-10",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 0,
    "hits": [
     "consult",
@@ -14601,7 +13090,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1742878/p-014719-001-key-indicators-for-asia-and-the-pacific-2027-2029-ta-cluster-technical-assistance",
    "deadline": null,
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 0,
    "hits": [],
    "status": "new"
@@ -14612,7 +13101,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1742922/low-carbon-energy-sector-development-project",
    "deadline": null,
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 0,
    "hits": [],
    "status": "new"
@@ -14623,7 +13112,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1702065/innovative-social-protection-system-for-inclusion-of-vulnerable-people-project-procurement-of-specia",
    "deadline": "2026-11-27",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": -2,
    "hits": [
     "-equipment"
@@ -14636,7 +13125,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1742375/ta-10729-uzb-republic-of-uzbekistan-small-and-medium-sized-enterprises-excellerator-program-small-an",
    "deadline": "2026-11-20",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 2,
    "hits": [
     "consult",
@@ -14653,7 +13142,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1742226/0810-taj-climate-and-disaster-resilient-irrigation-and-drainage-modernization-in-the-vakhsh-river-ba",
    "deadline": "2026-12-09",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": -1,
    "hits": [
     "design",
@@ -14667,7 +13156,7 @@
    "url": "https://www.developmentaid.org/tenders/view/1742092/strengthening-the-statistical-system-of-uzbekistan-purchase-of-384tb-data-center-nvme-read-intensive",
    "deadline": null,
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": 2,
    "hits": [
     "data",
@@ -14684,12 +13173,1110 @@
    "url": "https://www.developmentaid.org/tenders/view/1742138/procurement-of-laboratory-equipment-within-gcpuzb017ec",
    "deadline": "2026-11-18",
    "first_seen": 1794244267.8752255,
-   "last_seen": 1794244299.7519338,
+   "last_seen": 1794244429.7519426,
    "score": -2,
    "hits": [
     "-equipment"
    ],
    "status": "new"
+  },
+  "adb:3dd290329707": {
+   "site": "adb",
+   "title": "0767-FSM: Chuuk Water Supply and Sanitation Project [02AF]",
+   "url": "https://www.adb.org/node/1142361",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": -2,
+   "hits": [
+    "-water supply"
+   ],
+   "status": "new"
+  },
+  "adb:0281f3cf010d": {
+   "site": "adb",
+   "title": "4498-IND: Sustainable and Inclusive Tourism Development Project in Himachal Pradesh [SITDP-HP_W07]",
+   "url": "https://www.adb.org/node/1142356",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:4f2cf962b008": {
+   "site": "adb",
+   "title": "Loan 4689-KGZ: Bishkek Low-Carbon Municipal Building Upgrading Pilot / P57037-014-KGZ: Bishkek Low-Carbon Municipal Building Upgrading Pilot – Additional Financing [1A]",
+   "url": "https://www.adb.org/node/1140821",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:579e80e88270": {
+   "site": "adb",
+   "title": "Improving the Science, Technology, Engineering, and Mathematics (STEM) Secondary Education Project",
+   "url": "https://www.adb.org/node/1140436",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "education"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:360b84bf3ec0": {
+   "site": "adb",
+   "title": "Improving Access to Health Services for Disadvantaged Groups Investment Program - Tranche 1",
+   "url": "https://www.adb.org/node/1140311",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:c2a683353926": {
+   "site": "adb",
+   "title": "Improving Access to Health Services for Disadvantaged Groups Investment Program - Tranche 1",
+   "url": "https://www.adb.org/node/1140306",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:e9cc69415d49": {
+   "site": "adb",
+   "title": "Maharashtra Tertiary Care and Medical Education Sector Development Program",
+   "url": "https://www.adb.org/node/1140281",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": -1,
+   "hits": [
+    "education",
+    "-medical"
+   ],
+   "status": "new"
+  },
+  "adb:43dd303bc43d": {
+   "site": "adb",
+   "title": "P59329 AZE: Railways Electrification, Signaling and Telecommunication Project (Bilajari-Yalama)",
+   "url": "https://www.adb.org/node/1140161",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "communication"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:81c955a0ddf2": {
+   "site": "adb",
+   "title": "58265-001 BHU: Solar Farm Expansion Project",
+   "url": "https://www.adb.org/node/1140111",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": -2,
+   "hits": [
+    "-solar"
+   ],
+   "status": "new"
+  },
+  "adb:e0ee17539b9c": {
+   "site": "adb",
+   "title": "L3313-MON: Regional Upgrades of Sanitary and Phytosanitary Measures for Trade Project [G-6]",
+   "url": "https://www.adb.org/node/1138256",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:a565c90350ff": {
+   "site": "adb",
+   "title": "1010/1011- KIR: South Tarawa Renewable Energy Project (Phase-2)",
+   "url": "https://www.adb.org/node/1138156",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:65038346e993": {
+   "site": "adb",
+   "title": "Improving Workforce Readiness in Punjab Project (IWRPP)",
+   "url": "https://www.adb.org/node/1137996",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:8fa3c4b6f1d8": {
+   "site": "adb",
+   "title": "Improving Workforce Readiness in Punjab Project (IWRPP)",
+   "url": "https://www.adb.org/node/1137991",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:89d64f4252ff": {
+   "site": "adb",
+   "title": "Improving Workforce Readiness in Punjab Project (IWRPP)",
+   "url": "https://www.adb.org/node/1137981",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:49c9fff10a2a": {
+   "site": "adb",
+   "title": "Improving Access to Health Services for Disadvantaged Groups Investment Program - Tranche 1",
+   "url": "https://www.adb.org/node/1137756",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:aad27fdd8657": {
+   "site": "adb",
+   "title": "Maharashtra Tertiary Care and Medical Education Sector Development Program",
+   "url": "https://www.adb.org/node/1138016",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": -1,
+   "hits": [
+    "education",
+    "-medical"
+   ],
+   "status": "new"
+  },
+  "adb:82a4bd309cce": {
+   "site": "adb",
+   "title": "Greater Mekong Subregion Border Areas Health Project (GMS-BAHP)",
+   "url": "https://www.adb.org/node/1136841",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:fd0366d3ec79": {
+   "site": "adb",
+   "title": "0958-TAJ: Resilient Livelihoods and Empowerment of Rural Women Project [G12]",
+   "url": "https://www.adb.org/node/1136851",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "women"
+   ],
+   "status": "new",
+   "detail": {
+    "text": "country: TAJ",
+    "country": "TAJ"
+   }
+  },
+  "adb:5608206890e7": {
+   "site": "adb",
+   "title": "Greater Mekong Subregion Border Areas Health Project (GMS-BAHP)",
+   "url": "https://www.adb.org/node/1136836",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:c6ab3aa09964": {
+   "site": "adb",
+   "title": "Greater Mekong Subregion Border Areas Health Project (GMS-BAHP)",
+   "url": "https://www.adb.org/node/1136831",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:4c3bc3020910": {
+   "site": "adb",
+   "title": "Greater Mekong Subregion Border Areas Health Project (GMS-BAHP)",
+   "url": "https://www.adb.org/node/1136826",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:946a0df2bf72": {
+   "site": "adb",
+   "title": "Grant 0644-MON: Regional Road Development and Maintenance Project–Additional Financing — G3: Weigh-in-Motion Digital Platforms",
+   "url": "https://www.adb.org/node/1136786",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 3,
+   "hits": [
+    "platform"
+   ],
+   "status": "new",
+   "detail": {
+    "text": "country: MON",
+    "country": "MON"
+   }
+  },
+  "adb:55545b527f68": {
+   "site": "adb",
+   "title": "L4646/G1041-KGZ Climate Change and Disaster Resilient Water Resources Sector Project – Additional Financing [W-OCB-4]",
+   "url": "https://www.adb.org/node/1136736",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:72bb95f0e260": {
+   "site": "adb",
+   "title": "4548-SRI: Power System Strengthening and Renewable Energy Integration Project (PSSREIP)",
+   "url": "https://www.adb.org/node/1136416",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "integration"
+   ],
+   "status": "new",
+   "detail": {
+    "text": "country: SRI",
+    "country": "SRI"
+   }
+  },
+  "adb:5328afd7cf2e": {
+   "site": "adb",
+   "title": "Greater Mekong Subregion Health Security Project",
+   "url": "https://www.adb.org/node/1135411",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:ce919ac601cf": {
+   "site": "adb",
+   "title": "Loan 4419-MON/Loan 4420-MON/Grant 0929-MON: Border Efficiency for Sustainable Trade Project - CW-01: Construction and Commissioning of Khavirga Border Crossing Point Facilities and Infrastructure",
+   "url": "https://www.adb.org/node/1134601",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:a14960da3d22": {
+   "site": "adb",
+   "title": "Loan 4419-MON/Loan 4420-MON/Grant 0929-MON: Border Efficiency for Sustainable Trade Project - CW-01: Construction and Commissioning of Khavirga Border Crossing Point Facilities and Infrastructure",
+   "url": "https://www.adb.org/node/1134596",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:0249fc0120dd": {
+   "site": "adb",
+   "title": "L4627/L4628/G1035/TA10595-BAN: Khulna Water Supply Project (Phase 2) [W-04]",
+   "url": "https://www.adb.org/node/1134016",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": -2,
+   "hits": [
+    "-water supply"
+   ],
+   "status": "new"
+  },
+  "adb:890b18659fe8": {
+   "site": "adb",
+   "title": "Loan 4567-PAK: Power Distribution Strengthening Project (PDSP)",
+   "url": "https://www.adb.org/node/1133491",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:6e7431eb259b": {
+   "site": "adb",
+   "title": "4498-IND: Sustainable and Inclusive Tourism Development Project in Himachal Pradesh [SITDP-HP_W11] [Extended]",
+   "url": "https://www.adb.org/node/1131691",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:5617e3c06ae8": {
+   "site": "adb",
+   "title": "Loan 4490/Grant 0966-VAN: Luganville Resilient Urban Water Supply and Sanitation Project [CW-1]",
+   "url": "https://www.adb.org/node/1130501",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": -2,
+   "hits": [
+    "-water supply"
+   ],
+   "status": "new"
+  },
+  "adb:e95463276369": {
+   "site": "adb",
+   "title": "4396-PAK: Developing Resilient Environments and Advancing Municipal Services in Punjab Project [REBID-DREAMS-I-CW-01-RWASA] [Extended]",
+   "url": "https://www.adb.org/node/1129146",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:7c8cdf93bfa8": {
+   "site": "adb",
+   "title": "Loan 4109-NEP: Electricity Grid Modernization Project – Additional Financing",
+   "url": "https://www.adb.org/node/1126971",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": -2,
+   "hits": [
+    "-electricity"
+   ],
+   "status": "new"
+  },
+  "adb:0e47e8e276fd": {
+   "site": "adb",
+   "title": "Loan No. 4520(COL), Loan No. 8485, Grant No. 0983(SF), Grant No. 0984(EF): South Asia Subregional Economic Cooperation Electricity Transmission and Distribution Strengthening Project (Package No. P-13",
+   "url": "https://www.adb.org/node/1126446",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": -2,
+   "hits": [
+    "-electricity"
+   ],
+   "status": "new"
+  },
+  "adb:99ab783d69fc": {
+   "site": "adb",
+   "title": "56300-001:IND Madhya Pradesh Renewable Energy Scaling Up Project",
+   "url": "https://www.adb.org/node/1116736",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:eff9a4c87302": {
+   "site": "adb",
+   "title": "Energy Sector Specialist",
+   "url": "https://www.adb.org/node/1137466",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:539921a7bab8": {
+   "site": "adb",
+   "title": "Technical Consultant Assessing Investible Business Models and Gaps in the Bamboo Value Chain",
+   "url": "https://www.adb.org/node/1137561",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "consult"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:1c69b3101ae2": {
+   "site": "adb",
+   "title": "TON: Senior Environmental and Social Management Officer",
+   "url": "https://www.adb.org/node/1138706",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:1ec0685bc044": {
+   "site": "adb",
+   "title": "LOCAL ASSESSMENT ASSOCIATE",
+   "url": "https://www.adb.org/node/1142676",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "assessment"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:9f3c56fc1936": {
+   "site": "adb",
+   "title": "LOCAL ASSESSMENT ASSOCIATE",
+   "url": "https://www.adb.org/node/1142681",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "assessment"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:bd4486fcdb40": {
+   "site": "adb",
+   "title": "Internal Audit Services",
+   "url": "https://www.adb.org/node/1142686",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "it services"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:18898528e9b0": {
+   "site": "adb",
+   "title": "Environmental Policy and Planning Expert",
+   "url": "https://www.adb.org/node/1142691",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "expert"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:59394d00ae1c": {
+   "site": "adb",
+   "title": "Civil Society Brief Writer – Solomon Islands",
+   "url": "https://www.adb.org/node/1142696",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:2d2d0d610931": {
+   "site": "adb",
+   "title": "Cambodia Gender Expert (Digital Sector)",
+   "url": "https://www.adb.org/node/1142701",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "expert"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:0e611bb2c6bb": {
+   "site": "adb",
+   "title": "Business Process Re-engineering of the Public Debt Management System",
+   "url": "https://www.adb.org/node/1142706",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:31ca3b85a928": {
+   "site": "adb",
+   "title": "Project Management Specialist",
+   "url": "https://www.adb.org/node/1142711",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:df7a3699cfaa": {
+   "site": "adb",
+   "title": "International Health and Gender Specialist",
+   "url": "https://www.adb.org/node/1142716",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:02d1a1627292": {
+   "site": "adb",
+   "title": "Strengthening Project Readiness, Procurement and Financial Management in Southeast Asia",
+   "url": "https://www.adb.org/node/1142721",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:091b6c3c8f50": {
+   "site": "adb",
+   "title": "Education Policy Specialist",
+   "url": "https://www.adb.org/node/1142396",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "education"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:abd0b8a92d25": {
+   "site": "adb",
+   "title": "SRI Advocacy and Partnerships Specialist",
+   "url": "https://www.adb.org/node/1133876",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:f6706a41790a": {
+   "site": "adb",
+   "title": "Knowledge Sharing and Coordination Expert (Technical Coordinator)",
+   "url": "https://www.adb.org/node/1142366",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "expert"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:47ab8133c72b": {
+   "site": "adb",
+   "title": "Data Supervision and Analysis Specialist",
+   "url": "https://www.adb.org/node/1142371",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "data"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:e482067ac8cc": {
+   "site": "adb",
+   "title": "National Survey Leader/Supervisor 2",
+   "url": "https://www.adb.org/node/1142376",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:53892b61d8aa": {
+   "site": "adb",
+   "title": "National Survey Leader/Supervisor 3",
+   "url": "https://www.adb.org/node/1142381",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:48a5865feb36": {
+   "site": "adb",
+   "title": "Knowledge Management Specialist",
+   "url": "https://www.adb.org/node/1142386",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:7b2ef39fe21e": {
+   "site": "adb",
+   "title": "Research Analyst",
+   "url": "https://www.adb.org/node/1142391",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "research"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:8a7ce3d7fe8e": {
+   "site": "adb",
+   "title": "Associate",
+   "url": "https://www.adb.org/node/1142401",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:cb459f2e9bc1": {
+   "site": "adb",
+   "title": "sub-engineer PTDPIU",
+   "url": "https://www.adb.org/node/1142406",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:6120e9d22d18": {
+   "site": "adb",
+   "title": "Financial Consultant - KAZ KGZ: Almaty-Issyk Kul Alternative Road Project",
+   "url": "https://www.adb.org/node/1142411",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "consult"
+   ],
+   "status": "new",
+   "detail": {
+    "text": "country: KAZ",
+    "country": "KAZ"
+   }
+  },
+  "adb:46b70fc79c8a": {
+   "site": "adb",
+   "title": "TSCFP Impact and Results Specialist",
+   "url": "https://www.adb.org/node/1142416",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:f80b8d284422": {
+   "site": "adb",
+   "title": "National Survey Leader/Supervisor 1",
+   "url": "https://www.adb.org/node/1142421",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:9e7fb39202f4": {
+   "site": "adb",
+   "title": "PMC For Trans South-South Java Road Project",
+   "url": "https://www.adb.org/node/1142426",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:3247e9b145ba": {
+   "site": "adb",
+   "title": "civil-Engineer",
+   "url": "https://www.adb.org/node/1142431",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:374c8565cd3f": {
+   "site": "adb",
+   "title": "ADPR 2027- poverty (Economic Researcher/Analyst/Data Scientist)",
+   "url": "https://www.adb.org/node/1142436",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 2,
+   "hits": [
+    "data",
+    "research"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:acee4df83ae7": {
+   "site": "adb",
+   "title": "National Survey Specialist/Team Leader",
+   "url": "https://www.adb.org/node/1142441",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:bac916b4700c": {
+   "site": "adb",
+   "title": "Project Implementation Support Consultant (Bangalore, Davanagere,Mysore & Mangalore)",
+   "url": "https://www.adb.org/node/1128741",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "consult"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:a21e15d7a0d8": {
+   "site": "adb",
+   "title": "Project Implementation Support Consultant (Belgaum, Bellary Gulbarga & Dharwad)",
+   "url": "https://www.adb.org/node/1128791",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "consult"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:36ec1a68f280": {
+   "site": "adb",
+   "title": "Infrastructure Engineer for KGZ CARE (Nat'l)",
+   "url": "https://www.adb.org/node/1136506",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:e48e58ddac63": {
+   "site": "adb",
+   "title": "Project Management Unit (PMU) Environmental/Social Safeguards and Gender Specialist",
+   "url": "https://www.adb.org/node/1138321",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:0ab031d7f052": {
+   "site": "adb",
+   "title": "Civil Engineer",
+   "url": "https://www.adb.org/node/1141846",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:a3c19bc101e2": {
+   "site": "adb",
+   "title": "National Water Resource Expert (Kyrgyz Republic)",
+   "url": "https://www.adb.org/node/1141851",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "expert"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:5dbb88d3bad8": {
+   "site": "adb",
+   "title": "Institutional Development Coordinator/Deputy PMO Director",
+   "url": "https://www.adb.org/node/1141881",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:fae9e723dd99": {
+   "site": "adb",
+   "title": "National Water Resource Expert (Kazakhstan)",
+   "url": "https://www.adb.org/node/1141891",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "expert"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:56930df5cee5": {
+   "site": "adb",
+   "title": "Trade Facilitation and Customs Administration Expert",
+   "url": "https://www.adb.org/node/1141916",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "expert"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:3fdbd0e14603": {
+   "site": "adb",
+   "title": "Gender Specialist",
+   "url": "https://www.adb.org/node/1141931",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:33a16e780646": {
+   "site": "adb",
+   "title": "PMO Procurement Assistant",
+   "url": "https://www.adb.org/node/1141941",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:8522e4209aa2": {
+   "site": "adb",
+   "title": "GIS Specialist with Remote Sensing Experience",
+   "url": "https://www.adb.org/node/1141956",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:902d9b49da24": {
+   "site": "adb",
+   "title": "Nature Financing Specialist",
+   "url": "https://www.adb.org/node/1141966",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:4e63f37a5590": {
+   "site": "adb",
+   "title": "Environmental Safeguards Expert",
+   "url": "https://www.adb.org/node/1141971",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "expert"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:4db0be5d0b00": {
+   "site": "adb",
+   "title": "TSCFP Middle Office Analyst Consultant (fixed-rate)",
+   "url": "https://www.adb.org/node/1141991",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "consult"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:1e4f25adf396": {
+   "site": "adb",
+   "title": "Hydrology and Water Resources Management Specialist",
+   "url": "https://www.adb.org/node/1142031",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 0,
+   "hits": [],
+   "status": "new"
+  },
+  "adb:66301fa7ea99": {
+   "site": "adb",
+   "title": "Financial Modelling Consultant",
+   "url": "https://www.adb.org/node/1142061",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "consult"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:da53180826ec": {
+   "site": "adb",
+   "title": "Higher Education Project Coordinator",
+   "url": "https://www.adb.org/node/1142146",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "education"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:1a1f5b3ef58c": {
+   "site": "adb",
+   "title": "Monitoring and Evaluation Expert",
+   "url": "https://www.adb.org/node/1142216",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "expert"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
+  },
+  "adb:c42ad510bd43": {
+   "site": "adb",
+   "title": "IFRS/ESG Reporting Support National Consultant",
+   "url": "https://www.adb.org/node/1130906",
+   "deadline": null,
+   "first_seen": 1794244624.251799,
+   "last_seen": 1794244624.251799,
+   "score": 1,
+   "hits": [
+    "consult"
+   ],
+   "status": "new",
+   "detail": {
+    "text": ""
+   }
   }
  },
  "runs": [
@@ -15049,6 +14636,22 @@
    "sites_ok": 3,
    "problems": [],
    "reviewed": []
+  },
+  {
+   "date": "2026-11-09 22:13",
+   "new": 0,
+   "sites": 2,
+   "sites_ok": 2,
+   "problems": [],
+   "reviewed": []
+  },
+  {
+   "date": "2026-11-09 22:17",
+   "new": 85,
+   "sites": 1,
+   "sites_ok": 1,
+   "problems": [],
+   "reviewed": []
   }
  ],
  "feedback": [],
@@ -15119,10 +14722,10 @@
    "notes": []
   },
   "adb": {
-   "at": 1794244276.7522943,
-   "found": 115,
+   "at": 1794244624.251799,
+   "found": 85,
    "closed": 0,
-   "new": 0,
+   "new": 85,
    "notes": []
   },
   "ungm": {
@@ -15156,14 +14759,14 @@
    ]
   },
   "tendersontime": {
-   "at": 1794244280.8201795,
+   "at": 1794244410.754667,
    "found": 10,
    "closed": 0,
    "new": 0,
    "notes": []
   },
   "developmentaid": {
-   "at": 1794244299.7519338,
+   "at": 1794244429.7519426,
    "found": 50,
    "closed": 21,
    "new": 0,

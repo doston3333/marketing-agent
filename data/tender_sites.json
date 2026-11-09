@@ -281,7 +281,6 @@
    "url": "https://www.adb.org/projects/tenders",
    "mode": "rss",
    "feeds": [
-    "https://www.adb.org/rss/procurement-notices",
     "http://feeds.feedburner.com/adb-invitation-for-bids",
     "http://feeds.feedburner.com/adb-csrn"
    ],
@@ -289,7 +288,8 @@
    "extract": {
     "country": "[-–]\\s*([A-Z]{3})\\b"
    },
-   "notes": "ADB serves its tender list from a token-guarded search API behind a Cloudflare challenge, so the list page can't be read reliably; its own RSS feeds can. Two sources: the adb.org feed and FeedBurner mirrors (Google-hosted, so reachable even when adb.org blocks the box). Items carry the notice title (project, country code, package ref) and a link to the notice, no closing date. For a deadline, open the notice PDF in the persistent Chrome: tender.py doc <link> --site adb"
+   "notes": "ADB's tender list is served by a token-guarded search API behind Cloudflare, so the list page can't be read; the FeedBurner mirrors of ADB's own feeds carry the live notices (invitation for bids + consulting services recruitment). The adb.org/rss/procurement-notices path still exists but is a stale legacy feed (node ids ~175k, notices from 2015-2017) - do not use it. Items carry only the title (project, country code, package ref) and the notice link, no closing date; open the notice PDF with `tender.py doc <link> --site adb` to get deadlines and details.",
+   "persistent": true
   },
   {
    "id": "ungm",

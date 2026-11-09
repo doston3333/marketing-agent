@@ -545,7 +545,33 @@ class Browser:
             page.close()
 
     def download(self, site, url, path):
-        """Save a document (PDF/DOC) with the site's cookies. Returns the path or raises."""
+        """Save a document (PDF/DOC) with the site's cookies. Returns the path or raises.
+        In the persistent Chrome the bytes are fetched from inside the page: a request context has its own TLS
+        stack, which the challenge-protected sites reject with 403 no matter how valid the cookie is."""
+        if self.persistent is not None:
+            import base64
+            page = self.persistent.new_page()
+            try:
+                root = re.match(r"^https?://[^/]+", url).group(0)
+                page.goto(root + "/", wait_until="domcontentloaded", timeout=60000)
+                for attempt in range(5):  # a fresh profile may still be clearing the challenge: retry, it caches
+                    res = page.evaluate("""async (u) => {
+                        const r = await fetch(u, {credentials: 'include', redirect: 'follow'});
+                        const buf = new Uint8Array(await r.arrayBuffer());
+                        let s = '';
+                        for (let i = 0; i < buf.length; i++) s += String.fromCharCode(buf[i]);
+                        return {status: r.status, type: r.headers.get('content-type'), b64: btoa(s)};
+                    }""", url)
+                    if res["status"] < 400:
+                        break
+                    page.wait_for_timeout(4000)
+                if res["status"] >= 400:
+                    raise RuntimeError(f"download {url}: HTTP {res['status']}")
+                with open(path, "wb") as f:
+                    f.write(base64.b64decode(res["b64"]))
+            finally:
+                page.close()
+            return path
         r = self.context(site).request.get(url, timeout=60000)
         if not r.ok:
             raise RuntimeError(f"download {url}: HTTP {r.status}")
