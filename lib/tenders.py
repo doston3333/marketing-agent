@@ -300,6 +300,41 @@ def from_api(site, page_cfg):
     return from_json(site, page_cfg, [r.json()])
 
 
+def from_rss(site, page_cfg):
+    """An RSS/Atom feed, fetched without a browser (mode "rss"). Feeds carry a title and a link, sometimes a
+    date but almost never a deadline, so none is invented: a lot with no closing date stays open."""
+    import xml.etree.ElementTree as ET
+    atom = "{http://www.w3.org/2005/Atom}"
+    out = []
+    for feed in page_cfg.get("feeds") or [page_cfg["url"]]:
+        r = requests.get(feed, timeout=60, headers={"User-Agent": UA})
+        r.raise_for_status()
+        root = ET.fromstring(r.content)
+        for e in (root.findall(".//item") + root.findall(f".//{atom}entry"))[:page_cfg.get("limit", 60)]:
+            def g(*names):
+                for n in names:
+                    el = e.find(n)
+                    if el is not None:
+                        return (el.get("href") or el.text or "").strip()
+                return ""
+            title, link = g("title", atom + "title"), g("link", atom + "link")
+            if not title or not link:
+                continue
+            m = re.search(page_cfg["id_from_url"], link) if page_cfg.get("id_from_url") else None
+            extra = {"type": page_cfg["type"]} if page_cfg.get("type") else {}
+            for k, rx in (page_cfg.get("extract") or {}).items():  # e.g. the country code in an ADB title
+                mm = re.search(rx, title)
+                if mm:
+                    extra[k] = mm.group(1)
+            published = g("pubDate", atom + "published", atom + "updated")
+            if published:
+                extra["published"] = published
+            text = " | ".join(f"{k}: {clean(v, 160)}" for k, v in extra.items())
+            out.append(make_item(site, m.group(1) if m else None, title, link, text,
+                                 infer_deadline=False, **extra))
+    return out
+
+
 def collect_site(site, br=None, save_pages=True):
     """All items listed by one site. Returns (items, notes) where notes lists problems (blocked, login, errors)."""
     items, notes = [], []
@@ -310,7 +345,7 @@ def collect_site(site, br=None, save_pages=True):
             res = br.login(site)
             if res.startswith("failed"):
                 notes.append(f"login {res}")
-    for i, page in enumerate(site["pages"]):
+    for i, page in enumerate(site.get("pages") or [{}]):  # feed sites have no page list
         page = {"url": page} if isinstance(page, str) else page
         mode = page.get("mode", site.get("mode", "links"))
         cfg = {**{k: v for k, v in site.items() if k not in ("pages",)}, **page}
@@ -319,9 +354,12 @@ def collect_site(site, br=None, save_pages=True):
                 got = worldbank(site, cfg)
             elif mode == "api":
                 got = from_api(site, cfg)
+            elif mode == "rss":
+                got = from_rss(site, cfg)
             else:
                 res = br.fetch(site, cfg["url"], capture=cfg.get("capture"), scroll=cfg.get("scroll", 0),
-                               wait_for=cfg.get("wait_for"), actions=cfg.get("actions"))
+                               wait_for=cfg.get("wait_for"), actions=cfg.get("actions"),
+                               challenge=cfg.get("challenge"))
                 if save_pages:
                     os.makedirs(PAGES_DIR, exist_ok=True)
                     with open(os.path.join(PAGES_DIR, f"{site['id']}-{i}.txt"), "w") as fh:

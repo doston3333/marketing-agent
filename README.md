@@ -109,11 +109,12 @@ weekdays 09:20 ─┬─ inbox    the team's replies to tender digests (set asid
 | UzbekistanTenders, GlobalTenders, TendersInfo, BidDetail | listing pages filtered to Uzbekistan | optional, paid accounts show full notices |
 | TenderWeek | latest tenders page | optional (free account) |
 | World Bank | official procurement API, Uzbekistan | none |
-| ADB | tender search for "Uzbekistan" | none |
+| ADB | its own RSS feeds (procurement notices, IFBs, consulting notices) | none |
 | UNGM | notices with beneficiary country Uzbekistan | optional |
 | EBRD | notices searched for Uzbekistan (most now live on ECEPP) | none |
 | IsDB, OSCE | open tender lists | none |
-| TendersOnTime, DevelopmentAid | **off and ignored**: Cloudflare blocks headless browsers from cloud IPs | - |
+| TendersOnTime | Uzbekistan listing page in a real Chrome (challenge cleared once, cookie reused) | none to read |
+| DevelopmentAid | AMP country page (`/amp/tenders-in-uzbekistan`) in the same real Chrome | none to read |
 
 The site list, URLs and extraction rules are data, not code: `data/tender_sites.json`. What counts as a fit: `data/tender_profile.md` (edit it in plain words) and `data/tender_keywords.json` (pre-filter). Seen lots and verdicts: `data/tenders.json`.
 
@@ -121,9 +122,14 @@ The site list, URLs and extraction rules are data, not code: `data/tender_sites.
 
 1. **Telegram**: nothing to set up. The digest goes through the marketing bot (@marketingagent67_bot) to the marketing leads. That bot is read only by the marketing agent: when a lead replies to a tender digest, or writes a message starting with "tender" ("tender: qurilish kerak emas"), it does not treat it as a post edit but parks it in `state.json` → `tender_inbox` and answers "📑 Tender agentiga yetkazildi"; `tender.py inbox` picks those up on the next run. (Optional: a separate bot via `TENDER_BOT_TOKEN`, which this agent then reads itself, for sending the digest to other people or a group; `TENDER_CHAT_IDS=id1,id2` overrides the recipients.)
 2. **Site accounts (optional)**: `TENDER_<SITE>_USER` and `TENDER_<SITE>_PASS`, e.g. `TENDER_UNGM_USER`, `TENDER_GLOBALTENDERS_PASS` (site ids in `python3 tender.py sites`). Check one with `python3 tender.py login ungm`. UZEX and eBirja need no account to read.
-3. **Network access**: the environment must reach the tender sites (`*.uzex.uz`, `ebirja.uz`, `*.ebirja.uz`, `uzbekistantenders.com`, `globaltenders.com`, `tenderweek.com`, `tendersinfo.com`, `biddetail.com`, `search.worldbank.org`, `projects.worldbank.org`, `adb.org`, `*.searchstax.com`, `ungm.org`, `ebrd.com`, `isdb.org`, `procurement.osce.org`) plus `api.telegram.org` and `api.github.com`.
-4. **Routine**: a Claude Code cloud routine in this repo with the prompt `prompts/tender-review.md`, schedule `CRON_TZ=Asia/Tashkent 20 9 * * 1-5`. It installs `requirements-tender.txt` (Playwright, document readers) itself; Chromium comes with the cloud image, and `lib/browser.py` imports the environment's CA bundle into Chromium's store so pages load behind the egress proxy.
-5. Check with `python3 tender.py check`.
+3. **Challenge-protected sites**: TendersOnTime and DevelopmentAid sit behind a Cloudflare managed challenge that Playwright's own Chromium (and Playwright's Chrome launcher) never clears. Sites flagged `"persistent": true` are therefore read by a normal Google Chrome started as its own process with a remote debugging port, which Playwright attaches to over CDP; the challenge clears in ~5-10 s and the profile keeps the cookie, so later runs go straight in.
+   - Needs a headful display: `marketing-xvfb.service` (`Xvfb :95`) and `Environment=DISPLAY=:95 TENDER_BROWSER_PROFILE=/home/marketing/.cache/tender-chrome` in the `ais-agent@.service` drop-in.
+   - The Chrome profile is a normal browser profile: do not delete it, or the challenge has to be cleared again.
+   - ADB needed no browser at all: its tender list is served by a token-guarded search API, but its RSS feeds carry the same notices, so it uses `mode: "rss"`.
+   - Never point this at anything else as a way to defeat a block: the sites above are read by a real browser the way a visitor reads them, and a site that refuses that stays off.
+4. **Network access**: the environment must reach the tender sites (`*.uzex.uz`, `ebirja.uz`, `*.ebirja.uz`, `uzbekistantenders.com`, `globaltenders.com`, `tenderweek.com`, `tendersinfo.com`, `biddetail.com`, `search.worldbank.org`, `projects.worldbank.org`, `adb.org`, `feeds.feedburner.com`, `ungm.org`, `tendersontime.com`, `developmentaid.org`, `ebrd.com`, `isdb.org`, `procurement.osce.org`) plus `api.telegram.org` and `api.github.com`.
+5. **Routine**: a Claude Code cloud routine in this repo with the prompt `prompts/tender-review.md`, schedule `CRON_TZ=Asia/Tashkent 20 9 * * 1-5`. It installs `requirements-tender.txt` (Playwright, document readers) itself; Chromium comes with the cloud image, and `lib/browser.py` imports the environment's CA bundle into Chromium's store so pages load behind the egress proxy.
+6. Check with `python3 tender.py check`.
 
 ## Commands
 

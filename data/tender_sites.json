@@ -176,14 +176,18 @@
    "pages": [
     {
      "url": "https://www.tendersontime.com/uzbekistan-tenders/",
-     "pattern": "tendersontime\\.com/tenders-details/"
+     "pattern": "tendersontime\\.com/tenders-details/",
+     "id_from_url": "tenders-details/([^/?#]+)",
+     "scroll": 3,
+     "deadline_regex": "Deadline:\\s*(\\d{1,2}\\s+[A-Za-z]{3,9}\\s+\\d{4})"
     }
    ],
    "login": {
     "url": "https://www.tendersontime.com/login/"
    },
-   "notes": "Off and ignored: Cloudflare blocks headless browsers from cloud IPs (checked Oct 2026).",
-   "enabled": false
+   "notes": "Cloudflare managed challenge: needs the persistent real-Chrome profile (site flag persistent), which clears it in a few seconds and reuses the cookie. Cards carry deadline + TOT reference. Detail pages are partly paywalled; the list is enough to review.",
+   "persistent": true,
+   "challenge": 20
   },
   {
    "id": "tendersinfo",
@@ -243,17 +247,19 @@
    "mode": "links",
    "pages": [
     {
-     "url": "https://www.developmentaid.org/tenders/search?locations=223",
+     "url": "https://www.developmentaid.org/amp/tenders-in-uzbekistan",
      "pattern": "developmentaid\\.org/tenders/view/\\d+",
-     "id_from_url": "view/(\\d+)"
+     "id_from_url": "tenders/view/(\\d+)",
+     "scroll": 3
     }
    ],
    "login": {
     "url": "https://www.developmentaid.org/login",
     "two_step": true
    },
-   "notes": "Off and ignored: Cloudflare blocks headless browsers from cloud IPs (checked Oct 2026).",
-   "enabled": false
+   "notes": "Cloudflare managed challenge: needs the persistent real-Chrome profile. The React /tenders/search app wants a location id (locations=223 is Portugal, not Uzbekistan); the AMP country page lists the same notices as static HTML, so it is the page to read. Add more /amp/tenders-in-<country> pages for other countries.",
+   "persistent": true,
+   "challenge": 25
   },
   {
    "id": "worldbank",
@@ -272,29 +278,18 @@
   {
    "id": "adb",
    "name": "Asian Development Bank",
-   "url": "https://www.adb.org",
-   "mode": "capture",
-   "capture": {
-    "match": "searchstax\\.com/.*/emselect"
-   },
-   "items": "response.docs",
-   "fields": {
-    "id": "id",
-    "title": "tm_X3b_en_title",
-    "deadline": "ds_date_closing",
-    "published": "ss_date_formatted",
-    "country": "tm_X3b_en_country",
-    "type": "tm_X3b_en_type",
-    "category": "tm_X3b_en_sector",
-    "reference": "tm_X3b_en_project_number"
-   },
-   "link": "https://www.adb.org{ss_url}",
-   "pages": [
-    {
-     "url": "https://www.adb.org/projects/tenders?searchstax[query]=Uzbekistan&searchstax[page]=1&searchstax[order]=ds_date_posted%20desc"
-    }
+   "url": "https://www.adb.org/projects/tenders",
+   "mode": "rss",
+   "feeds": [
+    "https://www.adb.org/rss/procurement-notices",
+    "http://feeds.feedburner.com/adb-invitation-for-bids",
+    "http://feeds.feedburner.com/adb-csrn"
    ],
-   "notes": "Full-text search for Uzbekistan, newest first."
+   "limit": 50,
+   "extract": {
+    "country": "[-–]\\s*([A-Z]{3})\\b"
+   },
+   "notes": "ADB serves its tender list from a token-guarded search API behind a Cloudflare challenge, so the list page can't be read reliably; its own RSS feeds can. Two sources: the adb.org feed and FeedBurner mirrors (Google-hosted, so reachable even when adb.org blocks the box). Items carry the notice title (project, country code, package ref) and a link to the notice, no closing date. For a deadline, open the notice PDF in the persistent Chrome: tender.py doc <link> --site adb"
   },
   {
    "id": "ungm",

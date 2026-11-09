@@ -36,13 +36,16 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "lib
 import agent_lib as A  # noqa: E402
 import tenders as T  # noqa: E402
 
-NO_BROWSER_MODES = {"worldbank", "api"}
+NO_BROWSER_MODES = {"worldbank", "api", "rss"}
+# Sites behind a Cloudflare managed challenge run in a real Chrome on a persistent profile (see browser.py).
+# The profile keeps the clearance cookie, so the challenge is cleared once and reused. Needs DISPLAY (Xvfb).
+PROFILE_DIR = os.environ.get("TENDER_BROWSER_PROFILE") or os.path.expanduser("~/.cache/tender-chrome")
 DOC_EXT = re.compile(r"\.(pdf|docx?|xlsx?|zip|rar|rtf|odt)(\?|$)", re.I)
 
 
-def _browser():
+def _browser(persistent=False):
     import browser as B
-    return B.Browser()
+    return B.Browser(profile=PROFILE_DIR) if persistent else B.Browser()
 
 
 def _enabled(only=None):
@@ -69,6 +72,8 @@ def cmd_check(a):
     except ImportError:
         print("playwright: MISSING (pip install -r requirements-tender.txt)")
     print("items remembered:", len(st["items"]), "| last run:", (st["runs"][-1:] or [{}])[0].get("date"))
+    print("challenge sites: profile", PROFILE_DIR, "| DISPLAY", os.environ.get("DISPLAY") or "MISSING",
+          "| chrome", B.chrome_bin() or "MISSING (headless only)")
     for s in T.sites():
         u, p = B.env_names(s)
         have = all(os.environ.get(x) for x in (u, p))
@@ -90,14 +95,16 @@ def cmd_scan(a):
     st = T.load_state()
     targets = _enabled(a.site)
     problems, total_new, ok = [], 0, 0
-    br = None
+    br = brp = None
     try:
         modes = {(p.get("mode") if isinstance(p, dict) else None) or s.get("mode", "links")
-                 for s in targets for p in s["pages"]}
+                 for s in targets for p in (s.get("pages") or [{}])}
         if modes - NO_BROWSER_MODES:
             br = _browser()
+        if any(s.get("persistent") for s in targets):  # only started when a challenge-protected site is in play
+            brp = _browser(persistent=True)
         for s in targets:
-            items, notes = T.collect_site(s, br)
+            items, notes = T.collect_site(s, brp if s.get("persistent") else br)
             new = T.merge(st, s, items, notes)
             total_new += len(new)
             hits = sum(1 for k in new if st["items"][k]["score"] > 0)
@@ -109,8 +116,9 @@ def cmd_scan(a):
                   f"{('! ' + '; '.join(notes)) if notes else ''}", flush=True)
             T.save_state(st)  # after every site, so a crash later keeps what was collected
     finally:
-        if br:
-            br.close()
+        for b in (br, brp):
+            if b:
+                b.close()
     st["runs"].append({"date": A.tashkent_now().strftime("%Y-%m-%d %H:%M"), "new": total_new,
                        "sites": len(targets), "sites_ok": ok,
                        "problems": problems, "reviewed": []})
@@ -155,7 +163,7 @@ def _resolve(target, site_id=None):
 
 def cmd_open(a):
     site, url = _resolve(a.target, a.site)
-    with _browser() as br:
+    with _browser(site.get("persistent", False)) as br:
         res = br.fetch(site, url, scroll=1, tabs=(a.click or []) + site.get("detail_tabs", []))
         login = br.logins.get(site["id"])
     os.makedirs(T.PAGES_DIR, exist_ok=True)
@@ -242,7 +250,7 @@ def cmd_doc(a):
     d = os.path.join(T.PAGES_DIR, "docs")
     os.makedirs(d, exist_ok=True)
     name = re.sub(r"[^\w.\-]+", "_", url.split("?")[0].rstrip("/").split("/")[-1])[-80:] or "document"
-    with _browser() as br:
+    with _browser(site.get("persistent", False)) as br:
         if a.click:  # the file sits behind a button on the tender page (url is that page)
             path = br.download_by_click(site, url, a.click, d, nth=a.nth)
             name = os.path.basename(path)

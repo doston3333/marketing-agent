@@ -1,10 +1,11 @@
-# Headless Chromium for the tender agent (Playwright). One browser per run, one context per site so each
-# site keeps its own login cookies. Cookies are cached in work/browser/ for the session only (never committed).
+# Headless Chromium for the tender agent (Playwright) — or, for sites behind a Cloudflare managed challenge,
+# a real Chrome on a persistent profile (Browser(profile=...)). One browser per run, one context per site so
+# each site keeps its own login cookies. Cookies are cached in work/browser/ for the session only (never committed).
 #
 #   setup()                       make Chromium trust the environment's CA bundle (cloud proxy) and find a binary
 #   Browser().page_for(site)      a page in that site's context, logged in first when the site has credentials
 #   Browser().fetch(site, url)    {"url", "title", "text", "links", "captured", "blocked"} for one page
-import glob, json, os, re, shutil, subprocess
+import glob, json, os, re, shutil, subprocess, time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WORK = os.environ.get("AIS_WORK_DIR", os.path.join(ROOT, "work"))
@@ -12,7 +13,8 @@ STATE_DIR = os.path.join(WORK, "browser")
 UA = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
       "Chrome/140.0.0.0 Safari/537.36")
 NSSDB = os.path.expanduser("~/.pki/nssdb")
-BLOCK_MARKERS = ("Just a moment...", "Attention Required!", "Access denied", "Checking your browser")
+BLOCK_MARKERS = ("Just a moment...", "Attention Required!", "Access denied", "Checking your browser",
+                 "Performing security verification", "Verifying you are human")
 
 
 # ---------------------------------------------------------------- environment
@@ -74,8 +76,59 @@ def chromium_path():
     return None
 
 
+def chrome_bin():
+    """A real Google Chrome build (what a normal visitor runs), if one is installed."""
+    for p in (os.environ.get("TENDER_CHROME_BIN"), "/opt/google/chrome/chrome", "/usr/bin/google-chrome",
+              "/usr/bin/google-chrome-stable"):
+        if p and os.path.exists(p):
+            return p
+    return None
+
+
+def _free_port():
+    import socket
+    s = socket.socket()
+    s.bind(("127.0.0.1", 0))
+    port = s.getsockname()[1]
+    s.close()
+    return port
+
+
+def _cdp_alive(cdp):
+    import urllib.request
+    try:
+        urllib.request.urlopen(cdp + "/json/version", timeout=1).read()
+        return True
+    except Exception:
+        return False
+
+
 def setup():
     return {"ca": trust_ca_bundle(), "chromium": chromium_path() or "playwright default"}
+
+
+# One Playwright driver per process: a scan may need the headless browser and the persistent Chrome at the same
+# time, and a second sync_playwright().start() in the same thread raises "Sync API inside the asyncio loop".
+_SHARED = {"pw": None, "refs": 0}
+
+
+def _driver():
+    from playwright.sync_api import sync_playwright
+    if _SHARED["pw"] is None:
+        _SHARED["pw"] = sync_playwright().start()
+    _SHARED["refs"] += 1
+    return _SHARED["pw"]
+
+
+def _release():
+    _SHARED["refs"] -= 1
+    if _SHARED["refs"] <= 0:
+        pw, _SHARED["pw"], _SHARED["refs"] = _SHARED["pw"], None, 0
+        try:
+            if pw:
+                pw.stop()
+        except Exception:
+            pass
 
 
 def creds(site):
@@ -149,25 +202,86 @@ _LINKS_JS = r"""
 
 
 class Browser:
-    def __init__(self, headless=True):
-        from playwright.sync_api import sync_playwright
+    """headless=True      Playwright's own Chromium, fast, one context per site (the default).
+    profile=<dir>       a real Google Chrome on a persistent profile, for sites behind a Cloudflare managed
+                        challenge (TendersOnTime, DevelopmentAid). Chrome is started the way a user starts it
+                        (own process + remote debugging port) and Playwright attaches over CDP; Playwright's
+                        own launcher is what those checks flag, so the launched-with-flags route stays
+                        challenged. The challenge then clears in ~5-10 s and the profile keeps the clearance
+                        cookie for later runs. Headful, so it needs a display (Xvfb)."""
+
+    def __init__(self, headless=True, profile=None):
         setup()
-        self._pw = sync_playwright().start()
-        kw = {"headless": headless, "args": ["--disable-blink-features=AutomationControlled"]}
-        try:
-            self.browser = self._pw.chromium.launch(**kw)
-        except Exception:
-            path = chromium_path()
-            if not path:
-                raise
-            self.browser = self._pw.chromium.launch(executable_path=path, **kw)
-        self.contexts, self.logins = {}, {}
+        self._pw = _driver()
+        self._closed = False
+        self.persistent = None
+        base = ["--disable-blink-features=AutomationControlled", "--no-first-run", "--no-default-browser-check"]
+        self.logins = {}
+        self.proc = None
+        if profile:
+            self.browser = self._launch_chrome(profile) if chrome_bin() else None
+            if self.browser is not None:  # normal Chrome on CDP: this is what clears the challenge
+                self.persistent = self.browser.contexts[0] if self.browser.contexts else self.browser.new_context()
+            else:  # no Chrome binary: fall back to Playwright's launcher (may not pass anti-bot checks)
+                kw = {"headless": headless, "args": base + ["--window-size=1440,900"], "locale": "en-US",
+                      "viewport": {"width": 1366, "height": 900}, "user_agent": UA, "accept_downloads": True}
+                self.persistent = self._pw.chromium.launch_persistent_context(profile, **kw)
+        else:
+            kw = {"headless": headless, "args": base}
+            try:
+                self.browser = self._pw.chromium.launch(**kw)
+            except Exception:
+                path = chromium_path()
+                if not path:
+                    raise
+                self.browser = self._pw.chromium.launch(executable_path=path, **kw)
+        self.contexts = {}
         os.makedirs(STATE_DIR, exist_ok=True)
+
+    def _launch_chrome(self, profile):
+        """Start a normal Chrome (not Playwright's launcher) with a remote debugging port and attach to it.
+        Playwright's own launcher is what anti-bot checks flag; a browser started the way a user starts it is
+        not, and it keeps the profile, so the clearance cookie is reused on every later run."""
+        port = int(os.environ.get("TENDER_CHROME_PORT") or 0) or _free_port()
+        cdp = f"http://127.0.0.1:{port}"
+        if not _cdp_alive(cdp):
+            self.proc = subprocess.Popen(
+                [chrome_bin(), f"--user-data-dir={profile}", f"--remote-debugging-port={port}",
+                 "--no-first-run", "--no-default-browser-check", "--disable-sync", "--disable-features=Translate",
+                 "--window-size=1440,900", "about:blank"],
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+            for _ in range(60):
+                if _cdp_alive(cdp):
+                    break
+                time.sleep(0.5)
+            else:
+                raise RuntimeError(f"Chrome did not open its debugging port {port} (profile {profile})")
+        return self._pw.chromium.connect_over_cdp(cdp)
 
     def _keeps_state(self, site):
         return bool(site.get("login")) and all(creds(site))
 
     def close(self):
+        if self._closed:
+            return
+        self._closed = True
+        if self.persistent is not None:  # the profile itself keeps cookies; nothing to export
+            try:
+                if self.browser is not None:
+                    self.browser.close()
+                else:
+                    self.persistent.close()
+            except Exception:
+                pass
+            finally:
+                if self.proc is not None:
+                    self.proc.terminate()
+                    try:
+                        self.proc.wait(timeout=15)
+                    except Exception:
+                        self.proc.kill()
+                _release()
+            return
         for sid, ctx in self.contexts.items():
             if self.logins.get(sid) == "ok":
                 try:
@@ -177,7 +291,7 @@ class Browser:
         try:
             self.browser.close()
         finally:
-            self._pw.stop()
+            _release()
 
     def __enter__(self):
         return self
@@ -187,6 +301,8 @@ class Browser:
 
     def context(self, site):
         sid = site["id"]
+        if self.persistent is not None:  # one profile, one context: the clearance cookie lives there
+            return self.persistent
         if sid not in self.contexts:
             kw = {"user_agent": UA, "locale": site.get("locale", "en-US"), "viewport": {"width": 1366, "height": 900}}
             st = os.path.join(STATE_DIR, f"{sid}.json")
@@ -332,9 +448,27 @@ class Browser:
                 out.append(f"\n\n===== {t} =====\n" + "\n".join(new))
         return "".join(out)
 
-    def fetch(self, site, url, capture=None, scroll=0, max_card=1500, wait_for=None, actions=None, tabs=None):
+    def _clear_challenge(self, page, seconds):
+        """Cloudflare's managed challenge clears itself in a few seconds in a real browser. Poll until the
+        interstitial is gone (or the wait runs out) instead of reading the challenge page as the site."""
+        deadline = time.time() + seconds
+        while time.time() < deadline:
+            try:
+                title = (page.title() or "").lower()
+                body = _visible_text(page)
+            except Exception:
+                return
+            if not any(m.lower() in title for m in BLOCK_MARKERS) and \
+                    not re.search(r"performing security verification|verify you are human|enable javascript and cookies",
+                                  body[:600], re.I):
+                return
+            page.wait_for_timeout(1500)
+
+    def fetch(self, site, url, capture=None, scroll=0, max_card=1500, wait_for=None, actions=None, tabs=None,
+              challenge=None):
         """Open url in the site's context. capture={"match": regex, "body": {...}} records the JSON responses
-        the page's own scripts load (and can enlarge their page size). Returns a dict, never raises."""
+        the page's own scripts load (and can enlarge their page size). challenge=<seconds> waits out an
+        anti-bot interstitial. Returns a dict, never raises."""
         if site.get("login"):
             self.login(site)
         page = self.context(site).new_page()
@@ -360,6 +494,8 @@ class Browser:
                 page.on("response", _resp)
             resp = page.goto(url, wait_until="domcontentloaded", timeout=60000)
             self._settle(page)
+            if challenge:
+                self._clear_challenge(page, challenge)
             if wait_for:
                 try:
                     page.wait_for_selector(wait_for, timeout=15000)
