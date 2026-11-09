@@ -195,9 +195,10 @@
    "url": "https://www.tendersinfo.com",
    "mode": "capture",
    "capture": {
-    "match": "tendersinfo\\.com/esearch/tender_sector_test",
+    "match": "tendersinfo\\.com/esearch/results_test",
     "body": {
-     "length": 100
+     "length": 100,
+     "start": 0
     }
    },
    "items": "data",
@@ -206,13 +207,13 @@
     "title": "short_desc",
     "deadline": "doc_last",
     "published": "date_c",
-    "country": "region_name",
-    "category": "sector_name",
-    "buyer": "authority_name|purchaser_name"
+    "country": "region_name|country"
    },
    "pages": [
     {
-     "url": "https://www.tendersinfo.com/global-uzbekistan-tenders.php"
+     "url": "https://www.tendersinfo.com/esearch/process?type=global&search_text=Uzbekistan",
+     "wait_for": "#resultsTable, table.dataTable",
+     "scroll": 1
     }
    ],
    "login": {
@@ -221,7 +222,8 @@
     "pass_selector": "#password",
     "submit_selector": "#afgloginbtn"
    },
-   "notes": "Aggregator; the Uzbekistan table feed returns all live rows (about 90). Details need a paid login."
+   "notes": "The country landing pages (/global-uzbekistan-tenders.php, tenders-by-country.php) answer HTTP 500 with an empty body for everyone, and the old feed /esearch/tender_sector_test is gone (404); the site itself is up. The search page /esearch/process?type=global&search_text=Uzbekistan renders and its DataTable posts to /esearch/results_test, which returns 83 rows for Uzbekistan with id, title, published date, closing date (doc_last), country and a detail URL - so the page's own request is captured and its page size is raised to 100. No login needed for the list; detail pages and documents need the paid account.",
+   "link": "{url}"
   },
   {
    "id": "biddetail",
