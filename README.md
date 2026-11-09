@@ -61,6 +61,13 @@ Tests (offline): `python3 -m unittest discover -s tests`.
 
 The Montserrat font is vendored in `assets/` (SIL Open Font License), so no font download is needed at run time.
 
+## Leads
+
+Leads are the people the bot sends shortlists, posts and tender digests to; any of them can vote, press the buttons and reply with edits. A lead joins by pressing Start in @marketingagent67_bot.
+- Without an allowlist, the first `MAX_LEADS` (2) people who write to the bot become leads and everyone else is turned away.
+- `python3 agent.py leads allow 5562302157 @username` lets those Telegram users in (no cap) and closes open sign-up. `leads invite` makes a link (`https://t.me/marketingagent67_bot?start=<code>`) that lets in whoever opens it; `leads invite off` ends it.
+- `python3 agent.py leads remove CHAT_ID` stops sending to someone; `leads` lists everything. Commit `data/state.json` afterwards (the routines' save step does it).
+
 ## Switch-over rule
 
 Only one reader may poll the bot. When the new routines go live, disable the two old Claude scheduled tasks ("AIS marketing agent - daily post" and "AIS marketing agent - Telegram buttons") at the same moment, or they will steal each other's button presses. `data/state.json` was seeded from the Oct 1 snapshot; if the old tasks ran after that, copy the latest state.json from Drive over it right before the switch so the offset and post history carry over.

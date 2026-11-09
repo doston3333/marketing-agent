@@ -11,6 +11,10 @@ Telegram + state
   status POST_ID STATUS [--reason TEXT]               approved / rejected / sent (rejected keeps the reason)
   publish POST_ID             post the approved Telegram version to @aistationuz (only after a lead pressed 📢)
   settings [KEY VALUE]        show or set settings, e.g. settings publish_telegram on, settings autopick_hour 14 (or off)
+  leads                       list the leads, the allowlist and the invite link
+  leads allow ID|@USER ...    let these Telegram users become leads when they press Start (closes open sign-up)
+  leads remove CHAT_ID        stop sending to a lead and take them off the allowlist
+  leads invite [off]          make a new invite link (anyone who opens it becomes a lead), or switch it off
 
 Finding what to post
   shortlist send FILE         send today's 2-10 ideas (JSON list) to the leads as a list + Telegram poll; first vote picks
@@ -111,6 +115,8 @@ def main():
     p = sub.add_parser("learn"); p.add_argument("text"); p.add_argument("--context", default=""); p.add_argument("--explicit", action="store_true")
     p = sub.add_parser("publish"); p.add_argument("post_id")
     p = sub.add_parser("settings"); p.add_argument("key", nargs="?"); p.add_argument("value", nargs="?")
+    p = sub.add_parser("leads"); p.add_argument("op", nargs="?", default="list", choices=["list", "allow", "remove", "invite"])
+    p.add_argument("items", nargs="*")
     p = sub.add_parser("candidates"); p.add_argument("--n", type=int, default=20)
     p = sub.add_parser("story"); p.add_argument("id"); p.add_argument("status", nargs="?")
     p = sub.add_parser("examples"); p.add_argument("topic"); p.add_argument("--k", type=int, default=3)
@@ -341,6 +347,33 @@ def main():
             state["settings"][a.key] = v
             A.save_state(state)
         print(json.dumps(state.get("settings", {}), ensure_ascii=False))
+    elif a.cmd == "leads":
+        if a.op == "allow":
+            A.allow_users(state, a.items)
+        elif a.op == "remove":
+            for x in a.items:
+                print(("removed " if A.remove_lead(state, x) else "not a lead: ") + x)
+        elif a.op == "invite":
+            if a.items[:1] == ["off"]:
+                state.setdefault("settings", {}).pop("invite_code", None)
+            else:
+                A.new_invite(state)
+        if a.op != "list":
+            A.save_state(state)
+        st = state.get("settings") or {}
+        code = st.get("invite_code")
+        bot = "marketingagent67_bot"
+        if code:
+            try:
+                bot = A.tg("getMe", {})["result"]["username"]
+            except Exception:
+                pass
+        print(json.dumps({"leads": [{"chat_id": c, "name": state["lead_names"].get(str(c))} for c in state["leads"]],
+                          "allowed_users": st.get("allowed_users") or [],
+                          "sign_up": "allowlist / invite link" if (st.get("allowed_users") or code)
+                          else f"open: the first {A.MAX_LEADS} people who write to the bot",
+                          "invite_link": f"https://t.me/{bot}?start={code}" if code else None},
+                         ensure_ascii=False, indent=1))
     elif a.cmd == "learn":
         p = A.add_learning(state, a.text, a.context, a.explicit)
         A.save_state(state)

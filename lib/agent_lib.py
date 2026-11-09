@@ -115,9 +115,11 @@ def _merge(remote, local):
     for k, v in local.items():
         if k not in DEFAULT_STATE:
             m[k] = v
-    leads = list(remote.get("leads", []))
-    for c in local.get("leads", []):
-        if c not in leads and len(leads) < MAX_LEADS:
+    settings = {**remote.get("settings", {}), **local.get("settings", {})}
+    gone = {str(x) for x in settings.get("removed_leads") or []}
+    leads = []  # every lead either copy knows (the cap applies when someone registers), minus removed ones
+    for c in list(remote.get("leads", [])) + list(local.get("leads", [])):
+        if c not in leads and str(c) not in gone:
             leads.append(c)
     m["leads"] = leads
     m["lead_names"] = {**remote.get("lead_names", {}), **local.get("lead_names", {})}
@@ -155,7 +157,7 @@ def _merge(remote, local):
                 seen_k.add(key)
                 lst.append(x)
         m[k] = lst[-cap:]
-    m["settings"] = {**remote.get("settings", {}), **local.get("settings", {})}
+    m["settings"] = settings
     m["week_plan"] = local.get("week_plan") or remote.get("week_plan") or {}
     sls = dict(remote.get("shortlists", {}))
     for k, v in local.get("shortlists", {}).items():
@@ -344,6 +346,64 @@ def _name(u):
     return " ".join(x for x in [u.get("first_name"), u.get("last_name")] if x) or u.get("username") or str(u.get("id"))
 
 
+# ---------------------------------------------------------------- who may be a lead
+# Without settings.allowed_users or settings.invite_code, the first MAX_LEADS people who write to the bot become
+# leads. With either set, only listed users (Telegram id or @username) or people who open the invite link can.
+
+
+def _norm_user(x):
+    return str(x).strip().lstrip("@").lower()
+
+
+def may_register(state, msg):
+    st = state.get("settings") or {}
+    frm = msg.get("from") or {}
+    allowed = {_norm_user(x) for x in st.get("allowed_users") or []}
+    code = st.get("invite_code")
+    if not allowed and not code:
+        return len(state["leads"]) < MAX_LEADS
+    uname = _norm_user(frm.get("username") or "")
+    if str(frm.get("id")) in allowed or (uname and uname in allowed):
+        return True
+    return bool(code) and (msg.get("text") or "").strip() == f"/start {code}"
+
+
+def allow_users(state, items):
+    """Add Telegram ids / @usernames to settings.allowed_users (normalised, no duplicates)."""
+    st = state.setdefault("settings", {})
+    lst = [_norm_user(x) for x in st.get("allowed_users") or []]
+    for x in items:
+        x = _norm_user(x)
+        if x and x not in lst:
+            lst.append(x)
+    st["allowed_users"] = lst
+    gone = [g for g in st.get("removed_leads") or [] if str(g) not in lst]
+    if gone or "removed_leads" in st:
+        st["removed_leads"] = gone
+    return lst
+
+
+def remove_lead(state, chat_id):
+    """Stop sending to a lead (by chat id) and take them off the allowlist. Returns False if not a lead."""
+    cid = str(chat_id).strip()
+    if cid not in [str(c) for c in state["leads"]]:
+        return False
+    state["leads"] = [c for c in state["leads"] if str(c) != cid]
+    state["lead_names"].pop(cid, None)
+    st = state.setdefault("settings", {})
+    if st.get("allowed_users"):
+        st["allowed_users"] = [x for x in st["allowed_users"] if _norm_user(x) != cid]
+    st["removed_leads"] = list(dict.fromkeys([*map(str, st.get("removed_leads") or []), cid]))
+    return True
+
+
+def new_invite(state):
+    """A fresh invite code for https://t.me/<bot>?start=<code> (replaces the old one)."""
+    code = base64.urlsafe_b64encode(os.urandom(9)).decode().rstrip("=")
+    state.setdefault("settings", {})["invite_code"] = code
+    return code
+
+
 TENDER_ACK = "📑 Tender agentiga yetkazildi, keyingi tender sharhida hisobga olinadi."
 TENDER_PREFIX = re.compile(r"\s*#?(tender|тендер)\b", re.I)
 
@@ -355,7 +415,7 @@ def _tender_messages():
 
 
 def poll(state):
-    """Read new Telegram updates. Registers up to MAX_LEADS private chats (greets them) and returns
+    """Read new Telegram updates. Registers new leads that may_register() lets in (greets them) and returns
     actions: {"type": "registered"|"button"|"text", ...}. Saves state when anything changed."""
     args = {"timeout": 0, "limit": 100, "allowed_updates": UPDATE_TYPES}
     if state.get("offset"):
@@ -403,9 +463,12 @@ def poll(state):
         cid, text = msg["chat"]["id"], (msg.get("text") or msg.get("caption") or "").strip()
         photo = (msg.get("photo") or [{}])[-1].get("file_id")
         if cid not in state["leads"]:
-            if len(state["leads"]) < MAX_LEADS:
+            if may_register(state, msg):
                 state["leads"].append(cid)
                 state["lead_names"][str(cid)] = _name(msg.get("from", {}))
+                st = state.setdefault("settings", {})
+                if str(cid) in map(str, st.get("removed_leads") or []):
+                    st["removed_leads"] = [g for g in st["removed_leads"] if str(g) != str(cid)]
                 try:
                     _send_text(cid, GREETING)
                 except Exception as ex:
