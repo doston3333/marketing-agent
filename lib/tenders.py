@@ -236,8 +236,11 @@ def from_links(site, page_cfg, res):
         cands = [t for t in v["texts"] if len(t) > 12 and not re.match(r"(view|batafsil|подробнее|details?|more)\b", t, re.I)]
         title = max(cands, key=len) if cands else (lines[0] if lines else href)
         m = re.search(page_cfg["id_from_url"], href) if page_cfg.get("id_from_url") else None
+        # infer_deadline false: notices with no closing date (e.g. general procurement notices) keep none,
+        # instead of taking their publication date and being dropped as closed
         out.append(make_item(site, m.group(1) if m else None, title, href, v["card"],
-                             deadline=deadline_by_regex(page_cfg, v["card"])))
+                             deadline=deadline_by_regex(page_cfg, v["card"]),
+                             infer_deadline=page_cfg.get("infer_deadline", True)))
     return out
 
 

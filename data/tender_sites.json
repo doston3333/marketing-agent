@@ -354,7 +354,42 @@
      "may_be_empty": true
     }
    ],
-   "notes": "Project procurement notices searched for Uzbekistan. Bidding itself is on ECEPP (ecepp.ebrd.com). Most EBRD project notices are now only on ECEPP, so this feed is often empty."
+   "notes": "Project procurement notices searched for Uzbekistan. Bidding itself is on ECEPP (ecepp.ebrd.com). Most EBRD project notices are now only on ECEPP, so this feed is often empty. ECEPP itself is scanned as the separate site 'ecepp'."
+  },
+  {
+   "id": "ecepp",
+   "name": "EBRD ECEPP",
+   "url": "https://ecepp.ebrd.com",
+   "mode": "links",
+   "pages": [
+    {
+     "url": "https://ecepp.ebrd.com/delta/noticeSearchResults.html",
+     "pattern": "ecepp\\.ebrd\\.com/delta/viewNotice\\.html\\?displayNoticeId=\\d+",
+     "id_from_url": "displayNoticeId=(\\d+)",
+     "may_be_empty": true,
+     "actions": [
+      {
+       "eval": "() => { const t = $('#noticeResultsTable').DataTable(); t.search('Uzbekistan'); t.column(1).search(''); t.column(5).search('^Open$', true, false); t.page.len(-1).draw(); }",
+       "wait": 2000
+      }
+     ],
+     "deadline_regex": "UK Time\\s+(\\d{1,2}/\\d{1,2}/20\\d\\d)"
+    },
+    {
+     "url": "https://ecepp.ebrd.com/delta/noticeSearchResults.html",
+     "pattern": "ecepp\\.ebrd\\.com/delta/viewNotice\\.html\\?displayNoticeId=\\d+",
+     "id_from_url": "displayNoticeId=(\\d+)",
+     "may_be_empty": true,
+     "actions": [
+      {
+       "eval": "() => { const t = $('#noticeResultsTable').DataTable(); const cutoff = Date.now() - 60 * 864e5; $.fn.dataTable.ext.search.push((s, d) => { if (s.nTable.id !== 'noticeResultsTable') return true; const m = /(\\d{2})\\/(\\d{2})\\/(\\d{4})/.exec(d[3] || ''); return !m || new Date(+m[3], m[2] - 1, +m[1]).getTime() >= cutoff; }); t.search('Uzbekistan'); t.column(5).search(''); t.column(1).search('General'); t.page.len(-1).draw(); }",
+       "wait": 2000
+      }
+     ],
+     "infer_deadline": false
+    }
+   ],
+   "notes": "EBRD's client e-procurement portal, where nearly all EBRD project notices are now published. The public list needs no login. Page 1: open notices that mention Uzbekistan. Page 2: General Procurement Notices for Uzbekistan published in the last 60 days (early warning of tenders to come; no closing date, so treat as watch; the 60-day window matches how long undated lots are remembered, so old notices never come back as new). Bidding needs a free ECEPP registration."
   },
   {
    "id": "isdb",
