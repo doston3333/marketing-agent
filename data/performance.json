@@ -3,52 +3,52 @@
  "summary": {
   "kind": {
    "other": {
-    "posts": 15,
-    "median_eng": 1.06
+    "posts": 16,
+    "median_eng": 1.07
    },
    "partnership": {
-    "posts": 35,
-    "median_eng": 0.93
+    "posts": 36,
+    "median_eng": 0.97
    },
    "educational": {
-    "posts": 8,
-    "median_eng": 1.19
+    "posts": 9,
+    "median_eng": 1.16
    },
    "greeting": {
     "posts": 9,
     "median_eng": 1.02
    },
    "event": {
-    "posts": 6,
+    "posts": 7,
     "median_eng": 1.09
    },
    "opportunity": {
-    "posts": 10,
+    "posts": 17,
     "median_eng": 0.95
    }
   },
   "series": {
    "-": {
-    "posts": 83,
-    "median_eng": 0.99
+    "posts": 94,
+    "median_eng": 1.0
    }
   },
   "by": {
    "team": {
-    "posts": 83,
-    "median_eng": 0.99
+    "posts": 94,
+    "median_eng": 1.0
    }
   },
   "photo": {
    "True": {
-    "posts": 62,
+    "posts": 66,
     "median_eng": 1.02
    },
    "False": {
-    "posts": 21,
-    "median_eng": 0.99
+    "posts": 28,
+    "median_eng": 0.95
    }
   }
  },
- "updated": 1792813900.630602
+ "updated": 1794282615.5903654
 }
