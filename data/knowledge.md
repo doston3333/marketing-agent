@@ -72,11 +72,12 @@ Write as one AI Station team member who works with founders every week (first pe
 - Partnership announcements perform below normal: keep them short and lead with what the reader gets.
 
 ## Choosing the image (set spec.<platform>.art)
-- "photo": real people, places, events, products. Use the article URL (its lead photo is used, tinted to brand colours), an image URL, or tg:<file_id> of a photo a lead sent. Best for events, founders, local news.
-- "card": no background art, the plain brand background. Best when the phrase itself is the message (a deadline, a number, a short quote).
-- "minimax": a concept illustration from image_prompt. Only for abstract ideas (strategy, trends, explainers).
-- Mix within a post is fine (e.g. Instagram photo, LinkedIn card). Do not use MiniMax for every post.
-- After `agent.py render`, LOOK at every preview. Reject: a photo that is not about this story, any letters/garbage text in the art, deformed objects, the generic glossy "AI art" look, a headline that is hard to read. Pin the best with spec.<p>.art_path; if none is good, use "card".
+- Every platform gets a real picture. The leads do not want plain brand cards: a card looks like a placeholder.
+- "minimax": a concept illustration from image_prompt (drawn by MiniMax or OpenRouter, whichever key is set). The default for every platform, including deadlines, numbers, opportunities and quotes: show the subject (a gavel and code for a legal-tech hackathon, a trophy and a calendar page for a competition deadline), never the number itself.
+- "photo": real people, places, events, products when the story has a good photo. Use the article URL (its lead photo is used, tinted to brand colours), an image URL, or tg:<file_id> of a photo a lead sent.
+- Give each platform its own image_prompt (a different composition per platform, subject placed where its headline leaves room).
+- "card" (plain brand background, no art) is a last resort only: when image generation fails twice for that platform. Say so in the report.
+- After `agent.py render`, LOOK at every preview. Reject: a photo that is not about this story, any letters/garbage text in the art, deformed objects, the generic glossy "AI art" look, a headline that is hard to read. Pin the best with spec.<p>.art_path; if none is good, write a new image_prompt and render again.
 
 ## Carousels (format = carousel)
 - carousel.instagram (Uzbek) and carousel.linkedin (English): 3-9 slides after the cover. Slide = {"title" (max 10 words, one [[highlight]]), "body" (max 45 words), optional "stat"}.

@@ -51,11 +51,11 @@ STEP 3 - WRITE
    The image shows only the logo and the headline: ONE short phrase (IG max 7 words Uzbek, TG max 6 Uzbek, LI max 8 English), optional [[highlight]]. No tag, subline, stat or stat_label.
            "captions": {"instagram", "telegram", "linkedin"},
            "carousel"?: {"instagram": [slides], "linkedin": [slides]}}
-   Image type per the guide's "Choosing the image": events/people/places -> "photo" (article URL or tg:<file_id>), numbers/deadlines/quotes/opportunities -> "card", abstract ideas -> "minimax" with an image_prompt (one concrete visual metaphor, subject placement per platform, no text/people/logos/robots/glowing brains). Use a mix; MiniMax for every platform every day is a smell.
+   Image type per the guide's "Choosing the image": every platform gets a real picture: "minimax" with an image_prompt (one concrete visual metaphor, subject placement per platform, no text/people/logos/robots/glowing brains) by default, also for numbers/deadlines/quotes/opportunities; "photo" (article URL or tg:<file_id>) when the story has a good real photo. Never plan a "card": it is only the fallback when image generation fails twice.
 6. `python3 agent.py lint work/post.json` - fix every problem and every warning, repeat until it prints [] with no warnings you can fix. Then do the guide's self-review checklist honestly.
 
 STEP 4 - IMAGES (look before you send)
-`python3 agent.py render work/post.json --id draft --n 2` (600000 ms timeout). Read EVERY preview .jpg it lists and judge it: on-topic? clean (no garbage letters, no deformed objects)? the one phrase readable? not generic glossy AI art? Pin the best background for each platform by setting spec.<platform>.art_path to its art_path. If a photo is off-topic or a platform has no good option, switch that platform to "card" (or a new image_prompt) and render again (max 2 rounds).
+`python3 agent.py render work/post.json --id draft --n 2` (600000 ms timeout). Read EVERY preview .jpg it lists and judge it: on-topic? clean (no garbage letters, no deformed objects)? the one phrase readable? not generic glossy AI art? Pin the best background for each platform by setting spec.<platform>.art_path to its art_path. If a photo is off-topic or a platform has no good option, write a new image_prompt (or switch a photo to "minimax") and render again (max 2 rounds). Only if image generation itself fails twice for a platform, use "card" there and say so in the report.
 
 STEP 5 - DELIVER
 `python3 agent.py send work/post.json --history --note "🗳 Tanlangan g‘oya #<n>"` (600000 ms timeout). If it fails, retry once, then PushNotification with the error.
