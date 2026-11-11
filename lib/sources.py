@@ -1,8 +1,9 @@
 # Story discovery for the AI Station marketing agent.
-# Collects 150-400 items from a fixed source list (public Telegram channels via t.me/s, RSS, Google News
-# RSS, Hacker News), groups duplicates into story clusters, scores them, and keeps a rolling story bank
-# (data/story_bank.json) so a strong story from earlier in the week can beat a weak one from today.
-# No LLM here: Claude reads the top candidates (`agent.py candidates`) and applies the editorial rubric.
+# Collects ~1000 items from a fixed source list (global AI and tech press, Techmeme, Hacker News, Google News,
+# plus local Telegram channels and RSS), groups duplicates into story clusters, scores them by how much the
+# world is talking about them, and keeps a rolling story bank (data/story_bank.json).
+# The channel posts trending global AI news; local items are a small side list.
+# No LLM here: Claude reads the top candidates (`agent.py today` / `candidates`) and applies the editorial rubric.
 import hashlib, html, json, math, os, re, statistics, time, datetime, email.utils
 import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor
@@ -10,31 +11,50 @@ import requests
 
 UA = {"User-Agent": "Mozilla/5.0 (compatible; AIStationAgent/1.0)"}
 
-# tier: 3 = core local tech/startup, 2 = general local or regional news, 1 = global/background
+# tier: 3 = global AI / tech press (each one covering a story counts towards its "buzz"),
+#       2 = local tech and startup sources, company blogs, 1 = general local news
 TELEGRAM = {
-    "thetechkz": 3, "itpark_uz": 3, "startupchoyxona": 3, "yoshlarventures": 3, "startupgarage_uz": 3,
-    "itparkventures": 3, "spotuz": 2, "kunuzen": 2, "kunuzofficial": 2, "gazetauz": 2, "daryo_uz": 2,
-    "uzdaily": 2, "kursivuz": 2,
+    "thetechkz": 2, "itpark_uz": 2, "startupchoyxona": 2, "yoshlarventures": 2, "startupgarage_uz": 2,
+    "itparkventures": 2, "spotuz": 1, "kunuzen": 1, "kunuzofficial": 1, "gazetauz": 1, "daryo_uz": 1,
+    "uzdaily": 1, "kursivuz": 1,
 }
 RSS = {
-    "https://www.spot.uz/rss/": 3, "https://www.spot.uz/en/rss/": 3, "https://the-tech.kz/feed/": 3,
-    "https://digitalbusiness.kz/feed/": 2, "https://kun.uz/news/rss": 2, "https://www.gazeta.uz/ru/rss/": 2,
-    "https://daryo.uz/feed/": 2, "https://uz.kursiv.media/feed/": 2, "https://kz.kursiv.media/feed/": 1,
-    "https://timesca.com/feed/": 2, "https://www.uzdaily.uz/en/rss": 2,
-    "https://openai.com/news/rss.xml": 1,
-    "https://blog.google/technology/ai/rss/": 1, "https://techcrunch.com/category/artificial-intelligence/feed/": 1,
+    # global AI and tech press: the trend signal
+    "https://www.techmeme.com/feed.xml": 3,
+    "https://techcrunch.com/category/artificial-intelligence/feed/": 3,
+    "https://techcrunch.com/category/startups/feed/": 3, "https://techcrunch.com/category/venture/feed/": 3,
+    "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml": 3,
+    "https://arstechnica.com/ai/feed/": 3, "https://www.wired.com/feed/tag/ai/latest/rss": 3,
+    "https://www.technologyreview.com/feed/": 3, "https://the-decoder.com/feed/": 3,
+    "https://www.cnbc.com/id/19854910/device/rss/rss.html": 3, "https://news.crunchbase.com/feed/": 3,
+    "https://siliconangle.com/category/ai/feed/": 3, "https://feeds.bloomberg.com/technology/news.rss": 3,
+    "https://www.theguardian.com/technology/artificialintelligenceai/rss": 3,
+    "https://feeds.bbci.co.uk/news/technology/rss.xml": 3, "https://www.theinformation.com/feed": 3,
+    "https://fortune.com/feed/fortune-feeds/?id=3230629": 3, "https://www.scmp.com/rss/36/feed": 3,
+    "https://sifted.eu/feed": 3, "https://venturebeat.com/category/ai/feed/": 3,
+    # company blogs: the primary source, but not a sign that anyone cares
+    "https://openai.com/news/rss.xml": 2, "https://blog.google/technology/ai/rss/": 2,
+    "https://deepmind.google/blog/rss.xml": 2, "https://blogs.nvidia.com/feed/": 2,
+    # local
+    "https://www.spot.uz/rss/": 2, "https://www.spot.uz/en/rss/": 2, "https://the-tech.kz/feed/": 2,
+    "https://digitalbusiness.kz/feed/": 1, "https://kun.uz/news/rss": 1, "https://www.gazeta.uz/ru/rss/": 1,
+    "https://daryo.uz/feed/": 1, "https://uz.kursiv.media/feed/": 1, "https://kz.kursiv.media/feed/": 1,
+    "https://timesca.com/feed/": 1, "https://www.uzdaily.uz/en/rss": 1,
 }
-GNEWS = [  # (query, locale) - when:3d keeps it fresh
-    ("Uzbekistan (startup OR AI OR venture OR \"IT Park\") when:3d", "en"),
-    ("\"Central Asia\" (startup OR venture OR funding) when:3d", "en"),
-    ("Узбекистан (стартап OR \"искусственный интеллект\" OR венчур OR \"IT Park\") when:3d", "ru"),
-    ("Казахстан OR Узбекистан стартап инвестиции when:3d", "ru"),
+GNEWS = [  # (query, locale, scope): "world" results count as global press, "local" ones as local news
+    ("(OpenAI OR Anthropic OR Nvidia OR Gemini OR ChatGPT OR \"AI startup\") when:1d", "en", "world"),
+    ("\"AI startup\" (raises OR valuation OR revenue OR acquires) when:2d", "en", "world"),
+    ("\"artificial intelligence\" (schools OR hospitals OR robots OR government OR factory) when:2d", "en", "world"),
+    ("Uzbekistan (startup OR AI OR venture OR \"IT Park\") when:3d", "en", "local"),
+    ("Узбекистан (стартап OR \"искусственный интеллект\" OR венчур OR \"IT Park\") when:3d", "ru", "local"),
 ]
 GNEWS_LOCALE = {"en": "hl=en-US&gl=US&ceid=US:en", "ru": "hl=ru&gl=RU&ceid=RU:ru"}
 
 # Topic hints: what AI Station's audience cares about. Used for a cheap relevance prior and tagging.
 KEYWORDS = {
-    "ai": r"\b(ai|a\.i\.|llm|gpt|claude|gemini|openai|anthropic|nvidia|sun.?iy intellekt|искусственн\w+ интеллект|нейросет\w*|ии)\b",
+    "ai": r"\b(ai|a\.i\.|llms?|gpt\S*|chatgpt|claude|gemini|copilot|openai|anthropic|nvidia|deepseek|deepmind|xai|grok|"
+          r"artificial intelligence|machine learning|generative|chatbots?|humanoids?|robots?|robotaxis?|"
+          r"sun.?iy intellekt|искусственн\w+ интеллект\w*|нейросет\w*|ии)\b",
     "startup": r"\b(startap\w*|startup\w*|стартап\w*|founder\w*|asoschi\w*|основател\w*|accelerat\w*|акселерат\w*|inkubator\w*)\b",
     "venture": r"\b(invest\w*|инвест\w*|venture|venchur\w*|венчур\w*|raund\w*|раунд\w*|funding|seed|pre-seed|grant\w*|грант\w*|vc)\b",
     "local": r"\b(uzbek\w*|o.zbek\w*|узбек\w*|tashkent|toshkent|ташкент\w*|it ?park|central asia|markaziy osiyo|центральн\w+ ази\w+|kazakh\w*|казах\w*|astana hub)\b",
@@ -138,11 +158,11 @@ def rss(url):
     return out
 
 
-def google_news(query, locale):
+def google_news(query, locale, scope="local"):
     url = f"https://news.google.com/rss/search?q={requests.utils.quote(query)}&{GNEWS_LOCALE[locale]}"
-    items = rss(url)
+    items = rss(url)[:40]
     for it in items:
-        it["source"] = "gnews:" + (it.get("outlet") or "?")
+        it["source"] = ("news:" if scope == "world" else "gnews:") + (it.get("outlet") or "?")
         it["title"] = re.sub(r"\s+-\s+[^-]+$", "", it["title"])  # strip " - Outlet"
     return items
 
@@ -160,7 +180,7 @@ def collect(hours=96, tg_pages=1):
     """Fetch every source in parallel. Returns (items, errors)."""
     jobs = [("tg", n, lambda n=n: telegram_channel(n, tg_pages)) for n in TELEGRAM]
     jobs += [("rss", u, lambda u=u: rss(u)) for u in RSS]
-    jobs += [("gnews", q, lambda q=q, l=l: google_news(q, l)) for q, l in GNEWS]
+    jobs += [("gnews", q, lambda q=q, l=l, sc=sc: google_news(q, l, sc)) for q, l, sc in GNEWS]
     jobs += [("hn", "hn", hacker_news)]
     items, errors = [], {}
 
@@ -211,8 +231,8 @@ def tier(source):
             if source[4:] in u:
                 return t
         return 1
-    if source.startswith("gnews:"):
-        return 2
+    if source.startswith("news:") or source == "hn":
+        return 3
     return 1
 
 
@@ -252,10 +272,74 @@ def cluster(items, threshold=0.42):
     return clusters
 
 
+# What makes a global AI story travel: a name everyone knows, a big number, or a scene you can picture.
+BIG = re.compile(r"\b(openai|chatgpt|sora|anthropic|claude|google|gemini|deepmind|alphabet|apple|siri|iphone|microsoft|"
+                 r"copilot|meta|nvidia|amazon|aws|alexa|xai|grok|tesla|spacex|neuralink|samsung|deepseek|alibaba|tencent|"
+                 r"baidu|bytedance|tiktok|huawei|xiaomi|mistral|perplexity|midjourney|softbank|oracle|ibm|intel|amd|tsmc|"
+                 r"waymo|uber|netflix|spotify|youtube|whatsapp|instagram|telegram|yandex|y combinator|sequoia|a16z)\b", re.I)
+MONEY = re.compile(r"(\$\s?\d[\d.,]*\s?(million|billion|trillion|mln|mlrd|bn|[mbk]\b)|\b(raises?|raised|funding round|"
+                   r"valuation|valued at|series [a-f]\b|seed round|arr\b|annual(ized)? (recurring )?revenue|"
+                   r"acquires?|acquisition|ipo|unicorn)\b)", re.I)
+REAL_LIFE = re.compile(r"\b(schools?|teachers?|students?|classrooms?|homework|universit\w+|hospitals?|doctors?|patients?|"
+                       r"surgery|farms?|farmers?|factor(y|ies)|police|courts?|judges?|airports?|cit(y|ies)|governments?|"
+                       r"ministr(y|ies)|humanoids?|robots?|robotaxis?|driverless|self-driving|china|chinese|japan\w*|"
+                       r"korea\w*|india\w*|uae|dubai|saudi|singapore|estonia\w*)\b", re.I)
+GOSSIP = re.compile(r"\b(affair|scandal|divorce|mistress|girlfriend|boyfriend|sex(ual)?|suicide|murder|shooting)\b", re.I)
+
+
+_AMOUNT = re.compile(r"[$£€]\s?(\d[\d,]*(?:\.\d+)?)\s?(trillion|trn|tn|billion|bn|b|million|mln|m|thousand|k)?\b", re.I)
+_UNIT = {"trillion": 1e12, "trn": 1e12, "tn": 1e12, "billion": 1e9, "bn": 1e9, "b": 1e9, "million": 1e6, "mln": 1e6,
+         "m": 1e6, "thousand": 1e3, "k": 1e3}
+
+
+def amount(text):
+    """The largest sum of money named in the text, in units of currency (0 when there is none)."""
+    best = 0.0
+    for m in _AMOUNT.finditer(text or ""):
+        try:
+            best = max(best, float(m.group(1).replace(",", "")) * _UNIT.get((m.group(2) or "").lower(), 1))
+        except ValueError:
+            pass
+    return best
+
+
+def money_weight(text):
+    """0..1: how big the money in the story is. $1bn+ is the top; a small seed round barely counts."""
+    a = amount(text)
+    if a >= 1e9:
+        return 1.0
+    if a >= 1e8:
+        return 0.7
+    if a >= 1e7:
+        return 0.4
+    if a > 0:
+        return 0.1
+    return 0.3 if MONEY.search(text or "") else 0.0
+
+
+def story_type(tg, text, titles=""):
+    """A hint for the daily mix: opportunity | local | money | bigtech | reallife | other."""
+    titles = titles or text
+    if "opportunity" in tg and "local" in tg:
+        return "opportunity"
+    if "uz" in tg:
+        return "local"
+    if BIG.search(titles):
+        return "bigtech"
+    if MONEY.search(titles) or (MONEY.search(text) and ("startup" in tg or "venture" in tg)):
+        return "money"
+    if REAL_LIFE.search(text):
+        return "reallife"
+    return "other"
+
+
 def score_cluster(c, posted_tokens, now=None):
+    """How much the world is talking about this AI story right now, 0..1."""
     now = now or time.time()
     srcs = {i["source"] for i in c["items"]}
     velocity = sum(tier(s) for s in srcs)
+    press = {s for s in srcs if tier(s) == 3}
+    buzz = len(press) + (1 if any("techmeme" in s for s in press) else 0)  # being on Techmeme is itself a trend sign
     eng = max([i.get("eng", 0) for i in c["items"]] + [0])
     hn = max([i.get("points", 0) or 0 for i in c["items"]] + [0])
     first = min([i["ts"] for i in c["items"] if i.get("ts")] or [now])
@@ -263,16 +347,18 @@ def score_cluster(c, posted_tokens, now=None):
     fresh = 0.5 ** (age_h / 36)
     text = " ".join(i["title"] + " " + i.get("snippet", "") for i in c["items"])
     tg = tags(text)
-    rel = len({"ai", "startup", "venture", "local", "education", "opportunity", "policy"} & set(tg))
+    titles = " ".join(i["title"] for i in c["items"])
+    typ = story_type(tg, text, titles)
     nov = 1 - max([_sim(c["_tok"], p) for p in posted_tokens] + [0])
-    score = (0.30 * min(rel, 4) / 4 + 0.25 * min(velocity, 9) / 9 + 0.15 * min(eng, 3) / 3
-             + 0.10 * min(hn, 600) / 600 + 0.20 * fresh) * (0.4 + 0.6 * nov)
-    if "uz" in tg:
-        score += 0.10  # Uzbekistan first, the rest of Central Asia second
-    if "opportunity" in tg and "local" in tg:
-        score += 0.15  # proven best performer on @aistationuz: things the audience can act on
-    return round(score, 3), {"velocity": velocity, "sources": len(srcs), "eng_ratio": eng, "hn_points": hn,
-                             "age_h": round(age_h, 1), "relevance_tags": tg, "novelty": round(nov, 2)}
+    score = (0.35 * min(buzz, 5) / 5 + 0.15 * bool(BIG.search(text)) + 0.10 * money_weight(titles)
+             + 0.10 * min(hn, 600) / 600 + 0.10 * min(eng, 3) / 3 + 0.20 * fresh) * (0.4 + 0.6 * nov)
+    if "ai" not in tg:
+        score *= 0.7 if typ == "opportunity" else 0.35  # the channel is about AI; the rest is background
+    if GOSSIP.search(text):
+        score *= 0.3  # private lives and tragedies are not our stories, however loud
+    return round(score, 3), {"type": typ, "buzz": buzz, "velocity": velocity, "sources": len(srcs), "eng_ratio": eng,
+                             "hn_points": hn, "age_h": round(age_h, 1), "relevance_tags": tg,
+                             "novelty": round(nov, 2)}
 
 
 def _cid(c):
@@ -282,7 +368,6 @@ def _cid(c):
 
 def update_bank(bank, items, posted_topics, keep_days=7):
     """Merge freshly collected items into the story bank. bank = {"stories": {id: story}, "updated": ts}."""
-    posted_tokens = [tokens(t) for t in posted_topics]
     stories = bank.setdefault("stories", {})
     # attach to existing stories first so a story keeps its id (and status) across days
     fresh = []
@@ -308,12 +393,11 @@ def update_bank(bank, items, posted_topics, keep_days=7):
     now = time.time()
     for sid, s in list(stories.items()):
         s["items"] = sorted({i["id"]: i for i in s["items"]}.values(), key=lambda i: -(i.get("ts") or 0))[:8]
-        c = {"items": s["items"], "_tok": set(s["tokens"])}
-        s["score"], s["signals"] = score_cluster(c, posted_tokens, now)
         if s["status"] == "candidate" and now - s["first_seen"] > keep_days * 86400:
             del stories[sid]
+    rescore(bank, posted_topics, now)
     keep = sorted(stories.values(), key=lambda s: (s["status"] != "candidate", -s["score"]))
-    bank["stories"] = {s["id"]: s for s in keep[:200] if s["status"] != "candidate" or s["score"] >= 0.25}
+    bank["stories"] = {s["id"]: s for s in keep[:260] if s["status"] != "candidate" or s["score"] >= 0.18}
     for s in bank["stories"].values():
         s["items"] = s["items"][:8]
         for i in s["items"]:
@@ -322,14 +406,62 @@ def update_bank(bank, items, posted_topics, keep_days=7):
     return bank
 
 
+def rescore(bank, posted_topics=(), now=None):
+    """Score every story in the bank again with the current rules (also after the rules changed between runs)."""
+    posted_tokens = [tokens(t) for t in posted_topics]
+    for s in bank.get("stories", {}).values():
+        s["score"], s["signals"] = score_cluster({"items": s["items"], "_tok": set(s["tokens"])}, posted_tokens, now)
+    return bank
+
+
 def headline(s):
     best = max(s["items"], key=lambda i: (tier(i["source"]), -abs(len(i["title"]) - 90)))
     return best["title"]
 
 
-def top(bank, n=25, statuses=("candidate",)):
+def top(bank, n=25, statuses=("candidate",), types=None, ai=None):
+    """Best stories first. types: keep only these story types; ai: True keeps only stories tagged as AI."""
     ss = [s for s in bank.get("stories", {}).values() if s["status"] in statuses]
+    if types:
+        ss = [s for s in ss if s["signals"].get("type") in types]
+    if ai:
+        ss = [s for s in ss if "ai" in s["signals"].get("relevance_tags", [])]
     return sorted(ss, key=lambda s: -s["score"])[:n]
+
+
+_ALIAS = {"chatgpt": "openai", "sora": "openai", "claude": "anthropic", "gemini": "google", "deepmind": "google",
+          "alphabet": "google", "siri": "apple", "iphone": "apple", "copilot": "microsoft", "grok": "xai",
+          "aws": "amazon", "alexa": "amazon"}
+
+
+def entity(title):
+    """The well-known name a headline is about (first one mentioned), or None."""
+    m = BIG.search(title or "")
+    return _ALIAS.get(m.group(1).lower(), m.group(1).lower()) if m else None
+
+
+def digest(bank, per_type=None, per_entity=2):
+    """The day's trending AI stories as a varied menu: best first inside each story type, and at most `per_entity`
+    stories about the same big name, so one loud story (an IPO, a launch) cannot fill the whole list.
+    Returns {type: [story + {"entity", "also": n other bank stories about the same name}]}."""
+    per_type = per_type or {"bigtech": 12, "money": 8, "reallife": 8, "other": 4}
+    out, seen, total = {t: [] for t in per_type}, {}, {}
+    ranked = top(bank, 400, ai=True)
+    for st in ranked:
+        e = entity(headline(st))
+        if e:
+            total[e] = total.get(e, 0) + 1
+    for st in ranked:
+        t = st["signals"].get("type")
+        if t not in out or len(out[t]) >= per_type[t]:
+            continue
+        e = entity(headline(st))
+        if e:
+            if seen.get(e, 0) >= per_entity:
+                continue
+            seen[e] = seen.get(e, 0) + 1
+        out[t].append(st | {"entity": e, "also": max(0, total.get(e, 1) - 1) if e else 0})
+    return out
 
 
 def og_image(url):

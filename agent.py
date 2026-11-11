@@ -69,11 +69,14 @@ def _posted_topics(state):
 
 
 def _brief_story(s):
-    return {"id": s["id"], "score": s["score"], "headline": S.headline(s), "signals": s["signals"],
-            "status": s["status"],
-            "items": [{"source": i["source"], "title": i["title"][:200], "url": i["url"], "views": i.get("views"),
-                       "eng": i.get("eng"), "age_h": round((time.time() - i["ts"]) / 3600, 1) if i.get("ts") else None,
-                       "snippet": (i.get("snippet") or "")[:240]} for i in s["items"][:5]]}
+    b = {"id": s["id"], "score": s["score"], "headline": S.headline(s), "signals": s["signals"],
+         "status": s["status"],
+         "items": [{"source": i["source"], "title": i["title"][:200], "url": i["url"], "views": i.get("views"),
+                    "eng": i.get("eng"), "age_h": round((time.time() - i["ts"]) / 3600, 1) if i.get("ts") else None,
+                    "snippet": (i.get("snippet") or "")[:200]} for i in s["items"][:3]]}
+    if s.get("also"):
+        b["also"] = f"{s['also']} more stories in the bank about {s['entity']}: one of the day's loudest names"
+    return b
 
 
 def cmd_today(state, day=None):
@@ -83,17 +86,21 @@ def cmd_today(state, day=None):
     slot = dict(plan["week"][day])
     wp = state.get("week_plan", {}).get(now.strftime("%Y%m%d"))
     bank = A.data_json("story_bank.json", {})
-    stories = S.top(bank, 60)
-    opps = [s for s in stories if "opportunity" in s["signals"]["relevance_tags"]][:6]
+    if any("type" not in st.get("signals", {}) for st in bank.get("stories", {}).values()):
+        S.rescore(bank, _posted_topics(state))  # a bank saved before the scoring rules changed
+    menu = S.digest(bank)
     ideas = [i for i in A.data_json("ideas.json", {"ideas": []})["ideas"] if i.get("status") == "open"]
     lead_ideas = [i for i in ideas if i.get("source") == "lead"]
-    pillar_ideas = [i for i in ideas if i.get("pillar") == slot["pillar"] and i.get("source") != "lead"][:4]
+    recent = [{"date": h["date"], "series": h.get("series"), "topic": h.get("topic"),
+               "closing": A.closings(((state["posts"].get(h.get("post_id")) or {}).get("captions") or {}).get("telegram", ""))}
+              for h in state["history"][-5:]]
     print(json.dumps({"day": day, "date": now.strftime("%Y-%m-%d"), "slot": slot, "planned_this_week": wp,
-                      "rules": plan.get("always"),
+                      "story_types": plan.get("types"), "rules": plan.get("always"),
                       "lead_ideas_first": lead_ideas,
-                      "opportunities_in_bank": [_brief_story(s) for s in opps],
-                      "ideas_for_this_pillar": pillar_ideas,
-                      "top_stories": [_brief_story(s) for s in stories[:12]],
+                      "trending_ai": {t: [_brief_story(s) for s in ss] for t, ss in menu.items()},
+                      "local_ai": [_brief_story(s) for s in S.top(bank, 4, types=("local",), ai=True)],
+                      "opportunities_in_bank": [_brief_story(s) for s in S.top(bank, 4, types=("opportunity",))],
+                      "last_posts": recent,
                       "bank_updated_h_ago": round((time.time() - bank.get("updated", 0)) / 3600, 1) if bank else None},
                      ensure_ascii=False, indent=1))
 

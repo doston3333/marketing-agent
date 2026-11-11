@@ -31,10 +31,12 @@ _OR_PARAMS = {}  # model -> supported_parameters on OpenRouter (read once per ru
 FONT_URL = "https://raw.githubusercontent.com/google/fonts/main/ofl/montserrat/Montserrat%5Bwght%5D.ttf"
 TG_LINKS = ("\n\n🌐 [Website](https://aistation.uz) | [Instagram](https://www.instagram.com/aistationuz) | "
             "[LinkedIn](https://www.linkedin.com/company/109457182) | [YouTube](https://www.youtube.com/@AI_Station_UZ)")
-TG_END = "Learn. Build. Launch. Scale. 🚀"
+TG_END = "Learn. Build. Launch. Scale. 🚀"  # the old fixed last line; posts now end with a closing from the guide
 SIGNOFF_NAMES = ["Aloqabank", "Agrobank", "UNDP", "Ministry of Economy", "Iqtisodiyot va moliya vazirligi",
                  "Founders Hub", "NexaGrid", "IT Park", "UBS", "University of Business and Science", "Talos Capital",
-                 "Montfort", "Virtual Accelerate", "AloqaVentures", "United Ventures", "NVIDIA", "Notion", "HubSpot"]
+                 "Montfort", "Virtual Accelerate", "AloqaVentures", "United Ventures"]
+GLOBAL_PARTNERS = ["NVIDIA", "Notion", "HubSpot"]  # sign-off only when the post is about our partnership with them
+NEWS_SINCE = "20261112"  # first day the channel is run as a trending AI news desk (see data/knowledge.md)
 GREETING = ("Salom! Men AI Station marketing agentiman. Har kuni ertalab shu yerga tayyor post g‘oyasi, "
             "rasm va matnlarni yuboraman. Tugmalar orqali tasdiqlang yoki qayta so‘rang; istalgan xabarga "
             "reply qilib tahrir yozsangiz, men uni qo‘llayman.")
@@ -1101,10 +1103,7 @@ def _send_photo(chat_id, photo, caption):
 
 
 def tg_caption(text):
-    t = text.rstrip()
-    if TG_END not in t:
-        t += "\n\n" + TG_END
-    return t + TG_LINKS
+    return text.rstrip() + TG_LINKS
 
 
 def send_package(state, post_id, post, note=None, use_minimax=True):
@@ -1261,17 +1260,19 @@ def load_knowledge(state=None):
         print("\n".join(f"- {r.get('topic')} ({r.get('reason') or 'no reason given'})" for r in rj))
     cutoff = (tashkent_now() - datetime.timedelta(days=21)).strftime("%Y%m%d")
     print("\n## TOPICS COVERED RECENTLY (last 21 days, do not repeat)")
-    print("\n".join(f"- {h['date']}: {h['topic']} ({h.get('source', '')})" for h in state["history"] if h["date"] >= cutoff) or "- none")
+    print("\n".join(f"- {h['date']} [{h.get('series') or '-'}]: {h['topic']} ({h.get('source', '')})"
+                    for h in state["history"] if h["date"] >= cutoff) or "- none")
     perf = data_json("performance.json")
     if perf.get("summary"):
         print("\n## WHAT PERFORMS ON @aistationuz (views vs channel median; >1 = above normal)")
         print(json.dumps(perf["summary"], ensure_ascii=False))
     print("\n## APPROVED CAPTIONS (what good looks like)")
-    ap = [p for p in state["posts"].values() if p.get("status") == "approved"][-2:]
+    # only posts built as trending AI news: the older approved posts follow rules the leads dropped
+    ap = [p for k, p in sorted(state["posts"].items()) if p.get("status") == "approved" and k[:8] >= NEWS_SINCE][-2:]
     for p in ap:
         print(f"--- {p.get('topic')}\n[IG]\n{p['captions']['instagram']}\n[TG]\n{p['captions']['telegram']}\n[LI]\n{p['captions']['linkedin']}")
     if not ap:
-        print("- none yet")
+        print("- none yet: the gold posts in the guide are the model")
     print("\nFor voice examples on today's topic run: python3 agent.py examples \"<topic>\"")
 
 
@@ -1305,12 +1306,44 @@ def lint_warnings(post):
             mean = sum(len(x.split()) for x in sents) / len(sents)
             if style.get("sentence_words_mean") and mean > style["sentence_words_mean"] * 1.5:
                 W.append(f"telegram: sentences average {mean:.0f} words; house style is {style['sentence_words_mean']}")
+    W += news_warnings(post)
     for k, v in (post.get("captions") or {}).items():
         if re.search(r"\b(not (just|only)|emas,? balki)\b", v, re.I):
             W.append(f"{k}: 'not just X but Y' construction reads as AI")
         if len(re.findall(r"\b\w+, \w+,? (and|va) \w+\b", v)) >= 2:
             W.append(f"{k}: several lists of three; vary the rhythm")
     return W + art_warnings(post)
+
+
+CLOSINGS = {"subscribe": r"obuna bo.ling", "question": r"izohlarda (qoldiring|yozing)", "studio": r"ai station studio"}
+
+
+def closings(text):
+    """Which of the guide's closings a caption uses (subscribe / question / studio)."""
+    low = text.lower()
+    return [k for k, rx in CLOSINGS.items() if re.search(rx, low)]
+
+
+def news_warnings(post):
+    """Soft checks that the Uzbek captions are built like the channel's news posts."""
+    W = []
+    caps = post.get("captions") or {}
+    tgc = caps.get("telegram", "")
+    if tgc:
+        n = _words(tgc.replace(TG_END, ""))
+        if n < 100:
+            W.append(f"telegram: {n} words; a news post needs 100-190 to tell what happened, the numbers and how it works")
+        first = tgc.strip().split("\n")[0]
+        if "**" not in first:
+            W.append("telegram: line 1 is the headline: one emoji + the headline in **double asterisks**")
+        if not re.search(r"\d", tgc):
+            W.append("telegram: no number in the post; the story needs its numbers (money, users, years)")
+    for k in ("telegram", "instagram"):
+        c = closings(caps.get(k, ""))
+        if caps.get(k) and len(c) != 1:
+            W.append(f"{k}: {'no closing' if not c else 'several closings (' + ', '.join(c) + ')'}; "
+                     "end with exactly one: subscribe, question or AIS Studio (guide: Closings)")
+    return W
 
 
 def art_warnings(post):
@@ -1389,8 +1422,8 @@ def lint(post):
     for t in ("#aistation", "#aistationuz"):
         if t not in [x.lower() for x in tags]:
             P.append(f"instagram: missing {t}")
-    if not (80 <= _words(re.sub(r"#\w+", "", body)) <= 150):
-        P.append(f"instagram: body {_words(body)} words (want 80-150)")
+    if not (80 <= _words(re.sub(r"#\w+", "", body)) <= 180):
+        P.append(f"instagram: body {_words(body)} words (want 90-180)")
     if "](" in ig or "http" in ig:
         P.append("instagram: links do not work on Instagram, remove them")
     if "**" in ig or "__" in ig:
@@ -1415,11 +1448,9 @@ def lint(post):
     tgc = caps["telegram"]
     if re.search(r"(^|\s)#\w", tgc):
         P.append("telegram: no hashtags")
-    if not tgc.rstrip().endswith(TG_END):
-        P.append(f"telegram: must end with '{TG_END}'")
     n = _words(tgc.replace(TG_END, ""))
-    if not (60 <= n <= 120):
-        P.append(f"telegram: {n} words (want 60-120)")
+    if not (60 <= n <= 190):
+        P.append(f"telegram: {n} words (want 100-190)")
     if "@" in tgc:
         P.append("telegram: no profile links/handles")
     li = caps["linkedin"]
@@ -1449,7 +1480,9 @@ def lint(post):
     if not post.get("sources"):
         P.append("sources missing")
     txt = " ".join(caps.values()).lower()
-    named = [n for n in SIGNOFF_NAMES if n.lower() in txt]
+    ours = re.search(r"hamkor|partner|a.zosi|alliance|inception|memorandum", txt)  # about our own partnership
+    named = [n for n in SIGNOFF_NAMES + (GLOBAL_PARTNERS if ours else [])
+             if re.search(r"(?<!\w)" + re.escape(n.lower()) + r"(?!\w)", txt)]
     if named and not post.get("signoff"):
         P.append(f"signoff should be set: {', '.join(named)}")
     return P

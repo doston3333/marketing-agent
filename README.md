@@ -21,10 +21,10 @@ Not included on purpose: `secrets.json` (your MiniMax API key; it's in the Drive
 ```
 daily 08:50 ─┬─ start      Telegram: register leads, store lead ideas (photos / forwards / "g‘oya: ...")
              ├─ metrics    @aistationuz archive with views -> what performs (performance.json)
-             ├─ collect    ~700 items: 13 Telegram channels, 14 RSS feeds, Google News (EN/RU), Hacker News
-             │             -> clustered + scored story bank (story_bank.json, kept 7 days)
+             ├─ collect    ~900 items: global AI and tech press (20 feeds), Techmeme, Hacker News, Google News, local channels
+             │             -> clustered story bank scored by how much the world talks about each AI story (kept 7 days)
              ├─ knowledge  guide + team rules + measured house style + over-used phrases + leads' edits
-             ├─ today      weekly plan slot (content_plan.json) + opportunities + lead ideas + top stories
+             ├─ today      the day's trending AI stories by type (Big Tech / AI startap / Founder story / AI hayotda) + lead ideas
              ├─ Claude     picks, deep-reads, verifies, writes (examples by topic+views, 3 hooks, judge, editor pass)
              ├─ render     image candidates (MiniMax concept / real photo tinted to brand / brand card) -> Claude looks
              └─ send       package (+ carousel album + LinkedIn PDF) to the leads; commits data/ back to git
@@ -43,9 +43,9 @@ hourly :07 ── buttons ✅ 🎨 ✍️ 💡 📢, reply-edits (learned as rul
 | `data/archive.json` | Every public @aistationuz post with views |
 | `data/performance.json` | Views vs channel median by post kind / series / author |
 | `data/style.json`, `data/slop.json` | Measured house style; phrases the agent over-uses |
-| `data/content_plan.json` | Pillars, weekly series, priority rules |
+| `data/content_plan.json` | The four story types, the daily lean, priority rules |
 | `data/ideas.json` | Idea bank: lead ideas + evergreen ideas |
-| `data/knowledge.md` | Voice guide |
+| `data/knowledge.md` | What stories the channel posts, the four gold posts, voice and platform rules |
 
 ## Cloud environment setup
 

@@ -1,5 +1,35 @@
 {
- "note": "Weekly content system. Opportunities (deadlines, open calls, jobs) and big local news may replace any slot. Re-weighted monthly from performance.json.",
+ "note": "News desk. Every day the channel posts ONE trending global AI story, explained simply in Uzbek. The four story types below are the whole menu; the day only sets a lean so the week does not become one type.",
+ "types": {
+  "Big Tech": {
+   "signal": "bigtech",
+   "pillar": "news",
+   "kind": "news",
+   "what": "A deal, launch, model, acquisition or strategy move by a name everyone knows (Apple, Google, OpenAI, Anthropic, Nvidia, Microsoft, Meta, xAI, Tesla, DeepSeek, Alibaba).",
+   "example": "Apple rasman Google bilan hamkorlik qilishini e’lon qildi: Siri uchun Gemini, taxminan $1 mlrd."
+  },
+  "AI startap": {
+   "signal": "money",
+   "pillar": "ventures",
+   "kind": "news",
+   "what": "A startup most readers have not heard of, with a big number (round, valuation, revenue, users), a product you can explain in two sentences, and famous customers or investors.",
+   "example": "$500 million baholangan Listen Labs qanday qilib Microsoft va Sweetgreen bilan ishlayapti?"
+  },
+  "Founder story": {
+   "signal": "money",
+   "pillar": "studio",
+   "kind": "story",
+   "what": "How founders went from a small start to a big number, told as a timeline with the numbers at each step.",
+   "example": "Oddiy GPUlardan $120 millionlik AI biznesgacha: Runpod."
+  },
+  "AI hayotda": {
+   "signal": "reallife",
+   "pillar": "corporate",
+   "kind": "news",
+   "what": "A country, school, hospital, factory, city or profession using AI in a way the reader can picture, best with a video or photo.",
+   "example": "Xitoy maktablarida uy vazifalarini sun’iy intellekt tekshirmoqda."
+  }
+ },
  "pillars": {
   "academy": {
    "share": 0.3,
@@ -19,63 +49,64 @@
   },
   "news": {
    "share": 0.15,
-   "what": "One important AI or ecosystem story with our opinion and the 'so what for Tashkent'."
+   "what": "The AI story the world is talking about, explained simply in Uzbek."
   }
  },
  "week": {
   "Mon": {
-   "series": "AI Pulse",
+   "series": "Big Tech",
    "pillar": "news",
-   "kind": "roundup",
-   "format": "carousel",
-   "brief": "The week's 3 most important AI / ecosystem stories and what each means in Uzbekistan. Carousel on IG and LinkedIn, digest on Telegram."
+   "kind": "news",
+   "format": "single",
+   "brief": "Today's lean is Big Tech: when two stories are equally strong, rank the one of this type first. A clearly bigger story of another type still goes first. Monday also catches the biggest story of the weekend."
   },
   "Tue": {
-   "series": "AI Tool of the Week",
-   "pillar": "academy",
-   "kind": "educational",
-   "format": "carousel",
-   "brief": "One AI tool or technique students and founders can use this week: what it does, 3 steps to try it, a realistic limitation."
+   "series": "AI startap",
+   "pillar": "ventures",
+   "kind": "news",
+   "format": "single",
+   "brief": "Today's lean is AI startap: when two stories are equally strong, rank the one of this type first. A clearly bigger story of another type still goes first."
   },
   "Wed": {
-   "series": "Founder Wednesday",
+   "series": "Founder story",
    "pillar": "studio",
    "kind": "story",
    "format": "single",
-   "brief": "A founder lesson or startup story from Uzbekistan / Central Asia (named founders need sign-off), or a behind-the-scenes from AIS Studio from the leads' inputs."
+   "brief": "Today's lean is Founder story: when two stories are equally strong, rank the one of this type first. A clearly bigger story of another type still goes first."
   },
   "Thu": {
-   "series": "AI in Business",
+   "series": "AI hayotda",
    "pillar": "corporate",
-   "kind": "case",
+   "kind": "news",
    "format": "single",
-   "brief": "One concrete company use case or a myth-vs-fact for managers, with a number from a credible source."
+   "brief": "Today's lean is AI hayotda: when two stories are equally strong, rank the one of this type first. A clearly bigger story of another type still goes first."
   },
   "Fri": {
-   "series": "Funding Friday",
-   "pillar": "ventures",
-   "kind": "roundup",
+   "series": "Big Tech",
+   "pillar": "news",
+   "kind": "news",
    "format": "single",
-   "brief": "Central Asia deals of the week (Stanbase, The Tech, Spot) and one investor takeaway for founders."
+   "brief": "Today's lean is Big Tech: when two stories are equally strong, rank the one of this type first. A clearly bigger story of another type still goes first."
   },
   "Sat": {
-   "series": "Opportunities",
-   "pillar": "academy",
-   "kind": "opportunity",
+   "series": "AI hayotda",
+   "pillar": "corporate",
+   "kind": "news",
    "format": "single",
-   "brief": "Open calls, grants, hackathons, programs and deadlines useful to the audience (external ones; check the deadline is still open)."
+   "brief": "Today's lean is AI hayotda: when two stories are equally strong, rank the one of this type first. A clearly bigger story of another type still goes first."
   },
   "Sun": {
    "series": "Rest",
    "pillar": "news",
    "kind": "news",
    "format": "single",
-   "brief": "Optional: only if the story bank has a very strong story (score >= 0.75) or the leads sent an idea."
+   "brief": "Optional: only if a trending AI story scores >= 0.6 or the leads sent an idea."
   }
  },
  "always": [
-  "Opportunities with a deadline in the next 7 days beat the series slot (they are the channel's best performers).",
-  "An idea sent by a lead beats the series slot unless it is time-insensitive.",
-  "Event days (ICT Week, InnoWeek, demo days, cohort launches) replace the slot with pre-event / live / recap posts."
+  "An idea sent by a lead goes first.",
+  "The story must be trending now: several big outlets in the last 48 hours (72 for founder and real-life stories), or the top of Techmeme or Hacker News.",
+  "At most 2 of the 10 ideas are local: one local AI story that passes the same tests, one AI opportunity whose deadline is within 7 days. They go last unless a lead sent them.",
+  "Never the same story type first two days in a row unless the story is clearly the biggest of the day."
  ]
 }
