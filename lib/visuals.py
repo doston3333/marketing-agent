@@ -1,6 +1,7 @@
 # Image types for the AI Station agent (concept art comes from MiniMax, or from OpenRouter when there is no MiniMax key).
 # Per platform, spec[p]["art"] picks the background:
-#   "minimax" (default when image_prompt is set)  concept illustration, several candidates possible
+#   "minimax" (default when image_prompt is set)  a picture from the image model, several candidates possible;
+#             how to write image_prompt: data/knowledge.md "Writing the image prompt"
 #   "photo"   a real photo: spec[p]["photo"] = article URL (its og:image is used), image URL, "tg:<file_id>"
 #             (a photo a lead sent to the bot) or a local path
 #   "card"    no background art: the brand template, best for a big number / deadline / quote
@@ -68,7 +69,7 @@ def background(platform, sp, seed, candidate=0):
             art = photo_art(sp["photo"])
             return (art if sp.get("tint") is False else brand_tint(art)), "photo", None
         if kind == "minimax" and sp.get("image_prompt"):
-            prompt = sp["image_prompt"] if candidate == 0 else sp["image_prompt"] + f" Alternative composition #{candidate + 1}."
+            prompt = sp["image_prompt"] if candidate == 0 else sp["image_prompt"] + " Another take: a different camera angle and distance on the same scene."
             return A.minimax(prompt, platform), "minimax", None
         return None, "card", None
     except Exception as ex:

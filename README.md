@@ -51,7 +51,7 @@ hourly :07 ── buttons ✅ 🎨 ✍️ 💡 📢, reply-edits (learned as rul
 
 1. **Environment variables**: `TELEGRAM_BOT_TOKEN` (from @BotFather for @marketingagent67_bot) and an image key: `MINIMAX_API_KEY` or `OPENROUTER_API_KEY`.
    - With a MiniMax key, concept art comes from MiniMax image-01 (about $0.0035 per image).
-   - With only an OpenRouter key, it comes from `OPENROUTER_IMAGE_MODEL` (default `black-forest-labs/flux-3-image-klein`, about $0.011 per image at `OPENROUTER_IMAGE_RESOLUTION=1.5K`), asked for in 4:5 / 16:9 / 1:1 so nothing is cropped. Any model listed at `https://openrouter.ai/api/v1/images/models` works; the code reads its supported aspect ratios and resolutions.
+   - With only an OpenRouter key, it comes from `OPENROUTER_IMAGE_MODEL` (default `minimax/minimax-h3-image`, about $0.025 per image; `black-forest-labs/flux-3-image-klein` is the cheap choice at about $0.011). The size is the first of `OPENROUTER_IMAGE_RESOLUTION`, 2K, 1.5K, 1K that the model offers. Pictures are asked for in 5:4 / 1:1 / 3:2, the shape of the picture window on the Instagram / Telegram / LinkedIn image. Any model listed at `https://openrouter.ai/api/v1/images/models` works; the code reads its supported aspect ratios and resolutions.
    - `IMAGE_PROVIDER=minimax|openrouter` picks one when both keys are set. The post spec still calls this art type `"minimax"`.
 2. **Network access**: allow `api.telegram.org` and `api.minimax.io` or `openrouter.ai` (plus `pypi.org` / `files.pythonhosted.org` for `pip install`).
 3. **Git push** from the routine to the branch it runs on, so state is saved.

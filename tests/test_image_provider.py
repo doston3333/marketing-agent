@@ -14,7 +14,7 @@ def _png_b64(w=40, h=50):
 
 
 FLUX_PARAMS = {
-    "aspect_ratio": {"type": "enum", "values": ["16:9", "3:2", "1:1", "4:5", "3:4", "2:3"]},
+    "aspect_ratio": {"type": "enum", "values": ["16:9", "3:2", "5:4", "1:1", "4:5", "3:4", "2:3"]},
     "resolution": {"type": "enum", "values": ["768", "1K", "1.5K", "2K"]},
     "output_format": {"type": "enum", "values": ["jpeg", "png"]},
 }
@@ -85,21 +85,31 @@ class OpenRouterImage(Base):
         self.assertEqual(url, A.OR_URL)
         self.assertEqual(post.call_args.kwargs["headers"]["Authorization"], "Bearer sk-or-test")
         self.assertEqual(body["model"], A.OR_MODEL)
-        self.assertEqual(body["aspect_ratio"], "4:5")
-        self.assertEqual(body["resolution"], "1.5K")
-        self.assertTrue(body["prompt"].startswith("a paper boat"))
-        self.assertIn("no text", body["prompt"])  # the brand style rules travel with every prompt
+        self.assertEqual(body["aspect_ratio"], "5:4")  # the shape of the picture window, not of the whole canvas
+        self.assertEqual(body["resolution"], "2K")
+        self.assertEqual(body["prompt"], A.art_prompt("a paper boat", "instagram"))
+
+    def test_size_falls_back_to_what_the_model_offers(self):
+        params = dict(FLUX_PARAMS, resolution={"type": "enum", "values": ["768", "1K", "1.5K"]})
+        with mock.patch.object(A, "_or_params", return_value=params), \
+                mock.patch.object(A.requests, "post", return_value=Resp(200, {"data": [{"b64_json": _png_b64()}]})) as post:
+            A.openrouter_image("x", "linkedin")
+        self.assertEqual(post.call_args.kwargs["json"]["resolution"], "1.5K")
+        self.assertEqual(post.call_args.kwargs["json"]["aspect_ratio"], "3:2")
 
     def test_aspect_fallback_for_limited_model(self):
-        params = {"aspect_ratio": {"type": "enum", "values": ["1:1", "3:2", "2:3", "auto"]}}
+        params = {"aspect_ratio": {"type": "enum", "values": ["4:3", "16:9", "4:5", "auto"]}}
         with mock.patch.object(A, "_or_params", return_value=params), \
                 mock.patch.object(A.requests, "post", return_value=Resp(200, {"data": [{"b64_json": _png_b64()}]})) as post:
             A.openrouter_image("x", "instagram")
             ig = post.call_args.kwargs["json"]
             A.openrouter_image("x", "telegram")
             tg = post.call_args.kwargs["json"]
-        self.assertEqual(ig["aspect_ratio"], "2:3")
-        self.assertEqual(tg["aspect_ratio"], "3:2")
+            A.openrouter_image("x", "linkedin")
+            li = post.call_args.kwargs["json"]
+        self.assertEqual(ig["aspect_ratio"], "4:3")
+        self.assertEqual(tg["aspect_ratio"], "4:5")
+        self.assertEqual(li["aspect_ratio"], "16:9")
         self.assertNotIn("resolution", ig)
 
     def test_unknown_params_send_preferred_aspect_only(self):
@@ -107,7 +117,7 @@ class OpenRouterImage(Base):
                 mock.patch.object(A.requests, "post", return_value=Resp(200, {"data": [{"b64_json": _png_b64()}]})) as post:
             A.openrouter_image("x", "telegram")
         body = post.call_args.kwargs["json"]
-        self.assertEqual(body["aspect_ratio"], "16:9")
+        self.assertEqual(body["aspect_ratio"], "1:1")
         self.assertNotIn("resolution", body)
 
     def test_no_credit_fails_fast(self):

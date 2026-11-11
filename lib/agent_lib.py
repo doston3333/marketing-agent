@@ -20,10 +20,12 @@ TG_API = "https://api.telegram.org/bot{token}/{method}"
 os.makedirs(WORK + "/out", exist_ok=True)
 MM_URL = "https://api.minimax.io/v1/image_generation"
 OR_URL = "https://openrouter.ai/api/v1/images"
-OR_MODEL = os.environ.get("OPENROUTER_IMAGE_MODEL", "black-forest-labs/flux-3-image-klein")
-OR_RESOLUTION = os.environ.get("OPENROUTER_IMAGE_RESOLUTION", "1.5K")  # 1.5K covers the 1350 px Instagram canvas
-# Aspect ratio per platform, best first; the art is cover-cropped onto the canvas, so a near match is fine.
-OR_ASPECTS = {"instagram": ("4:5", "3:4", "2:3"), "telegram": ("16:9", "2:1", "3:2"), "linkedin": ("1:1",)}
+OR_MODEL = os.environ.get("OPENROUTER_IMAGE_MODEL", "minimax/minimax-h3-image")
+# Wanted size, best first; the first one the model offers is used. MiniMax H3 charges the same for 1K and 2K.
+OR_RESOLUTIONS = tuple(x for x in (os.environ.get("OPENROUTER_IMAGE_RESOLUTION"), "2K", "1.5K", "1K") if x)
+# Aspect ratio per platform, best first: the shape of the picture window on each canvas (ART_BOX). The art is
+# cover-cropped into that window, so a near match is fine.
+OR_ASPECTS = {"instagram": ("5:4", "4:3", "1:1"), "telegram": ("1:1", "5:4", "4:5"), "linkedin": ("3:2", "16:9", "4:3")}
 _OR_PARAMS = {}  # model -> supported_parameters on OpenRouter (read once per run)
 FONT_URL = "https://raw.githubusercontent.com/google/fonts/main/ofl/montserrat/Montserrat%5Bwght%5D.ttf"
 TG_LINKS = ("\n\n🌐 [Website](https://aistation.uz) | [Instagram](https://www.instagram.com/aistationuz) | "
@@ -672,15 +674,28 @@ CYAN = (79, 191, 253)
 WHITE = (255, 255, 255)
 LOGO_B64 = "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"
 SIZES = {"instagram": (1080, 1350), "telegram": (1280, 720), "linkedin": (1200, 1200)}
-STYLE = {
-    "instagram": "Vivid cinematic 3D render with dramatic lighting and depth. Keep the main subject in the upper half and the lower third calm and dark.",
-    "telegram": "Wide editorial illustration with clean bold shapes. Keep the main subject on the right side and the left half calm and dark.",
-    "linkedin": "Refined, minimal, premium business image with generous negative space. Keep the subject in the upper right and the lower half calm and dark.",
-}
-COMMON = (" Colour palette: deep indigo night (#0D0D21) with electric blue (#7A7AFB) and cyan (#4FBFFD) light accents."
-          " Matte surfaces with subtle film grain, soft realistic light, not glossy plastic."
-          " Absolutely no text, letters, numbers, logos, watermarks, flags or real people."
-          " Avoid AI cliches: no robots, humanoids, glowing brains, circuit-board faces, handshake holograms or floating screens.")
+# The picture fills only this part of each canvas (fractions x0, y0, x1, y1) and fades into the brand background where
+# the headline sits, so the headline never covers the subject.
+ART_BOX = {"instagram": (0, 0, 1, 0.68), "telegram": (0.40, 0, 1, 1), "linkedin": (0, 0, 1, 0.68)}
+# What the code adds to every image_prompt: which edge may go dark (it fades into the headline area) and no writing.
+# Subject, look, light and colour are the writer's job: data/knowledge.md "Writing the image prompt".
+_FRAME_BOTTOM = ("Composition: the main subject sits in the middle of the frame with space around it, and the lowest fifth"
+                 " of the frame falls off into deep navy shadow (#0D0D21).")
+FRAME = {"instagram": _FRAME_BOTTOM, "linkedin": _FRAME_BOTTOM,
+         "telegram": "Composition: the main subject sits right of centre, and the left fifth of the frame falls off"
+                     " into deep navy shadow (#0D0D21)."}
+NO_TEXT = (" No text, letters, numbers, logos, watermarks or interface elements anywhere; any screen, page, sign or"
+           " label is blank or abstract light.")
+# Stock symbols that make a picture look like every other post (lint warns; allowed only with a twist).
+ART_CLICHES = ("gavel", "light bulb", "lightbulb", "handshake", "rocket", "chess", "puzzle", "robot", "brain",
+               "circuit board", "hologram", "padlock", "bullseye", "trophy")
+
+
+def art_prompt(prompt, platform):
+    """The full text sent to the image model: the writer's brief, then the framing for this platform and no writing."""
+    return prompt.strip() + " " + FRAME[platform] + NO_TEXT
+
+
 _FONTS = {}
 
 
@@ -755,27 +770,35 @@ def _cover(art, W, H):
     return art.crop((x, y, x + W, y + H)).convert("RGBA")
 
 
-def _scrim(img, kind):
-    W, H = img.size
-    if kind == "bottom":
-        top, full = 0.30, 0.66
-        col = Image.new("L", (1, H))
-        for y in range(H):
-            t = y / H
-            v = 0 if t < top else (min(1, (t - top) / (full - top)) ** 1.35) * 245
-            if y < H * 0.2:
-                v = max(v, (1 - y / (H * 0.2)) * 150)
-            col.putpixel((0, y), int(v))
-        a = col.resize((W, H))
-    else:  # left
+def _smooth(t):
+    t = min(1.0, max(0.0, t))
+    return t * t * (3 - 2 * t)
+
+
+def _place_art(art, platform):
+    """The canvas with the picture in its window (ART_BOX), faded into the brand background towards the headline."""
+    W, H = SIZES[platform]
+    x0, y0, x1, y1 = ART_BOX[platform]
+    bx0, by0, bx1, by1 = int(W * x0), int(H * y0), int(W * x1), int(H * y1)
+    img = Image.new("RGBA", (W, H), BG + (255,))
+    img.paste(_cover(art, bx1 - bx0, by1 - by0), (bx0, by0))
+    if platform == "telegram":  # headline on the left: the picture's left third fades out
         row = Image.new("L", (W, 1))
         for x in range(W):
-            t = x / W
-            row.putpixel((x, 0), int(245 if t < 0.42 else max(0, 245 * (1 - (t - 0.42) / 0.33))))
+            row.putpixel((x, 0), int(255 * (1 - _smooth((x / W - x0) / 0.27))))
         a = row.resize((W, H))
+    else:  # headline below: the picture's lower quarter fades out; a light shade at the top keeps the logo readable
+        col = Image.new("L", (1, H))
+        for y in range(H):
+            v = 255 * _smooth((y / H - (y1 - 0.19)) / 0.19)
+            if y < H * 0.18:
+                v = max(v, 115 * (1 - y / (H * 0.18)) ** 1.5)
+            col.putpixel((0, y), int(v))
+        a = col.resize((W, H))
     layer = Image.new("RGBA", (W, H), BG + (0,))
     layer.putalpha(a)
     img.alpha_composite(layer)
+    return img
 
 
 def _tokens(headline):
@@ -824,8 +847,7 @@ def compose(platform, sp, seed=7, art=None):
     Other spec fields (tag, subline, stat, stat_label) are not drawn; carousels have their own slide layout."""
     W, H = SIZES[platform]
     if art is not None:
-        img = _cover(art, W, H)
-        _scrim(img, "left" if platform == "telegram" else "bottom")
+        img = _place_art(art, platform)
     else:
         img = _template_bg(platform, seed)
     d = ImageDraw.Draw(img)
@@ -833,7 +855,15 @@ def compose(platform, sp, seed=7, art=None):
            "telegram": dict(M=64, logo=190, maxw=int(W * 0.52), hs=(86, 52), hmax=3),
            "linkedin": dict(M=88, logo=210, maxw=W - 176, hs=(100, 60), hmax=3)}[platform]
     M, maxw = cfg["M"], cfg["maxw"]
-    img.alpha_composite(_logo(cfg["logo"]), (M, int(M * 1.05)))
+    logo, at = _logo(cfg["logo"]), (M, int(M * 1.05))
+    if art is not None:  # a soft dark halo keeps the logo readable on a bright picture
+        pad = 60
+        halo = Image.new("RGBA", (logo.width + 2 * pad, logo.height + 2 * pad), BG + (0,))
+        halo.paste(Image.new("RGBA", logo.size, BG + (255,)), (pad, pad), logo.getchannel("A").filter(ImageFilter.MaxFilter(9)))
+        halo = halo.filter(ImageFilter.GaussianBlur(16))
+        for _ in range(2):
+            img.alpha_composite(halo, (at[0] - pad, at[1] - pad))
+    img.alpha_composite(logo, at)
     toks = _tokens(clean(sp.get("headline") or ""))
     for size in range(cfg["hs"][0], cfg["hs"][1] - 1, -4):
         hf = F(800, size)
@@ -844,14 +874,26 @@ def compose(platform, sp, seed=7, art=None):
     y = H - int(M * 1.35) - len(lines) * lh
     if platform == "telegram":
         y = (H - len(lines) * lh) // 2 + int(M * 0.6)
+    words = []
     for line in lines:
         x = M
         for i, (w, hl) in enumerate(line):
             gap = i < len(line) - 1 and not re.match(r"[,.:;!?)]", line[i + 1][0])
             t = w + (" " if gap else "")
-            d.text((x, y), t, font=hf, fill=(CYAN if hl else WHITE) + (255,))
+            words.append((x, y, t, hl))
             x += d.textlength(t, font=hf)
         y += lh
+    if art is not None:  # a soft dark halo keeps the phrase readable where it overlaps the picture
+        halo = Image.new("RGBA", img.size, BG + (0,))
+        hd = ImageDraw.Draw(halo)
+        for x, y, t, _ in words:
+            hd.text((x, y), t, font=hf, fill=BG + (255,), stroke_width=max(2, size // 12), stroke_fill=BG + (255,))
+        halo = halo.filter(ImageFilter.GaussianBlur(size * 0.22))
+        img.alpha_composite(halo)
+        img.alpha_composite(halo)
+        d = ImageDraw.Draw(img)
+    for x, y, t, hl in words:
+        d.text((x, y), t, font=hf, fill=(CYAN if hl else WHITE) + (255,))
     return img.convert("RGB")
 
 
@@ -905,10 +947,10 @@ def openrouter_image(prompt, platform):
     key = secrets().get("openrouter_key")
     if not key:
         raise RuntimeError("no OpenRouter key (OPENROUTER_API_KEY)")
-    body = {"model": OR_MODEL, "prompt": prompt.strip() + " " + STYLE[platform] + COMMON, "n": 1}
+    body = {"model": OR_MODEL, "prompt": art_prompt(prompt, platform), "n": 1}
     params = _or_params(OR_MODEL)
     if params:
-        for name, wanted in (("aspect_ratio", OR_ASPECTS[platform]), ("resolution", (OR_RESOLUTION,)),
+        for name, wanted in (("aspect_ratio", OR_ASPECTS[platform]), ("resolution", OR_RESOLUTIONS),
                              ("output_format", ("png", "jpeg"))):
             v = _or_pick(params, name, wanted)
             if v is not None:
@@ -940,12 +982,12 @@ def _minimax_image(prompt, platform):
     key = secrets().get("minimax_key")
     if not key:
         raise RuntimeError("no MiniMax key in secrets.json")
-    body = {"model": "image-01", "prompt": prompt.strip() + " " + STYLE[platform] + COMMON,
+    body = {"model": "image-01", "prompt": art_prompt(prompt, platform),
             "response_format": "base64", "n": 1, "prompt_optimizer": False}
-    if platform == "instagram":
-        body.update(width=1024, height=1280)
+    if platform == "instagram":  # the picture window shapes (ART_BOX): 5:4, square, 3:2
+        body.update(width=1280, height=1024)
     else:
-        body["aspect_ratio"] = "16:9" if platform == "telegram" else "1:1"
+        body["aspect_ratio"] = "1:1" if platform == "telegram" else "3:2"
     last = None
     for i in range(2):
         try:
@@ -1211,6 +1253,29 @@ def lint_warnings(post):
             W.append(f"{k}: 'not just X but Y' construction reads as AI")
         if len(re.findall(r"\b\w+, \w+,? (and|va) \w+\b", v)) >= 2:
             W.append(f"{k}: several lists of three; vary the rhythm")
+    return W + art_warnings(post)
+
+
+def art_warnings(post):
+    """Soft checks on the image prompts: too thin, a stock symbol, or one prompt copied to several platforms."""
+    W, seen = [], {}
+    spec = post.get("spec") or {}
+    for p in ("instagram", "telegram", "linkedin"):
+        sp = spec.get(p) if isinstance(spec.get(p), dict) else {}
+        ip = str(sp.get("image_prompt") or "").strip()
+        if (sp.get("art") or "minimax") != "minimax" or not ip:
+            continue
+        n = len(ip.split())
+        if n < 45:
+            W.append(f"spec.{p}.image_prompt: {n} words; a good brief is 60-110 "
+                     "(what is there and what happens, setting, light, camera or drawing style)")
+        hit = [c for c in ART_CLICHES if re.search(r"\b" + re.escape(c) + r"s?\b", ip.lower())]
+        if hit:
+            W.append(f"spec.{p}.image_prompt: stock symbol ({', '.join(hit)}); show this story's own scene, "
+                     "or keep the symbol only with a twist")
+        if ip in seen:
+            W.append(f"spec.{p}.image_prompt: same as {seen[ip]}; write a different shot for each platform")
+        seen.setdefault(ip, p)
     return W
 
 
@@ -1235,6 +1300,8 @@ def lint(post):
     for k, v in allt.items():
         if "—" in v or "–" in v:
             P.append(f"{k}: em/en dash, use a hyphen")
+        if k.endswith(".image_prompt"):  # a brief for the image model, not copy: "landscape" is fine there
+            continue
         low = v.lower().replace("'", "‘").replace("ʻ", "‘")
         for c in CLICHES:
             if c in low:
