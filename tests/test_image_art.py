@@ -1,5 +1,6 @@
 # Offline tests for the picture brief and layout (art_prompt, art_warnings, compose). Run: python3 -m unittest discover -s tests
 import os, sys, unittest
+from unittest import mock
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "lib"))
 import agent_lib as A  # noqa: E402
@@ -34,6 +35,89 @@ class ArtPrompt(unittest.TestCase):
         full = A.art_prompt(GOOD, "instagram").lower()
         for forced in ("3d render", "editorial illustration", "minimal", "film grain, soft realistic light"):
             self.assertNotIn(forced, full.replace(GOOD.lower(), ""))
+
+
+class Poster(unittest.TestCase):
+    """By default the image model sets the headline into the picture; the code only adds the logo."""
+
+    def test_headline_lines_and_highlight(self):
+        self.assertEqual(A.headline_lines("Huquq uchun kod yozing: [[60 mln]] so‘m", "instagram"),
+                         (["Huquq uchun kod", "yozing: 60 mln", "so‘m"], "60 mln"))
+        self.assertEqual(A.headline_lines("UniSat 4.0: apply by [[15 Nov]]", "linkedin"),
+                         (["UniSat 4.0: apply", "by 15 Nov"], "15 Nov"))
+        self.assertEqual(A.headline_lines("Qisqa ibora", "telegram"), (["Qisqa ibora"], ""))
+
+    def test_never_more_than_three_lines(self):
+        lines, _ = A.headline_lines("Juda uzun sarlavha bu yerda yetti so‘zdan iborat", "telegram")
+        self.assertLessEqual(len(lines), 3)
+        self.assertEqual(" ".join(lines), "Juda uzun sarlavha bu yerda yetti so‘zdan iborat")
+
+    def test_apostrophe_is_normalised_before_it_reaches_the_model(self):
+        self.assertEqual(A.headline_lines("60 mln so`m", "instagram")[0], ["60 mln so‘m"])
+
+    def test_prompt_carries_the_exact_headline_and_the_highlight(self):
+        full = A.art_prompt(GOOD, "instagram", "Qizlar uchun bepul [[kosmik]] dastur")
+        self.assertTrue(full.startswith(GOOD))
+        self.assertIn('on 3 lines: "Qizlar uchun" / "bepul kosmik" / "dastur".', full)
+        self.assertIn('The words "kosmik" are bright sky blue (#4FBFFD)', full)
+        self.assertIn("Spell the headline exactly as written", full)
+        self.assertIn("The top left corner stays plain and dark", full)   # the logo goes there
+        self.assertNotIn("[[", full)
+        self.assertNotIn(A.NO_TEXT.strip(), full)
+
+    def test_telegram_headline_goes_on_the_left(self):
+        self.assertIn("left half", A.art_prompt(GOOD, "telegram", "Qisqa ibora"))
+        self.assertIn("lower third", A.art_prompt(GOOD, "linkedin", "Short phrase"))
+        self.assertIn('on 1 line: "Qisqa ibora". Every word is pure white.', A.art_prompt(GOOD, "telegram", "Qisqa ibora"))
+
+    def test_when_the_model_sets_the_headline(self):
+        sp = {"art": "minimax", "image_prompt": GOOD, "headline": "Qisqa ibora"}
+        self.assertTrue(A.text_in_art(sp))
+        self.assertTrue(A.text_in_art({"image_prompt": GOOD, "headline": "Qisqa ibora"}))   # art defaults to minimax
+        self.assertFalse(A.text_in_art({**sp, "text": "code"}))                              # the fallback
+        self.assertFalse(A.text_in_art({**sp, "headline": ""}))
+        self.assertFalse(A.text_in_art({"art": "photo", "photo": "https://example.com/a.jpg", "headline": "Qisqa ibora"}))
+        self.assertFalse(A.text_in_art({"art": "card", "headline": "Qisqa ibora"}))
+
+
+class Background(unittest.TestCase):
+    def setUp(self):
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "lib"))
+        import visuals
+        self.V = visuals
+        self.img = Image.new("RGB", (80, 100), (255, 0, 0))
+
+    def test_headline_is_sent_to_the_model_by_default(self):
+        sp = {"art": "minimax", "image_prompt": GOOD, "headline": "Bir [[qisqa]] ibora"}
+        with mock.patch.object(A, "minimax", return_value=self.img) as m:
+            art, src, err, baked = self.V.background("instagram", sp, 7)
+        m.assert_called_once_with(GOOD, "instagram", "Bir [[qisqa]] ibora")
+        self.assertEqual((src, err, baked), ("minimax", None, True))
+
+    def test_text_code_keeps_the_headline_out_of_the_picture(self):
+        sp = {"art": "minimax", "image_prompt": GOOD, "headline": "Bir ibora", "text": "code"}
+        with mock.patch.object(A, "minimax", return_value=self.img) as m:
+            art, src, err, baked = self.V.background("telegram", sp, 7, candidate=1)
+        self.assertIsNone(m.call_args.args[2])
+        self.assertTrue(m.call_args.args[0].startswith(GOOD + " Another take"))
+        self.assertFalse(baked)
+
+    def test_pinned_picture_remembers_whether_it_carries_the_headline(self):
+        import tempfile
+        d = tempfile.mkdtemp()
+        for name, want in (("instagram_0_t.png", True), ("instagram_0.png", False)):   # the second: art made before this change
+            path = os.path.join(d, name)
+            self.img.save(path)
+            art, src, err, baked = self.V.background("instagram", {"art": "minimax", "image_prompt": GOOD,
+                                                                   "headline": "Bir ibora", "art_path": path}, 7)
+            self.assertEqual((src, baked), ("pinned", want), name)
+
+    def test_failed_generation_falls_back_to_a_card_with_the_headline_drawn(self):
+        sp = {"art": "minimax", "image_prompt": GOOD, "headline": "Bir ibora"}
+        with mock.patch.object(A, "minimax", side_effect=RuntimeError("402 no credit")):
+            art, src, err, baked = self.V.background("linkedin", sp, 7)
+        self.assertEqual((art, src, baked), (None, "card", False))
+        self.assertIn("402 no credit", err)
 
 
 class ArtWarnings(unittest.TestCase):
@@ -111,6 +195,20 @@ class Compose(unittest.TestCase):
         img = A.compose("linkedin", {"headline": ""}, 7, tall)
         self.assertTrue(self._is_red(img.getpixel((5, int(H * 0.3)))))
         self.assertTrue(self._is_red(img.getpixel((W - 5, int(H * 0.3)))))
+
+    def test_picture_with_the_headline_fills_the_canvas_and_gets_only_the_logo(self):
+        for p in ("instagram", "telegram", "linkedin"):
+            W, H = A.SIZES[p]
+            img = A.compose(p, {"headline": "Bu ibora chizilmasligi kerak"}, 7, self.red, baked=True)
+            self.assertEqual(img.size, (W, H))
+            for xy in ((W // 2, H - 10), (int(W * 0.1), int(H * 0.6)), (int(W * 0.1), H - 40), (W - 10, 10), (W // 2, H // 2)):
+                self.assertTrue(self._is_red(img.getpixel(xy)), (p, xy))   # no fade, no headline drawn by the code
+            box = img.crop((0, 0, int(W * 0.3), int(H * 0.14)))
+            self.assertTrue(any(min(px) > 200 for px in box.getdata()), p)  # the white logo is there
+
+    def test_baked_without_a_picture_is_a_normal_card(self):
+        img = A.compose("instagram", {"headline": "Bir ibora"}, 7, None, baked=True)
+        self.assertEqual(img.size, A.SIZES["instagram"])
 
     def test_card_without_art_still_renders(self):
         img = A.compose("instagram", {"headline": "Bir [[qisqa]] ibora"}, 7, None)

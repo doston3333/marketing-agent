@@ -23,8 +23,9 @@ OR_URL = "https://openrouter.ai/api/v1/images"
 OR_MODEL = os.environ.get("OPENROUTER_IMAGE_MODEL", "minimax/minimax-h3-image")
 # Wanted size, best first; the first one the model offers is used. MiniMax H3 charges the same for 1K and 2K.
 OR_RESOLUTIONS = tuple(x for x in (os.environ.get("OPENROUTER_IMAGE_RESOLUTION"), "2K", "1.5K", "1K") if x)
-# Aspect ratio per platform, best first: the shape of the picture window on each canvas (ART_BOX). The art is
-# cover-cropped into that window, so a near match is fine.
+# Aspect ratio per platform, best first (a near match is fine, the art is cover-cropped). A picture that carries the
+# headline fills the whole canvas; one without it fills only the picture window (ART_BOX).
+OR_ASPECTS_FULL = {"instagram": ("4:5", "3:4", "2:3"), "telegram": ("16:9", "2:1", "3:2"), "linkedin": ("1:1",)}
 OR_ASPECTS = {"instagram": ("5:4", "4:3", "1:1"), "telegram": ("1:1", "5:4", "4:5"), "linkedin": ("3:2", "16:9", "4:3")}
 _OR_PARAMS = {}  # model -> supported_parameters on OpenRouter (read once per run)
 FONT_URL = "https://raw.githubusercontent.com/google/fonts/main/ofl/montserrat/Montserrat%5Bwght%5D.ttf"
@@ -674,11 +675,22 @@ CYAN = (79, 191, 253)
 WHITE = (255, 255, 255)
 LOGO_B64 = "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"
 SIZES = {"instagram": (1080, 1350), "telegram": (1280, 720), "linkedin": (1200, 1200)}
-# The picture fills only this part of each canvas (fractions x0, y0, x1, y1) and fades into the brand background where
-# the headline sits, so the headline never covers the subject.
-ART_BOX = {"instagram": (0, 0, 1, 0.68), "telegram": (0.40, 0, 1, 1), "linkedin": (0, 0, 1, 0.68)}
-# What the code adds to every image_prompt: which edge may go dark (it fades into the headline area) and no writing.
+# By default the image model sets the headline into the picture itself (POSTER) and the code adds only the logo.
 # Subject, look, light and colour are the writer's job: data/knowledge.md "Writing the image prompt".
+_TYPE = ("in very large, heavy, geometric sans-serif type (Montserrat ExtraBold: wide round letters, normal spacing, "
+         "not condensed), pure white, on {n} {lines_word}: {lines}. {colour} Spell the headline exactly as written, "
+         "letter for letter, with the same punctuation and capital letters. The top left corner stays plain and dark with "
+         "nothing in it. No other text, letters, numbers, logos or watermarks anywhere in the picture.")
+_POSTER_BOTTOM = ("Social media poster layout: the picture fills the upper two thirds of the frame, and the lower third "
+                  "darkens smoothly into solid deep navy (#0D0D21). On that dark lower area, left-aligned with a wide left "
+                  "margin, is the headline " + _TYPE)
+POSTER = {"instagram": _POSTER_BOTTOM, "linkedin": _POSTER_BOTTOM,
+          "telegram": "Social media banner layout: the picture fills the right half of the frame, and the left half darkens "
+                      "smoothly into solid deep navy (#0D0D21). On that dark left half, left-aligned with a wide left "
+                      "margin and vertically centred, is the headline " + _TYPE}
+# Fallback (spec.<platform>.text = "code", and real photos): the code draws the headline. The picture then fills only
+# this part of each canvas (fractions x0, y0, x1, y1) and fades into the brand background where the headline sits.
+ART_BOX = {"instagram": (0, 0, 1, 0.68), "telegram": (0.40, 0, 1, 1), "linkedin": (0, 0, 1, 0.68)}
 _FRAME_BOTTOM = ("Composition: the main subject sits in the middle of the frame with space around it, and the lowest fifth"
                  " of the frame falls off into deep navy shadow (#0D0D21).")
 FRAME = {"instagram": _FRAME_BOTTOM, "linkedin": _FRAME_BOTTOM,
@@ -691,9 +703,41 @@ ART_CLICHES = ("gavel", "light bulb", "lightbulb", "handshake", "rocket", "chess
                "circuit board", "hologram", "padlock", "bullseye", "trophy")
 
 
-def art_prompt(prompt, platform):
-    """The full text sent to the image model: the writer's brief, then the framing for this platform and no writing."""
-    return prompt.strip() + " " + FRAME[platform] + NO_TEXT
+def headline_lines(headline, platform):
+    """The headline as the image model should set it: (lines, the highlighted words)."""
+    toks = _tokens(clean(headline))
+    width = {"instagram": 15, "telegram": 15, "linkedin": 18}[platform]
+    while True:
+        lines, cur = [], ""
+        for w, _ in toks:
+            t = (cur + " " + w).strip()
+            if cur and len(t) > width:
+                lines.append(cur)
+                cur = w
+            else:
+                cur = t
+        lines += [cur] if cur else []
+        if len(lines) <= 3:
+            return lines, " ".join(w for w, hl in toks if hl)
+        width += 2
+
+
+def text_in_art(sp):
+    """True when the image model sets the headline into this platform's picture (the default for "minimax" art);
+    False when the code draws it: a real photo, a card, or spec.<platform>.text = "code"."""
+    kind = sp.get("art") or ("minimax" if sp.get("image_prompt") else "card")
+    return bool(kind == "minimax" and sp.get("image_prompt") and sp.get("text") != "code" and clean(sp.get("headline")))
+
+
+def art_prompt(prompt, platform, headline=None):
+    """The full text sent to the image model: the writer's brief, then either the poster layout with the headline
+    to set into the picture, or (no headline) the framing for a picture the code will put the headline next to."""
+    lines, hl = headline_lines(headline, platform) if headline else ([], "")
+    if not lines:
+        return prompt.strip() + " " + FRAME[platform] + NO_TEXT
+    colour = f'The words "{hl}" are bright sky blue (#4FBFFD) instead of white.' if hl else "Every word is pure white."
+    return prompt.strip() + " " + POSTER[platform].format(
+        n=len(lines), lines_word="line" if len(lines) == 1 else "lines", lines=" / ".join(f'"{x}"' for x in lines), colour=colour)
 
 
 _FONTS = {}
@@ -842,11 +886,15 @@ def _logo(width):
     return lg.resize((width, int(lg.height * width / lg.width)), Image.LANCZOS)
 
 
-def compose(platform, sp, seed=7, art=None):
+def compose(platform, sp, seed=7, art=None, baked=False):
     """Draw the AI Station layer for one platform: the logo and one short phrase (sp["headline"]), nothing else.
-    Other spec fields (tag, subline, stat, stat_label) are not drawn; carousels have their own slide layout."""
+    baked = the picture already carries the headline (set by the image model): it fills the canvas and only the logo
+    is added. Other spec fields (tag, subline, stat, stat_label) are not drawn; carousels have their own slide layout."""
     W, H = SIZES[platform]
-    if art is not None:
+    baked = baked and art is not None
+    if baked:
+        img = _cover(art, W, H)
+    elif art is not None:
         img = _place_art(art, platform)
     else:
         img = _template_bg(platform, seed)
@@ -864,6 +912,8 @@ def compose(platform, sp, seed=7, art=None):
         for _ in range(2):
             img.alpha_composite(halo, (at[0] - pad, at[1] - pad))
     img.alpha_composite(logo, at)
+    if baked:
+        return img.convert("RGB")
     toks = _tokens(clean(sp.get("headline") or ""))
     for size in range(cfg["hs"][0], cfg["hs"][1] - 1, -4):
         hf = F(800, size)
@@ -911,15 +961,16 @@ def image_provider():
     return None
 
 
-def minimax(prompt, platform):
-    """Concept art for one platform. The art type keeps the name "minimax" (prompts and saved posts use it);
-    the picture comes from MiniMax image-01 or, without a MiniMax key, from an OpenRouter image model."""
+def minimax(prompt, platform, headline=None):
+    """The picture for one platform; with a headline, the model also sets that headline into it (art_prompt).
+    The art type keeps the name "minimax" (prompts and saved posts use it); the picture comes from MiniMax image-01
+    or, without a MiniMax key, from an OpenRouter image model (MiniMax H3 by default)."""
     prov = image_provider()
     if prov == "openrouter":
-        return openrouter_image(prompt, platform)
+        return openrouter_image(prompt, platform, headline)
     if prov is None:
         raise RuntimeError("no image key: set MINIMAX_API_KEY or OPENROUTER_API_KEY")
-    return _minimax_image(prompt, platform)
+    return _minimax_image(prompt, platform, headline)
 
 
 def _or_params(model):
@@ -943,20 +994,21 @@ def _or_pick(params, name, wanted):
     return None
 
 
-def openrouter_image(prompt, platform):
+def openrouter_image(prompt, platform, headline=None):
     key = secrets().get("openrouter_key")
     if not key:
         raise RuntimeError("no OpenRouter key (OPENROUTER_API_KEY)")
-    body = {"model": OR_MODEL, "prompt": art_prompt(prompt, platform), "n": 1}
+    body = {"model": OR_MODEL, "prompt": art_prompt(prompt, platform, headline), "n": 1}
+    aspects = (OR_ASPECTS_FULL if headline else OR_ASPECTS)[platform]
     params = _or_params(OR_MODEL)
     if params:
-        for name, wanted in (("aspect_ratio", OR_ASPECTS[platform]), ("resolution", OR_RESOLUTIONS),
+        for name, wanted in (("aspect_ratio", aspects), ("resolution", OR_RESOLUTIONS),
                              ("output_format", ("png", "jpeg"))):
             v = _or_pick(params, name, wanted)
             if v is not None:
                 body[name] = v
     else:  # parameters unknown: the documented aspect_ratio only
-        body["aspect_ratio"] = OR_ASPECTS[platform][0]
+        body["aspect_ratio"] = aspects[0]
     headers = {"Authorization": "Bearer " + key, "X-Title": "AI Station marketing agent"}
     last = None
     for i in range(2):
@@ -978,13 +1030,18 @@ def openrouter_image(prompt, platform):
     raise RuntimeError(f"OpenRouter {OR_MODEL}: {last}")
 
 
-def _minimax_image(prompt, platform):
+def _minimax_image(prompt, platform, headline=None):
     key = secrets().get("minimax_key")
     if not key:
         raise RuntimeError("no MiniMax key in secrets.json")
-    body = {"model": "image-01", "prompt": art_prompt(prompt, platform),
+    body = {"model": "image-01", "prompt": art_prompt(prompt, platform, headline),
             "response_format": "base64", "n": 1, "prompt_optimizer": False}
-    if platform == "instagram":  # the picture window shapes (ART_BOX): 5:4, square, 3:2
+    if headline:  # the whole canvas: 4:5, 16:9, square
+        if platform == "instagram":
+            body.update(width=1024, height=1280)
+        else:
+            body["aspect_ratio"] = "16:9" if platform == "telegram" else "1:1"
+    elif platform == "instagram":  # the picture window shapes (ART_BOX): 5:4, square, 3:2
         body.update(width=1280, height=1024)
     else:
         body["aspect_ratio"] = "1:1" if platform == "telegram" else "3:2"
@@ -1015,8 +1072,8 @@ def render_all(spec, post_id, use_minimax=True):
         sp = dict(spec[p])
         if not use_minimax and (sp.get("art") or "minimax") == "minimax" and not sp.get("art_path"):
             sp["art"] = "card"
-        art, src, err = visuals.background(p, sp, seed)
-        img = compose(p, sp, seed, art)
+        art, src, err, baked = visuals.background(p, sp, seed)
+        img = compose(p, sp, seed, art, baked)
         path = f"{WORK}/out/{post_id}_{p}_{int(time.time())}.jpg"
         img.save(path, "JPEG", quality=92)
         return p, {"path": path, "minimax": src in ("minimax", "pinned"), "source": src, "error": err}

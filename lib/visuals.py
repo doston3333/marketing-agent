@@ -59,21 +59,26 @@ def brand_tint(img, amount=0.55):
     return ImageEnhance.Brightness(out).enhance(0.82)
 
 
+BAKED = "_t.png"  # file-name ending of a saved picture that already carries the headline
+
+
 def background(platform, sp, seed, candidate=0):
-    """Returns (art_or_None, source_label, error)."""
+    """Returns (art_or_None, source_label, error, baked). baked = the picture already carries the headline
+    (the image model set it), so the code must add only the logo."""
     if sp.get("art_path") and os.path.exists(sp["art_path"]):
-        return Image.open(sp["art_path"]).convert("RGB"), "pinned", None
+        return Image.open(sp["art_path"]).convert("RGB"), "pinned", None, str(sp["art_path"]).endswith(BAKED)
     kind = sp.get("art") or ("minimax" if sp.get("image_prompt") else "card")
     try:
         if kind == "photo" and sp.get("photo"):
             art = photo_art(sp["photo"])
-            return (art if sp.get("tint") is False else brand_tint(art)), "photo", None
+            return (art if sp.get("tint") is False else brand_tint(art)), "photo", None, False
         if kind == "minimax" and sp.get("image_prompt"):
             prompt = sp["image_prompt"] if candidate == 0 else sp["image_prompt"] + " Another take: a different camera angle and distance on the same scene."
-            return A.minimax(prompt, platform), "minimax", None
-        return None, "card", None
+            baked = A.text_in_art(sp)
+            return A.minimax(prompt, platform, sp.get("headline") if baked else None), "minimax", None, baked
+        return None, "card", None, False
     except Exception as ex:
-        return None, "card", f"{kind}: {str(ex)[:160]}"
+        return None, "card", f"{kind}: {str(ex)[:160]}", False
 
 
 def render_candidates(spec, post_id, n=2, platforms=("instagram", "telegram", "linkedin")):
@@ -92,13 +97,13 @@ def render_candidates(spec, post_id, n=2, platforms=("instagram", "telegram", "l
 
     def one(j):
         p, i, sp = j
-        art, src, err = background(p, sp, spec.get("seed", 7) + i, candidate=i)
+        art, src, err, baked = background(p, sp, spec.get("seed", 7) + i, candidate=i)
         ap = None
         if art is not None:
-            ap = f"{outdir}/{p}_{i}.png"
+            ap = f"{outdir}/{p}_{i}{BAKED if baked else '.png'}"
             art.save(ap)
         prev = f"{outdir}/{p}_{i}_preview.jpg"
-        A.compose(p, sp, spec.get("seed", 7) + i, art).save(prev, "JPEG", quality=85)
+        A.compose(p, sp, spec.get("seed", 7) + i, art, baked).save(prev, "JPEG", quality=85)
         return p, {"art_path": ap, "preview": prev, "source": src, "error": err}
 
     A.secrets()

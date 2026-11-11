@@ -62,7 +62,13 @@ class ProviderChoice(Base):
         os.environ["OPENROUTER_API_KEY"] = "sk-or-test"
         with mock.patch.object(A, "openrouter_image", return_value="IMG") as o:
             self.assertEqual(A.minimax("a paper boat", "telegram"), "IMG")
-        o.assert_called_once_with("a paper boat", "telegram")
+        o.assert_called_once_with("a paper boat", "telegram", None)
+
+    def test_headline_travels_to_the_provider(self):
+        os.environ["OPENROUTER_API_KEY"] = "sk-or-test"
+        with mock.patch.object(A, "openrouter_image", return_value="IMG") as o:
+            A.minimax("a paper boat", "telegram", "Bir [[qisqa]] ibora")
+        o.assert_called_once_with("a paper boat", "telegram", "Bir [[qisqa]] ibora")
 
     def test_no_key_raises(self):
         with self.assertRaises(RuntimeError):
@@ -96,6 +102,17 @@ class OpenRouterImage(Base):
             A.openrouter_image("x", "linkedin")
         self.assertEqual(post.call_args.kwargs["json"]["resolution"], "1.5K")
         self.assertEqual(post.call_args.kwargs["json"]["aspect_ratio"], "3:2")
+
+    def test_with_a_headline_the_picture_is_the_whole_canvas(self):
+        want = {"instagram": "4:5", "telegram": "16:9", "linkedin": "1:1"}
+        with mock.patch.object(A, "_or_params", return_value=FLUX_PARAMS), \
+                mock.patch.object(A.requests, "post", return_value=Resp(200, {"data": [{"b64_json": _png_b64()}]})) as post:
+            for p, aspect in want.items():
+                A.openrouter_image("a paper boat", p, "Bir [[qisqa]] ibora")
+                body = post.call_args.kwargs["json"]
+                self.assertEqual(body["aspect_ratio"], aspect, p)
+                self.assertEqual(body["prompt"], A.art_prompt("a paper boat", p, "Bir [[qisqa]] ibora"))
+                self.assertIn('"Bir qisqa ibora"', body["prompt"])
 
     def test_aspect_fallback_for_limited_model(self):
         params = {"aspect_ratio": {"type": "enum", "values": ["4:3", "16:9", "4:5", "auto"]}}

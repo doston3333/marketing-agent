@@ -76,7 +76,8 @@ Write as one AI Station team member who works with founders every week (first pe
 - "minimax": a picture made from image_prompt by the image model (MiniMax H3). The default for every platform, including deadlines, numbers, opportunities and quotes. How to write the prompt is the next section; it decides whether the post looks good.
 - "photo": real people, places, events, products when the story has a good photo. Use the article URL (its lead photo is used, tinted to brand colours), an image URL, or tg:<file_id> of a photo a lead sent. Use it for a named real person: the image model never draws real people.
 - "card" (plain brand background, no art) is a last resort only: when image generation fails twice for that platform. Say so in the report.
-- The picture sits in the top two thirds of the Instagram and LinkedIn image and in the right half of the Telegram image; the headline has its own dark area, so it does not cover the subject.
+- For "minimax" art the image model also sets the headline (spec.<p>.headline) into the picture, in the brand type: white heavy sans-serif on a dark navy area, the [[highlight]] in sky blue. The code adds only the logo on top. The picture sits in the upper two thirds on Instagram and LinkedIn and in the right half on Telegram.
+- For "photo" art, and when spec.<p>.text is "code", the code draws the headline itself next to the picture (the fallback when the model cannot spell a headline).
 
 ## Writing the image prompt (spec.<platform>.image_prompt)
 The picture is what stops the scroll. Write each prompt like a brief to a photographer or an illustrator, not a search query. A thin prompt ("a gavel on a circuit board, cinematic") gives stock art.
@@ -94,17 +95,19 @@ The picture is what stops the scroll. Write each prompt like a brief to a photog
    d. Camera (photo, still life, miniature): lens, aperture, viewpoint, what is in focus, film grain. Or drawing style (illustration): shapes, palette, texture.
 5. Brand colour comes from the light, not from painting everything blue: deep navy shadows, electric blue or cyan from one source (a screen glow, a night window, a rim light) and one warm accent (a lamp, brass, wood, skin, coral). Never a flat all-blue picture and never a murky dark one: the subject is well lit.
 6. People make a post feel alive. Use fictional, anonymous people: seen from behind, in profile, or only their hands. When the story is local they are young Uzbek people, with at most one small local detail (a piala of green tea, an ikat pattern); no monuments, no postcard views. Never a named or recognisable real person, never a face as the main subject.
-7. Nothing that carries writing: screens show only a soft glow, books are closed with blank covers; no signs, badges, posters, whiteboards, calendars or documents.
+7. Nothing in the scene carries writing: screens show only a soft glow, books are closed with blank covers; no signs, badges, posters, whiteboards, calendars or documents. The headline is the only text in the picture.
 8. Three platforms are three different shots of the same scene, not one prompt three times: Instagram the main moment, Telegram a close detail (that picture is square), LinkedIn a wider, calmer view.
-9. Do not write where the subject sits in the frame, the image size, "no text" or brand hex colours: the code adds the framing and the no-text rule for each platform.
+9. Do not write the headline, the layout, where the subject sits, the image size or the type style in image_prompt: the code adds the poster layout and the headline text for each platform from spec.<p>.headline.
 Example (photo): "Documentary photograph of a teenage Uzbek girl seen from behind at a workbench at night, assembling a small cube-shaped satellite frame with gold solar panels; her dark hair is tied back, safety glasses pushed up on her head, a soldering iron in her right hand with a thin curl of smoke. The bench is crowded with wires, a multimeter and small tools. Behind it a large window shows a deep blue pre-dawn sky with a few sharp stars. Warm desk-lamp light on her hands and the satellite, cool blue window light on her shoulders. Shot on a 50mm lens at f/2, shallow depth of field with the satellite in sharp focus, natural colour, fine film grain."
 Example (still life): "Studio still life photograph: an antique brass balance scale on a dark slate surface. In the left pan lies a stack of three closed leather-bound books with blank spines; in the right pan a single matte black keyboard key glows cyan from within. One hard warm key light from the upper left rakes across the brass and leather, a cool electric-blue rim light outlines the scale from behind, and the background is a smooth deep navy backdrop. Shot on a 90mm macro lens at eye level, crisp focus on the glowing key, rich tactile detail, subtle film grain."
 Example (illustration): "Bold editorial illustration for a magazine cover: a girl in a workshop apron stands on a stepladder tightening a bolt on a huge cube-shaped satellite, its two solar panels unfolding like wings above the rooftops of a sleeping city at night, a crescent moon behind. Flat geometric shapes with confident outlines, a limited palette of deep navy, electric blue, cyan and one warm coral accent on her apron, visible risograph grain and slightly misregistered ink, strong diagonal composition, large simple shapes."
 
 ## Judging the previews
 - After `agent.py render`, LOOK at every preview and ask: would a designer at a good studio post this?
-- Reject when: letters or garbage text anywhere, deformed hands, faces or objects, a stock symbol or the glossy "AI art" look, a flat, muddy or all-blue picture, the subject cut off or lost in the fade, a photo that is not about this story, a headline that is hard to read.
-- When you reject, rewrite the prompt (a different scene, look or shot) and render again; do not just roll the same prompt. Pin the best with spec.<p>.art_path.
+- Read the headline in every preview letter by letter against spec.<p>.headline. Reject the preview if any letter, digit, punctuation mark or capital differs, a word is missing, repeated or split wrongly, the highlight is on other words, or the headline is small, cut off or hidden behind the logo. Only the apostrophe in o‘ and g‘ may look like ’. A post with a misspelt headline must never be sent.
+- Reject also when: any other letters or garbage text in the scene, deformed hands, faces or objects, a stock symbol or the glossy "AI art" look, a flat, muddy or all-blue picture, the subject cut off or covered by the headline, a photo that is not about this story.
+- When the picture is wrong, rewrite the prompt (a different scene, look or shot) and render again; do not just roll the same prompt. When only the headline is wrong on both candidates, render once more; if it is still wrong, set spec.<p>.text to "code", remove art_path and render again: the code then draws the headline. Say so in the report.
+- Pin the best with spec.<p>.art_path.
 
 ## Carousels (format = carousel)
 - carousel.instagram (Uzbek) and carousel.linkedin (English): 3-9 slides after the cover. Slide = {"title" (max 10 words, one [[highlight]]), "body" (max 45 words), optional "stat"}.
@@ -112,7 +115,7 @@ Example (illustration): "Bold editorial illustration for a magazine cover: a gir
 - LinkedIn gets the slides as a PDF document post (the leads upload the PDF).
 
 ## Image cards (spec)
-- The image carries only the AI Station logo and ONE short phrase (spec.<p>.headline). Nothing else: no tag pill, no subline, no stat block, no footer. The caption does the explaining.
+- The image carries only the AI Station logo and ONE short phrase (spec.<p>.headline). Nothing else: no tag pill, no subline, no stat block, no footer. The caption does the explaining. Short phrases with common words are spelt most reliably by the image model.
 - Phrase: Instagram max 7 words (Uzbek), Telegram max 6 words (Uzbek), LinkedIn max 8 words (English). One short sentence or phrase, the takeaway or the hook, not a summary of the post.
 - Optional: up to 3 words in [[ ]] are highlighted in cyan; use it on the word that carries the meaning, or not at all.
 - A number or date in the phrase must be copied exactly from the source.
