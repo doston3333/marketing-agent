@@ -24,7 +24,7 @@
    },
    "opportunity": {
     "posts": 17,
-    "median_eng": 0.96
+    "median_eng": 0.97
    }
   },
   "series": {
@@ -42,7 +42,7 @@
   "photo": {
    "True": {
     "posts": 66,
-    "median_eng": 1.03
+    "median_eng": 1.04
    },
    "False": {
     "posts": 29,
@@ -50,5 +50,5 @@
    }
   }
  },
- "updated": 1794369057.4410794
+ "updated": 1794455415.0972674
 }
