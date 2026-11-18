@@ -1,14 +1,14 @@
 {
- "channel_median_views": 174.5,
+ "channel_median_views": 175,
  "summary": {
   "kind": {
    "other": {
     "posts": 17,
-    "median_eng": 1.0
+    "median_eng": 0.99
    },
    "partnership": {
     "posts": 36,
-    "median_eng": 0.97
+    "median_eng": 0.98
    },
    "educational": {
     "posts": 10,
@@ -30,13 +30,13 @@
   "series": {
    "-": {
     "posts": 97,
-    "median_eng": 1.0
+    "median_eng": 0.99
    }
   },
   "by": {
    "team": {
     "posts": 97,
-    "median_eng": 1.0
+    "median_eng": 0.99
    }
   },
   "photo": {
@@ -46,9 +46,9 @@
    },
    "False": {
     "posts": 31,
-    "median_eng": 0.89
+    "median_eng": 0.9
    }
   }
  },
- "updated": 1794887457.6779604
+ "updated": 1794973814.985158
 }
