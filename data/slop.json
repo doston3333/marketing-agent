@@ -2,146 +2,206 @@
  "phrases": [
   [
    "aistation aistationuz",
-   15,
-   133.1
-  ],
-  [
-   "yuboring aistation",
-   8,
-   71.0
-  ],
-  [
-   "yuboring aistation aistationuz",
-   8,
-   71.0
+   32,
+   174.5
   ],
   [
    "aistationuz startap",
-   7,
-   62.1
-  ],
-  [
-   "aistation aistationuz startap",
-   7,
-   62.1
+   10,
+   54.5
   ],
   [
    "aistationuz ai",
-   6,
-   53.2
+   10,
+   54.5
   ],
   [
-   "launch scale",
-   16,
-   47.3
+   "aistation aistationuz startap",
+   10,
+   54.5
   ],
   [
-   "learn build",
-   16,
-   47.3
+   "yuboring aistation",
+   9,
+   49.1
   ],
   [
-   "build launch",
-   16,
-   47.3
-  ],
-  [
-   "learn build launch",
-   16,
-   47.3
-  ],
-  [
-   "build launch scale",
-   16,
-   47.3
-  ],
-  [
-   "learn build launch scale",
-   16,
-   47.3
-  ],
-  [
-   "bizning maslahat",
-   5,
-   44.4
-  ],
-  [
-   "do‘stingizga yuboring",
-   5,
-   44.4
-  ],
-  [
-   "saqlab qo‘ying",
-   5,
-   44.4
-  ],
-  [
-   "do‘stingizga yuboring aistation",
-   5,
-   44.4
+   "yuboring aistation aistationuz",
+   9,
+   49.1
   ],
   [
    "aistation aistationuz ai",
-   5,
-   44.4
+   9,
+   49.1
   ],
   [
-   "do‘stingizga yuboring aistation aistationuz",
-   5,
-   44.4
+   "learn build",
+   24,
+   43.6
   ],
   [
-   "shuning uchun",
-   4,
-   35.5
+   "build launch",
+   24,
+   43.6
   ],
   [
-   "yuboring aistation aistationuz startap",
-   4,
-   35.5
+   "launch scale",
+   24,
+   43.6
   ],
   [
-   "park ventures",
-   3,
-   26.6
+   "build launch scale",
+   24,
+   43.6
   ],
   [
-   "qurayotgan do‘stingizga",
-   3,
-   26.6
+   "learn build launch",
+   24,
+   43.6
   ],
   [
-   "ai talaba",
-   3,
-   26.6
+   "learn build launch scale",
+   24,
+   43.6
   ],
   [
-   "talaba uchun",
-   3,
-   26.6
+   "so‘nggi yangiliklarni",
+   6,
+   32.7
   ],
   [
-   "qurayotgan do‘stingizga yuboring",
-   3,
-   26.6
+   "uchun sahifamizga",
+   6,
+   32.7
   ],
   [
-   "it park ventures",
-   3,
-   26.6
+   "bo‘yicha so‘nggi",
+   6,
+   32.7
   ],
   [
-   "qurayotgan do‘stingizga yuboring aistation",
-   3,
-   26.6
+   "bo‘ling aistation",
+   6,
+   32.7
   ],
   [
-   "yuboring aistation aistationuz ai",
-   3,
-   26.6
+   "intellekt bo‘yicha",
+   6,
+   32.7
+  ],
+  [
+   "yangiliklarni bilish",
+   6,
+   32.7
+  ],
+  [
+   "obuna bo‘ling",
+   6,
+   32.7
+  ],
+  [
+   "sahifamizga obuna",
+   6,
+   32.7
+  ],
+  [
+   "bo‘ling aistation aistationuz",
+   6,
+   32.7
+  ],
+  [
+   "so‘nggi yangiliklarni bilish",
+   6,
+   32.7
+  ],
+  [
+   "uchun sahifamizga obuna",
+   6,
+   32.7
+  ],
+  [
+   "yangiliklarni bilish uchun",
+   6,
+   32.7
+  ],
+  [
+   "sun’iy intellekt bo‘yicha",
+   6,
+   32.7
+  ],
+  [
+   "bo‘yicha so‘nggi yangiliklarni",
+   6,
+   32.7
+  ],
+  [
+   "intellekt bo‘yicha so‘nggi",
+   6,
+   32.7
+  ],
+  [
+   "bilish uchun sahifamizga",
+   6,
+   32.7
+  ],
+  [
+   "obuna bo‘ling aistation",
+   6,
+   32.7
+  ],
+  [
+   "sahifamizga obuna bo‘ling",
+   6,
+   32.7
+  ],
+  [
+   "bo‘yicha so‘nggi yangiliklarni bilish",
+   6,
+   32.7
+  ],
+  [
+   "uchun sahifamizga obuna bo‘ling",
+   6,
+   32.7
+  ],
+  [
+   "sun’iy intellekt bo‘yicha so‘nggi",
+   6,
+   32.7
+  ],
+  [
+   "yangiliklarni bilish uchun sahifamizga",
+   6,
+   32.7
+  ],
+  [
+   "bilish uchun sahifamizga obuna",
+   6,
+   32.7
+  ],
+  [
+   "intellekt bo‘yicha so‘nggi yangiliklarni",
+   6,
+   32.7
+  ],
+  [
+   "so‘nggi yangiliklarni bilish uchun",
+   6,
+   32.7
+  ],
+  [
+   "sahifamizga obuna bo‘ling aistation",
+   6,
+   32.7
+  ],
+  [
+   "obuna bo‘ling aistation aistationuz",
+   6,
+   32.7
   ]
  ],
- "agent_texts": 16,
- "human_texts": 71,
- "updated": 1792381912.9781618
+ "agent_texts": 33,
+ "human_texts": 90,
+ "updated": 1795405883.7268007
 }
