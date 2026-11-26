@@ -23,32 +23,32 @@
     "median_eng": 1.09
    },
    "opportunity": {
-    "posts": 19,
+    "posts": 20,
     "median_eng": 1.02
    }
   },
   "series": {
    "-": {
-    "posts": 100,
-    "median_eng": 1.0
+    "posts": 101,
+    "median_eng": 0.99
    }
   },
   "by": {
    "team": {
-    "posts": 100,
-    "median_eng": 1.0
+    "posts": 101,
+    "median_eng": 0.99
    }
   },
   "photo": {
    "True": {
-    "posts": 69,
+    "posts": 70,
     "median_eng": 1.02
    },
    "False": {
     "posts": 31,
-    "median_eng": 0.92
+    "median_eng": 0.93
    }
   }
  },
- "updated": 1795578635.9317553
+ "updated": 1795665015.69439
 }
